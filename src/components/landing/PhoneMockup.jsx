@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function PhoneMockup() {
   const faturas = [
-    { issuer: 'ENDE', amount: '18.450', status: 'Pagar', cls: 'bg-danger-soft text-danger' },
+    { issuer: 'ENDE', amount: '18.450', status: 'Pagar', cls: 'bg-danger-soft text-destructive' },
     { issuer: 'ELISAL', amount: '8.200', status: 'Pago', cls: 'bg-green-soft text-ok' },
     { issuer: 'TV Cabo', amount: '15.000', status: 'Pago', cls: 'bg-green-soft text-ok' },
   ];
@@ -35,7 +35,7 @@ export default function PhoneMockup() {
               <div key={i} className="bg-surface rounded-lg p-2.5 flex items-center justify-between shadow-soft">
                 <div>
                   <p className="text-xs font-semibold text-ink">{f.issuer}</p>
-                  <p className="font-mono text-[0.65rem] text-muted tabular-nums">{f.amount} Kz</p>
+                  <p className="font-mono text-[0.65rem] text-muted-2 tabular-nums">{f.amount} Kz</p>
                 </div>
                 <span className={`text-[0.55rem] font-semibold px-1.5 py-0.5 rounded ${f.cls}`}>
                   {f.status}
