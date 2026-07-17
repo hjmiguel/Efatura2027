@@ -10,6 +10,8 @@ import ScrollToTop from './components/ScrollToTop';
 import Landing from './pages/Landing';
 import Registo from './pages/Registo';
 import Entrar from './pages/Entrar';
+import Termos from './pages/Termos';
+import Privacidade from './pages/Privacidade';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -41,6 +43,8 @@ const AuthenticatedApp = () => {
       <Route path="/" element={<Landing />} />
       <Route path="/registo" element={<Registo />} />
       <Route path="/entrar" element={<Entrar />} />
+      <Route path="/termos" element={<Termos />} />
+      <Route path="/privacidade" element={<Privacidade />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

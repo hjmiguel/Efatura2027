@@ -9,7 +9,7 @@ export default function Registo() {
           <span className="font-heading font-bold text-white">G+</span>
         </div>
         <h1 className="font-heading text-2xl font-bold text-ink mb-2">Criar conta</h1>
-        <p className="text-muted text-sm mb-8">
+        <p className="text-muted-foreground text-sm mb-8">
           O registo estará disponível em breve. Ainda estamos a preparar esta página.
         </p>
         <Link

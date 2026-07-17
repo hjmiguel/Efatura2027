@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin } from 'lucide-react';
 
+
 export default function Footer() {
   return (
     <footer className="bg-ink text-white/70 pt-14 pb-8">
@@ -31,9 +32,9 @@ export default function Footer() {
           <div>
             <h4 className="font-heading font-semibold text-white text-sm mb-3">Legal</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors">Termos de uso</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Privacidade</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Lei 22/11</a></li>
+              <li><Link to="/termos" className="hover:text-white transition-colors">Termos de uso</Link></li>
+              <li><Link to="/privacidade" className="hover:text-white transition-colors">Privacidade</Link></li>
+              <li><Link to="/privacidade" className="hover:text-white transition-colors">Lei 22/11</Link></li>
             </ul>
           </div>
 
