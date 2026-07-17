@@ -36,7 +36,7 @@ export default function Problem() {
                 <p.icon className="w-5 h-5 text-danger" />
               </div>
               <h3 className="font-heading font-bold text-ink mb-2">{p.title}</h3>
-              <p className="text-sm text-muted leading-relaxed">{p.text}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{p.text}</p>
             </div>
           ))}
         </div>

@@ -27,7 +27,7 @@ export default function Trust() {
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-ink mb-3">
             A Gestão+ nunca recebe o teu dinheiro.
           </h2>
-          <p className="text-muted max-w-xl mx-auto">
+          <p className="text-muted-foreground max-w-xl mx-auto">
             Tu pagas, a app organiza. Construída com segurança e confiança em cada passo.
           </p>
         </div>
@@ -39,7 +39,7 @@ export default function Trust() {
                 <item.icon className="w-5 h-5 text-primary" />
               </div>
               <h3 className="font-heading font-semibold text-ink text-sm mb-1.5">{item.title}</h3>
-              <p className="text-xs text-muted leading-relaxed">{item.text}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">{item.text}</p>
             </div>
           ))}
         </div>

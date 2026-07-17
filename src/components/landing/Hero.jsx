@@ -17,7 +17,7 @@ export default function Hero() {
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-ink leading-[1.05] tracking-tight">
               O teu dinheiro,<br />em dia.
             </h1>
-            <p className="mt-6 text-lg text-muted leading-relaxed max-w-md mx-auto lg:mx-0">
+            <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-md mx-auto lg:mx-0">
               Junta as tuas faturas, paga por Multicaixa Express e sabe sempre quanto te sobra. Feito para Angola.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">

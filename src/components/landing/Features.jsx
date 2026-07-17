@@ -31,7 +31,7 @@ export default function Features() {
                 <f.icon className="w-5 h-5 text-primary" />
               </div>
               <h3 className="font-heading font-bold text-ink mb-2">{f.title}</h3>
-              <p className="text-sm text-muted leading-relaxed">{f.text}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{f.text}</p>
             </div>
           ))}
         </div>

@@ -33,7 +33,7 @@ export default function HowItWorks() {
                   PASSO {s.num}
                 </span>
                 <h3 className="font-heading font-bold text-ink mb-2 leading-tight">{s.title}</h3>
-                <p className="text-sm text-muted leading-relaxed max-w-[14rem]">{s.text}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-[14rem]">{s.text}</p>
               </div>
             </div>
           ))}

@@ -9,7 +9,7 @@ export default function FinalCTA() {
         <h2 className="font-heading text-3xl sm:text-4xl font-bold text-ink mb-4 leading-tight">
           Começa a guardar as tuas faturas hoje.
         </h2>
-        <p className="text-muted text-lg mb-8 max-w-lg mx-auto">
+        <p className="text-muted-foreground text-lg mb-8 max-w-lg mx-auto">
           As despesas de 2027 contam para a declaração de 2028. Quanto mais cedo começas, mais organizas.
         </p>
         <Link

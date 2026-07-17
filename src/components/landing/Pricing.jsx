@@ -62,10 +62,10 @@ export default function Pricing() {
                 </span>
               )}
               <h3 className="font-heading font-bold text-ink text-lg mb-1">{plan.name}</h3>
-              <p className="text-sm text-muted mb-4">{plan.description}</p>
+              <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
               <div className="flex items-baseline gap-1.5 mb-6">
                 <span className="font-mono text-4xl font-bold text-ink tabular-nums">{plan.price}</span>
-                <span className="text-sm font-medium text-muted">Kz</span>
+                <span className="text-sm font-medium text-muted-foreground">Kz</span>
                 <span className="text-sm text-muted-2 ml-1">{plan.period}</span>
               </div>
               <ul className="space-y-3 mb-7">
