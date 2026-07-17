@@ -15,29 +15,29 @@ export default function PhoneMockup() {
         <div className="pt-8 px-3 pb-3 h-full flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-[0.6rem] text-muted-2 font-body">Olá, Ana</p>
+              <p className="text-[0.6rem] text-muted-2">Olá, Ana</p>
               <p className="font-heading text-sm font-bold text-ink">As minhas faturas</p>
             </div>
             <div className="w-7 h-7 rounded-full bg-gold-soft flex items-center justify-center">
-              <span className="text-[0.6rem] font-heading font-bold text-ink">A</span>
+              <span className="text-[0.6rem] font-bold text-ink">A</span>
             </div>
           </div>
 
-          <div className="bg-primary rounded-lg p-3 mb-4">
-            <p className="text-[0.55rem] text-surface/70 uppercase tracking-wider mb-0.5 font-body">Disponível</p>
-            <p className="font-mono text-lg font-bold text-surface tabular-nums">
+          <div className="bg-primary rounded-xl p-3 mb-4">
+            <p className="text-[0.55rem] text-white/70 uppercase tracking-wider mb-0.5">Disponível</p>
+            <p className="font-mono text-lg font-bold text-white tabular-nums">
               247.300 <span className="text-xs font-medium">Kz</span>
             </p>
           </div>
 
           <div className="space-y-2 flex-1">
             {faturas.map((f, i) => (
-              <div key={i} className="bg-surface rounded p-2.5 flex items-center justify-between shadow-soft border border-line">
+              <div key={i} className="bg-surface rounded-lg p-2.5 flex items-center justify-between shadow-soft">
                 <div>
-                  <p className="text-xs font-heading font-bold text-ink">{f.issuer}</p>
+                  <p className="text-xs font-semibold text-ink">{f.issuer}</p>
                   <p className="font-mono text-[0.65rem] text-muted-2 tabular-nums">{f.amount} Kz</p>
                 </div>
-                <span className={`text-[0.55rem] font-heading font-bold px-1.5 py-0.5 rounded ${f.cls}`}>
+                <span className={`text-[0.55rem] font-semibold px-1.5 py-0.5 rounded ${f.cls}`}>
                   {f.status}
                 </span>
               </div>

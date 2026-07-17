@@ -7,27 +7,27 @@ export default function TalaoCard({
   amount,
   amountSuffix = 'Kz',
   variant = 'default',
-  notchColor = '#F5F0E6',
+  notchColor = '#EAEEEC',
   children,
   footer,
 }) {
   const isGold = variant === 'gold';
   const headerClass = isGold
     ? 'bg-gold text-ink'
-    : 'bg-primary text-surface';
+    : 'bg-primary text-white';
 
   return (
     <div
-      className="talao-serrated-top rounded-b-talao shadow-talao overflow-hidden bg-surface border border-line"
+      className="talao-serrated-top rounded-b-talao shadow-talao overflow-hidden bg-surface"
       style={{ '--talao-notch-bg': notchColor }}
     >
       <div className={`${headerClass} px-5 pt-7 pb-4`}>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[0.65rem] font-heading font-bold uppercase tracking-[0.14em] opacity-80">
+          <span className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] opacity-75">
             {issuer}
           </span>
           {amountLabel && (
-            <span className="text-[0.6rem] font-heading font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-black/10">
+            <span className="text-[0.6rem] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-black/10">
               {amountLabel}
             </span>
           )}
@@ -63,7 +63,7 @@ export function TalaoField({ label, value, copyable = false }) {
 
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-xs text-muted-2 font-body font-medium">{label}</span>
+      <span className="text-xs text-muted-2 font-medium">{label}</span>
       <button
         type="button"
         onClick={handleCopy}

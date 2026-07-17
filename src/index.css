@@ -1,78 +1,76 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 40 20% 95%;
-    --foreground: 30 10% 10%;
+    --background: 150 12% 93%;
+    --foreground: 163 34% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 30 10% 10%;
+    --card-foreground: 163 34% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 30 10% 10%;
-    --primary: 166 70% 20%;
+    --popover-foreground: 163 34% 10%;
+    --primary: 166 74% 21%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 40 15% 90%;
-    --secondary-foreground: 30 10% 10%;
-    --muted: 40 15% 92%;
-    --muted-foreground: 30 5% 40%;
-    --accent: 37 79% 50%;
-    --accent-foreground: 30 10% 10%;
-    --destructive: 5 63% 50%;
+    --secondary: 140 14% 90%;
+    --secondary-foreground: 163 34% 10%;
+    --muted: 140 14% 93%;
+    --muted-foreground: 140 7% 45%;
+    --accent: 37 79% 57%;
+    --accent-foreground: 163 34% 10%;
+    --destructive: 5 63% 53%;
     --destructive-foreground: 0 0% 100%;
-    --border: 30 10% 80%;
-    --input: 30 10% 80%;
-    --ring: 166 70% 20%;
-    --chart-1: 166 70% 20%;
-    --chart-2: 37 79% 50%;
+    --border: 140 14% 90%;
+    --input: 140 14% 90%;
+    --ring: 166 74% 21%;
+    --chart-1: 166 74% 21%;
+    --chart-2: 37 79% 57%;
     --chart-3: 163 66% 33%;
-    --chart-4: 5 63% 50%;
+    --chart-4: 5 63% 53%;
     --chart-5: 220 60% 45%;
-    --radius: 0.25rem;
-    --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
-    --font-body: 'Lora', Georgia, 'Times New Roman', serif;
-    --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --radius: 0.5rem;
+    --font-heading: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    --sidebar-background: 40 20% 95%;
-    --sidebar-foreground: 30 10% 10%;
-    --sidebar-primary: 166 70% 20%;
+    --sidebar-background: 150 12% 93%;
+    --sidebar-foreground: 163 34% 10%;
+    --sidebar-primary: 166 74% 21%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 40 15% 90%;
-    --sidebar-accent-foreground: 30 10% 10%;
-    --sidebar-border: 30 10% 80%;
-    --sidebar-ring: 166 70% 20%;
+    --sidebar-accent: 140 14% 90%;
+    --sidebar-accent-foreground: 163 34% 10%;
+    --sidebar-border: 140 14% 90%;
+    --sidebar-ring: 166 74% 21%;
   }
 
   .dark {
-    --background: 30 10% 10%;
-    --foreground: 0 0% 95%;
-    --card: 30 8% 14%;
-    --card-foreground: 0 0% 95%;
-    --popover: 30 8% 14%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 166 70% 20%;
-    --primary-foreground: 0 0% 95%;
-    --secondary: 30 8% 18%;
-    --secondary-foreground: 0 0% 95%;
-    --muted: 30 8% 18%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 37 79% 50%;
-    --accent-foreground: 30 10% 10%;
-    --destructive: 5 63% 50%;
-    --destructive-foreground: 0 0% 95%;
-    --border: 30 8% 22%;
-    --input: 30 8% 22%;
-    --ring: 166 70% 20%;
-    --sidebar-background: 30 8% 14%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 166 70% 20%;
+    --background: 163 34% 10%;
+    --foreground: 0 0% 98%;
+    --card: 163 30% 13%;
+    --card-foreground: 0 0% 98%;
+    --popover: 163 30% 13%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 166 74% 21%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 163 20% 20%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 163 20% 20%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 37 79% 57%;
+    --accent-foreground: 163 34% 10%;
+    --destructive: 5 63% 53%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 163 20% 20%;
+    --input: 163 20% 20%;
+    --ring: 166 74% 21%;
+    --sidebar-background: 163 30% 13%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 166 74% 21%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 30 8% 18%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 30 8% 22%;
-    --sidebar-ring: 166 70% 20%;
+    --sidebar-accent: 163 20% 20%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 163 20% 20%;
+    --sidebar-ring: 166 74% 21%;
   }
 }
 
@@ -90,7 +88,7 @@
   }
 
   section[id] {
-    scroll-margin-top: 8rem;
+    scroll-margin-top: 5rem;
   }
 
   .font-mono {
@@ -136,57 +134,5 @@
 
   .talao-perforation::after {
     right: -21px;
-  }
-
-  /* === Newspaper utilities === */
-
-  .news-columns-2 {
-    column-count: 2;
-    column-gap: 2rem;
-    column-rule: 1px solid hsl(var(--border));
-  }
-
-  .news-columns-3 {
-    column-count: 3;
-    column-gap: 2rem;
-    column-rule: 1px solid hsl(var(--border));
-  }
-
-  @media (max-width: 640px) {
-    .news-columns-2,
-    .news-columns-3 {
-      column-count: 1;
-    }
-  }
-
-  .rule-double {
-    border-top: 4px double hsl(var(--foreground));
-  }
-
-  .rule-thick {
-    border-top: 2px solid hsl(var(--foreground));
-  }
-
-  .rule-thin {
-    border-top: 1px solid hsl(var(--border));
-  }
-
-  .drop-cap::first-letter {
-    font-family: var(--font-heading);
-    font-size: 3.5em;
-    font-weight: 800;
-    float: left;
-    line-height: 0.75;
-    margin: 0.1em 0.08em 0 0;
-    color: hsl(var(--foreground));
-  }
-
-  .kicker {
-    font-family: var(--font-body);
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: hsl(var(--muted-foreground));
   }
 }

@@ -61,28 +61,28 @@ module.exports = {
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
   			},
-  			ink: '#1A1714',
-  			'primary-2': '#0F5A47',
-  			gold: '#C8923A',
-  			'gold-soft': '#F5E8C8',
-  			'danger-soft': '#F2DAD4',
-  			ok: '#1C7A5A',
-  			'green-soft': '#DCEDE3',
+  			ink: '#10211C',
+  			'primary-2': '#12715C',
+  			gold: '#E8A23D',
+  			'gold-soft': '#F6E2BC',
+  			'danger-soft': '#F7E0DC',
+  			ok: '#1C8A6A',
+  			'green-soft': '#DCF0E6',
   			brandblue: '#3a64a8',
-  			surface: '#FFFCF5',
-  			line: '#D4CFC4',
-  			'muted-2': '#8A8278'
+  			surface: '#FFFFFF',
+  			line: '#E2E8E4',
+  			'muted-2': '#93A099'
   		},
   		fontFamily: {
-  			heading: ['Playfair Display', 'Georgia', 'Times New Roman', 'serif'],
-  			body: ['Lora', 'Georgia', 'Times New Roman', 'serif'],
-  			display: ['Playfair Display', 'Georgia', 'Times New Roman', 'serif'],
+  			heading: ['Space Grotesk', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+  			body: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+  			display: ['Space Grotesk', 'ui-sans-serif', 'system-ui', 'sans-serif'],
   			mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
   		},
   		boxShadow: {
-  			talao: '0 8px 24px -12px rgba(26,23,20,.28)',
-  			'talao-lg': '0 20px 56px -16px rgba(26,23,20,.32)',
-  			soft: '0 2px 8px -2px rgba(26,23,20,.08)'
+  			talao: '0 8px 24px -12px rgba(16,33,28,.28)',
+  			'talao-lg': '0 20px 56px -16px rgba(16,33,28,.32)',
+  			soft: '0 2px 8px -2px rgba(16,33,28,.08)'
   		},
   		keyframes: {
   			'accordion-down': {
