@@ -2,7 +2,6 @@ import React from 'react';
 import Navbar from '@/components/landing/Navbar';
 import Hero from '@/components/landing/Hero';
 import AGTBand from '@/components/landing/AGTBand';
-import StatsBand from '@/components/landing/StatsBand';
 import Problem from '@/components/landing/Problem';
 import HowItWorks from '@/components/landing/HowItWorks';
 import DemoBand from '@/components/landing/DemoBand';
@@ -23,7 +22,6 @@ export default function Landing() {
       <main>
         <Hero />
         <AGTBand />
-        <StatsBand />
         <Problem />
         <HowItWorks />
         <DemoBand />
