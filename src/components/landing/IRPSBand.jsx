@@ -41,10 +41,14 @@ export default function IRPSBand() {
                 notchColor="#F6E2BC"
               >
                 <p className="text-xs text-ink/60 mb-3 font-medium">Despesas com NIF organizadas</p>
-                <div className="flex flex-wrap gap-2">
-                  <Tag>Saúde</Tag>
-                  <Tag>Educação</Tag>
-                  <Tag>Renda</Tag>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <Tag>Saúde 22.400</Tag>
+                  <Tag>Educação 96.000</Tag>
+                  <Tag>Renda 10.000</Tag>
+                </div>
+                <div className="flex items-start gap-2 text-xs text-ink/70 bg-white/40 rounded-lg p-3">
+                  <span className="font-bold text-destructive flex-shrink-0">!</span>
+                  <span>2 faturas sem o teu NIF. Sem NIF não contam para a dedução.</span>
                 </div>
               </TalaoCard>
             </div>

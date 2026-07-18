@@ -3,10 +3,10 @@ import { Camera, Bell, Smartphone, CheckCircle2 } from 'lucide-react';
 import { useInView } from '@/hooks/useAnimations';
 
 const steps = [
-  { num: 1, icon: Camera, title: 'Liga a AGT ou tira foto', text: 'A app organiza tudo automaticamente.' },
+  { num: 1, icon: Camera, title: 'Liga a AGT e as empresas', text: 'As faturas eletrónicas chegam sozinhas. As empresas ligadas enviam com a referência de pagamento. As de papel entram por foto.' },
   { num: 2, icon: Bell, title: 'Recebe o aviso', text: 'Antes do prazo, na app e por WhatsApp.' },
-  { num: 3, icon: Smartphone, title: 'Paga por Multicaixa Express', text: 'Direto nas empresas ligadas.' },
-  { num: 4, icon: CheckCircle2, title: 'A app concilia', text: 'A fatura fica como paga, sozinha.' },
+  { num: 3, icon: Smartphone, title: 'Paga por Multicaixa Express', text: 'Direto nas empresas ligadas, com a referência que elas enviaram.' },
+  { num: 4, icon: CheckCircle2, title: 'A app concilia', text: 'A fatura fica como paga, sem tratares de comprovativos.' },
 ];
 
 const bounceDelays = [0.3, 0.62, 0.94, 1.26];
@@ -23,6 +23,9 @@ export default function HowItWorks() {
         <h2 className="text-center font-heading text-2xl sm:text-3xl font-bold text-ink mb-12 max-w-xl mx-auto">
           Quatro passos e estás a usar.
         </h2>
+        <p className="text-center text-xs text-muted-foreground max-w-2xl mx-auto mb-10">
+          A AGT verifica que a fatura existe sob o teu NIF. As empresas dão a referência que permite pagar. A foto cobre o que ainda é papel. Só a empresa tem a referência de pagamento.
+        </p>
 
         <div className="relative">
           <div

@@ -16,7 +16,7 @@ export default function PhoneMockup() {
         <div className="pt-8 px-3 pb-3 h-full flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-[0.6rem] text-muted-2">Olá, Ana</p>
+              <p className="text-[0.6rem] text-muted-2">Olá, Samara</p>
               <p className="font-heading text-sm font-bold text-ink">As minhas faturas</p>
             </div>
             <div className="w-7 h-7 rounded-full bg-gold-soft flex items-center justify-center">
@@ -24,10 +24,16 @@ export default function PhoneMockup() {
             </div>
           </div>
 
-          <div className="bg-primary rounded-xl p-3 mb-4">
+          <div className="bg-primary rounded-xl p-3 mb-2">
             <p className="text-[0.55rem] text-white/70 uppercase tracking-wider mb-0.5">Disponível</p>
             <p className="font-mono text-lg font-bold text-white tabular-nums">
               <CountUp value={247300} /> <span className="text-xs font-medium">Kz</span>
+            </p>
+          </div>
+          <div className="bg-gold rounded-xl p-3 mb-4">
+            <p className="text-[0.55rem] text-ink/60 uppercase tracking-wider mb-0.5">Dedutível no IRPS</p>
+            <p className="font-mono text-lg font-bold text-ink tabular-nums">
+              <CountUp value={128400} /> <span className="text-xs font-medium">Kz</span>
             </p>
           </div>
 

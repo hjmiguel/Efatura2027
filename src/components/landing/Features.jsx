@@ -1,14 +1,14 @@
 import React from 'react';
-import { Receipt, Camera, PieChart, Target, Sparkles, MessageCircle } from 'lucide-react';
+import { Receipt, Camera, PieChart, Target, Sparkles, Smartphone } from 'lucide-react';
 import Reveal from './Reveal';
 
 const features = [
-  { icon: Receipt, title: 'Faturas da AGT', text: 'As tuas faturas chegam sozinhas, sem tirar foto.' },
-  { icon: Camera, title: 'Leitura por foto', text: 'Aponta a câmara e a app lê os dados da fatura.' },
+  { icon: Receipt, title: 'Faturas verificadas pela AGT', text: 'Com a tua autorização, as faturas eletrónicas chegam sozinhas.' },
+  { icon: Smartphone, title: 'Empresas ligadas', text: 'Faturas com a referência de pagamento, prontas a pagar num toque.' },
+  { icon: Camera, title: 'Leitura por foto', text: 'Para o que ainda é papel, a app lê o emissor, o montante e o prazo.' },
   { icon: PieChart, title: 'Orçamento por categoria', text: 'Vê para onde vai o teu dinheiro todos os meses.' },
   { icon: Target, title: 'Metas de poupança', text: 'Define objetivos e acompanha o teu progresso.' },
-  { icon: Sparkles, title: 'Assistente de IA', text: 'Pergunta sobre o teu dinheiro e recebe respostas.' },
-  { icon: MessageCircle, title: 'Avisos por WhatsApp', text: 'Recebe lembretes antes dos prazos das faturas.' },
+  { icon: Sparkles, title: 'Assistente', text: 'Pergunta sobre o teu dinheiro e recebe respostas com os teus dados.' },
 ];
 
 export default function Features() {

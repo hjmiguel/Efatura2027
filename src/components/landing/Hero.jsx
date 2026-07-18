@@ -18,7 +18,7 @@ export default function Hero() {
               </div>
             </Reveal>
             <Reveal delay={0.09}>
-              <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-ink leading-[1.05] tracking-tight">
+              <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl max-[420px]:text-3xl font-bold text-ink leading-[1.05] tracking-tight">
                 O teu dinheiro,<br />em dia.
               </h1>
             </Reveal>
@@ -44,6 +44,9 @@ export default function Hero() {
                   Ver como funciona
                 </a>
               </div>
+            </Reveal>
+            <Reveal delay={0.36}>
+              <p className="mt-4 text-xs text-muted-2 text-center lg:text-left">Grátis para começar. Sem cartão de crédito.</p>
             </Reveal>
           </div>
 

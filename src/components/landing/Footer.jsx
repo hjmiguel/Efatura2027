@@ -58,8 +58,8 @@ export default function Footer() {
         </div>
 
         <div className="pt-6 border-t border-white/10 text-xs text-white/40 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>© 2026 Gestão+. Todos os direitos reservados.</p>
-          <p>Pagamento seguro pela EMIS. Dados ao abrigo da Lei 22/11.</p>
+          <p>Btouch, Consultoria e Serviço, Lda · NIF 5002234173 · Luanda, Angola</p>
+          <p>© 2026 Gestão+ · Pagamento seguro pela EMIS. Dados ao abrigo da Lei 22/11.</p>
         </div>
       </div>
     </footer>

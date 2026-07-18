@@ -6,17 +6,17 @@ const problems = [
   {
     icon: Files,
     title: 'Faturas espalhadas',
-    text: 'Papel, email e WhatsApp — nunca sabes onde está cada uma.',
+    text: 'Papel, email e WhatsApp. Quando precisas, não encontras.',
   },
   {
     icon: Clock,
     title: 'Prazos que passam',
-    text: 'Multas que aparecem porque te esqueceste da data limite.',
+    text: 'Ninguém te avisa. Descobres quando chega a multa.',
   },
   {
     icon: Copy,
     title: 'Referências à mão',
-    text: 'Copiar números longos e depois perder o comprovativo.',
+    text: 'Copiar dezoito dígitos e depois perder o comprovativo.',
   },
 ];
 

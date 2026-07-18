@@ -26,8 +26,9 @@ export default function Navbar() {
     >
       <nav className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="font-heading font-bold text-white text-sm">G+</span>
+          <div className="relative w-8 h-8 rounded-lg bg-primary flex items-center justify-center overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gold" />
+            <span className="font-heading font-bold text-white text-sm relative">G+</span>
           </div>
           <span className="font-heading font-bold text-ink text-lg">Gestão+</span>
         </Link>
@@ -86,7 +87,7 @@ export default function Navbar() {
               <Link
                 to="/entrar"
                 onClick={() => setOpen(false)}
-                className="text-sm font-medium text-ink px-4 py-2.5 text-center rounded-lg border border-line"
+                className="text-sm font-medium text-ink px-4 py-2.5 text-center rounded-lg border border-line max-[420px]:hidden"
               >
                 Entrar
               </Link>
