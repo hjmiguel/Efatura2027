@@ -1,4 +1,5 @@
 import React from 'react';
+import CountUp from './CountUp';
 
 export default function PhoneMockup() {
   const faturas = [
@@ -26,7 +27,7 @@ export default function PhoneMockup() {
           <div className="bg-primary rounded-xl p-3 mb-4">
             <p className="text-[0.55rem] text-white/70 uppercase tracking-wider mb-0.5">Disponível</p>
             <p className="font-mono text-lg font-bold text-white tabular-nums">
-              247.300 <span className="text-xs font-medium">Kz</span>
+              <CountUp value={247300} /> <span className="text-xs font-medium">Kz</span>
             </p>
           </div>
 

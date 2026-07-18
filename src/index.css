@@ -136,3 +136,126 @@
     right: -21px;
   }
 }
+
+/* ===== GESTÃO+ ANIMAÇÕES ===== */
+
+/* Scroll reveal */
+.reveal-up { opacity: 0; transform: translateY(24px); transition: opacity .75s cubic-bezier(.22,.68,.3,1), transform .75s cubic-bezier(.22,.68,.3,1); }
+.reveal-left { opacity: 0; transform: translateX(-26px); transition: opacity .75s cubic-bezier(.22,.68,.3,1), transform .75s cubic-bezier(.22,.68,.3,1); }
+.reveal-right { opacity: 0; transform: translateX(26px); transition: opacity .75s cubic-bezier(.22,.68,.3,1), transform .75s cubic-bezier(.22,.68,.3,1); }
+.reveal-scale { opacity: 0; transform: scale(.955); transition: opacity .75s cubic-bezier(.22,.68,.3,1), transform .75s cubic-bezier(.22,.68,.3,1); }
+.reveal-visible { opacity: 1; transform: none; }
+
+/* Hero phone entrance */
+.hero-phone { animation: hero-phone-in 1s cubic-bezier(.22,.68,.3,1) both; }
+@keyframes hero-phone-in {
+  from { opacity: 0; transform: translateY(38px) rotate(1.5deg); }
+  to { opacity: 1; transform: translateY(0) rotate(0); }
+}
+
+/* Hero talão entrance + float */
+.hero-talao { animation: hero-talao-in .75s cubic-bezier(.22,.68,.3,1) .5s both; }
+@keyframes hero-talao-in {
+  from { opacity: 0; transform: scale(.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+.hero-talao-inner { animation: talao-float 5.5s ease-in-out 1.25s infinite; }
+@keyframes talao-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-11px); }
+}
+
+/* Pulse dot ring */
+.pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgb(134 239 172);
+  animation: pulse-ring 2s ease-out infinite;
+}
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: .8; }
+  100% { transform: scale(2.75); opacity: 0; }
+}
+
+/* Steps progress line */
+.steps-line { width: 0; transition: width 1.5s cubic-bezier(.22,.68,.3,1) .25s; }
+.steps-line.grow { width: 80%; }
+
+/* Steps circle bounce */
+.steps-circle { opacity: 0; transform: scale(.4); }
+.steps-circle.bounce { animation: circle-bounce .6s cubic-bezier(.3,1.6,.5,1) forwards; }
+@keyframes circle-bounce {
+  0% { opacity: 0; transform: scale(.4); }
+  60% { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Invoice fall */
+.invoice-row { opacity: 0; transform: translateY(14px); }
+.invoice-row.fall { animation: invoice-fall .75s cubic-bezier(.22,.68,.3,1) forwards; }
+@keyframes invoice-fall { to { opacity: 1; transform: translateY(0); } }
+
+/* Rosette badge */
+.rosette {
+  clip-path: polygon(50% 0%,58% 8%,70% 4%,75% 16%,88% 18%,85% 32%,97% 38%,90% 50%,97% 62%,85% 68%,88% 82%,75% 84%,70% 96%,58% 92%,50% 100%,42% 92%,30% 96%,25% 84%,12% 82%,15% 68%,3% 62%,10% 50%,3% 38%,15% 32%,12% 18%,25% 16%,30% 4%,42% 8%);
+}
+.rosette-in { opacity: 0; transform: scale(0) rotate(-40deg); }
+.rosette-in.pop { animation: rosette-pop .55s cubic-bezier(.3,1.6,.5,1) forwards; }
+@keyframes rosette-pop {
+  0% { opacity: 0; transform: scale(0) rotate(-40deg); }
+  60% { opacity: 1; transform: scale(1.18) rotate(4deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+/* Card hover */
+.card-hover { transition: transform .3s cubic-bezier(.22,.68,.3,1), box-shadow .3s cubic-bezier(.22,.68,.3,1); }
+.card-hover:hover { transform: translateY(-5px); box-shadow: 0 12px 32px -8px rgba(16,33,28,.22); }
+
+/* Button hover */
+.btn-hover { transition: transform .3s cubic-bezier(.22,.68,.3,1), box-shadow .3s cubic-bezier(.22,.68,.3,1), background-color .3s; }
+.btn-hover:hover { transform: translateY(-2px); }
+.btn-primary-hover:hover { box-shadow: 0 8px 20px -6px hsla(166,74%,21%,.5); }
+.btn-gold-hover:hover { box-shadow: 0 8px 20px -6px hsla(37,79%,57%,.5); }
+
+/* Problem column hover */
+.problem-card .problem-bar { transition: background-color .3s; }
+.problem-card:hover .problem-bar { background-color: hsl(166 74% 21%); }
+.problem-card .problem-text { transition: transform .3s cubic-bezier(.22,.68,.3,1); }
+.problem-card:hover .problem-text { transform: translateX(4px); }
+
+/* Scroll progress bar */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, hsl(166 74% 21%), hsl(37 79% 57%));
+  z-index: 100;
+  transition: width .1s linear;
+}
+
+/* Focus visible - gold outline */
+*:focus-visible {
+  outline: 2px solid hsl(37 79% 57%) !important;
+  outline-offset: 3px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-up, .reveal-left, .reveal-right, .reveal-scale {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .hero-phone, .hero-talao, .hero-talao-inner,
+  .pulse-dot::after, .steps-circle, .invoice-row, .rosette-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .steps-line { width: 80% !important; transition: none !important; }
+  .scroll-progress { display: none !important; }
+  .card-hover:hover, .btn-hover:hover { transform: none !important; }
+}

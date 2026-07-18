@@ -10,10 +10,12 @@ import Pricing from '@/components/landing/Pricing';
 import Trust from '@/components/landing/Trust';
 import FinalCTA from '@/components/landing/FinalCTA';
 import Footer from '@/components/landing/Footer';
+import ScrollProgressBar from '@/components/landing/ScrollProgressBar';
 
 export default function Landing() {
   return (
     <div className="min-h-screen bg-background">
+      <ScrollProgressBar />
       <Navbar />
       <main>
         <Hero />

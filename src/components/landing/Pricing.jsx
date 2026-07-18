@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Check } from 'lucide-react';
+import Reveal from './Reveal';
 
 const plans = [
   {
@@ -47,10 +48,12 @@ export default function Pricing() {
         </h2>
 
         <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
-          {plans.map((plan) => (
-            <div
+          {plans.map((plan, i) => (
+            <Reveal
               key={plan.name}
-              className={`relative rounded-talao p-7 border-2 transition-shadow ${
+              variant={i === 0 ? 'left' : 'right'}
+              delay={i === 0 ? 0 : 0.09}
+              className={`relative rounded-talao p-7 border-2 card-hover ${
                 plan.highlighted
                   ? 'border-primary bg-surface shadow-talao'
                   : 'border-line bg-surface'
@@ -69,8 +72,8 @@ export default function Pricing() {
                 <span className="text-sm text-muted-2 ml-1">{plan.period}</span>
               </div>
               <ul className="space-y-3 mb-7">
-                {plan.features.map((f, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-sm text-ink/80">
+                {plan.features.map((f, j) => (
+                  <li key={j} className="flex items-start gap-2.5 text-sm text-ink/80">
                     <Check className="w-4 h-4 text-ok mt-0.5 flex-shrink-0" />
                     {f}
                   </li>
@@ -78,15 +81,15 @@ export default function Pricing() {
               </ul>
               <Link
                 to={plan.href}
-                className={`block text-center font-semibold py-3 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                className={`block text-center font-semibold py-3 rounded-xl btn-hover ${
                   plan.highlighted
-                    ? 'bg-primary hover:bg-primary-2 text-white'
+                    ? 'bg-primary hover:bg-primary-2 text-white btn-primary-hover'
                     : 'bg-line hover:bg-line/70 text-ink'
                 }`}
               >
                 {plan.cta}
               </Link>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>

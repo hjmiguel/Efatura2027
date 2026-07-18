@@ -1,5 +1,7 @@
 import React from 'react';
 import TalaoCard from './TalaoCard';
+import Reveal from './Reveal';
+import CountUp from './CountUp';
 
 function Tag({ children }) {
   return (
@@ -14,7 +16,7 @@ export default function IRPSBand() {
     <section id="irps" className="py-16 sm:py-24 bg-gold-soft">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div>
+          <Reveal variant="scale">
             <p className="text-sm font-semibold uppercase tracking-wider text-gold mb-3">
               IRPS 2027
             </p>
@@ -27,14 +29,14 @@ export default function IRPSBand() {
             <p className="text-xs text-ink/50 leading-relaxed">
               O IRPS entra em vigor a 1 de janeiro de 2027. A primeira declaração é em 2028. Os limites de dedução ainda não estão confirmados em Diário da República.
             </p>
-          </div>
+          </Reveal>
 
-          <div className="flex justify-center lg:justify-end">
+          <Reveal variant="scale" delay={0.09} className="flex justify-center lg:justify-end">
             <div className="w-full max-w-[280px] rotate-[-3deg]">
               <TalaoCard
                 issuer="Dedutível no IRPS"
                 amountLabel="2027"
-                amount="128.400"
+                amount={<CountUp value={128400} />}
                 variant="gold"
                 notchColor="#F6E2BC"
               >
@@ -46,7 +48,7 @@ export default function IRPSBand() {
                 </div>
               </TalaoCard>
             </div>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>

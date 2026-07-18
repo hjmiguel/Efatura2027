@@ -1,5 +1,6 @@
 import React from 'react';
 import { Files, Clock, Copy } from 'lucide-react';
+import Reveal from './Reveal';
 
 const problems = [
   {
@@ -31,13 +32,18 @@ export default function Problem() {
         </h2>
         <div className="grid sm:grid-cols-3 gap-6">
           {problems.map((p, i) => (
-            <div key={i} className="bg-surface rounded-talao p-6 border border-line text-center">
+            <Reveal
+              key={i}
+              delay={0.09 * (i + 1)}
+              className="problem-card relative bg-surface rounded-talao p-6 border border-line text-center overflow-hidden"
+            >
+              <div className="problem-bar absolute left-0 top-0 bottom-0 w-1 bg-line" />
               <div className="w-12 h-12 rounded-xl bg-danger-soft flex items-center justify-center mx-auto mb-4">
                 <p.icon className="w-5 h-5 text-destructive" />
               </div>
-              <h3 className="font-heading font-bold text-ink mb-2">{p.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{p.text}</p>
-            </div>
+              <h3 className="font-heading font-bold text-ink mb-2 problem-text">{p.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed problem-text">{p.text}</p>
+            </Reveal>
           ))}
         </div>
       </div>

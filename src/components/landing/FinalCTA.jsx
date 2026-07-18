@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import Reveal from './Reveal';
 
 export default function FinalCTA() {
   return (
     <section className="py-16 sm:py-24 bg-surface">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+      <Reveal variant="scale" className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
         <h2 className="font-heading text-3xl sm:text-4xl font-bold text-ink mb-4 leading-tight">
           Começa a guardar as tuas faturas hoje.
         </h2>
@@ -14,12 +15,12 @@ export default function FinalCTA() {
         </p>
         <Link
           to="/registo"
-          className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-2 text-white font-semibold px-8 py-4 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-2 text-white font-semibold px-8 py-4 rounded-xl btn-hover btn-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           Criar conta grátis
           <ArrowRight className="w-4 h-4" />
         </Link>
-      </div>
+      </Reveal>
     </section>
   );
 }

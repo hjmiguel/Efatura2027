@@ -1,5 +1,6 @@
 import React from 'react';
 import { Receipt, Camera, PieChart, Target, Sparkles, MessageCircle } from 'lucide-react';
+import Reveal from './Reveal';
 
 const features = [
   { icon: Receipt, title: 'Faturas da AGT', text: 'As tuas faturas chegam sozinhas, sem tirar foto.' },
@@ -23,16 +24,17 @@ export default function Features() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((f, i) => (
-            <div
+            <Reveal
               key={i}
-              className="bg-surface rounded-talao p-6 border border-line hover:shadow-talao transition-shadow"
+              delay={0.09 * (i + 1)}
+              className="bg-surface rounded-talao p-6 border border-line card-hover"
             >
               <div className="w-11 h-11 rounded-xl bg-green-soft flex items-center justify-center mb-4">
                 <f.icon className="w-5 h-5 text-primary" />
               </div>
               <h3 className="font-heading font-bold text-ink mb-2">{f.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{f.text}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
