@@ -13,6 +13,8 @@ import AppLayout from '@/components/app/AppLayout';
 import Landing from './pages/Landing';
 import Registo from './pages/Registo';
 import Entrar from './pages/Entrar';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Termos from './pages/Termos';
 import Privacidade from './pages/Privacidade';
 import Home from './pages/app/Home';
@@ -67,6 +69,8 @@ const AuthenticatedApp = () => {
       <Route path="/" element={<Landing />} />
       <Route path="/registo" element={<Registo />} />
       <Route path="/entrar" element={<Entrar />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/termos" element={<Termos />} />
       <Route path="/privacidade" element={<Privacidade />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
