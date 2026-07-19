@@ -33,6 +33,9 @@ import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminAudit from './pages/admin/AdminAudit';
+import AdminFraud from './pages/admin/AdminFraud';
+import AdminPlans from './pages/admin/AdminPlans';
+import AdminCompliance from './pages/admin/AdminCompliance';
 import PartnerPortal from './pages/partners/PartnerPortal';
 import CorporateLayout from './pages/corporate/CorporateLayout';
 import CorporateDashboard from './pages/corporate/CorporateDashboard';
@@ -95,7 +98,10 @@ const AuthenticatedApp = () => {
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/antifraude" element={<AdminFraud />} />
           <Route path="/admin/utilizadores" element={<AdminUsers />} />
+          <Route path="/admin/planos" element={<AdminPlans />} />
+          <Route path="/admin/conformidade" element={<AdminCompliance />} />
           <Route path="/admin/auditoria" element={<AdminAudit />} />
         </Route>
       </Route>

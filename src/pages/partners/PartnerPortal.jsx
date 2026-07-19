@@ -6,6 +6,7 @@ import PartnerInvoices from '@/components/partners/PartnerInvoices';
 import PartnerNifs from '@/components/partners/PartnerNifs';
 import PartnerApiKeys from '@/components/partners/PartnerApiKeys';
 import PartnerSandbox from '@/components/partners/PartnerSandbox';
+import PartnerImport from '@/components/partners/PartnerImport';
 
 export default function PartnerPortal() {
   const [tab, setTab] = useState('painel');
@@ -94,6 +95,7 @@ export default function PartnerPortal() {
       <main className="flex-1 px-4 md:px-8 py-6 pb-24 md:pb-8 max-w-5xl">
         {tab === 'painel' && <PartnerDashboard invoices={invoices} consents={consents} />}
         {tab === 'faturas' && <PartnerInvoices invoices={invoices} />}
+        {tab === 'importar' && <PartnerImport onDone={() => setTab('faturas')} />}
         {tab === 'nifs' && <PartnerNifs consents={consents} />}
         {tab === 'api' && (
           <PartnerApiKeys

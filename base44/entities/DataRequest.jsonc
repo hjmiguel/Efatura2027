@@ -1,0 +1,57 @@
+{
+  "name": "DataRequest",
+  "type": "object",
+  "properties": {
+    "user_name": {
+      "type": "string",
+      "description": "Nome do utilizador que pediu"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email do utilizador"
+    },
+    "request_type": {
+      "type": "string",
+      "enum": [
+        "export",
+        "delete",
+        "rectification"
+      ],
+      "default": "export",
+      "description": "Tipo de pedido \u2014 exporta\u00e7\u00e3o, elimina\u00e7\u00e3o ou retifica\u00e7\u00e3o (Lei 22/11)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do pedido"
+    },
+    "requested_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "deadline_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed"
+      ],
+      "default": "pending"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "handled_by": {
+      "type": "string",
+      "description": "Quem tratou o pedido"
+    }
+  },
+  "required": [
+    "user_name",
+    "request_type",
+    "status"
+  ]
+}

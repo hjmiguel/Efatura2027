@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Briefcase, LayoutDashboard, Receipt, Users, Key, FlaskConical, ArrowLeft } from 'lucide-react';
+import { Briefcase, LayoutDashboard, Receipt, Users, Key, FlaskConical, ArrowLeft, Upload } from 'lucide-react';
 
 const nav = [
   { id: 'painel', label: 'Painel', icon: LayoutDashboard },
   { id: 'faturas', label: 'Faturas', icon: Receipt },
+  { id: 'importar', label: 'Importar', icon: Upload },
   { id: 'nifs', label: 'NIFs ligados', icon: Users },
   { id: 'api', label: 'API e chaves', icon: Key },
   { id: 'sandbox', label: 'Sandbox', icon: FlaskConical },

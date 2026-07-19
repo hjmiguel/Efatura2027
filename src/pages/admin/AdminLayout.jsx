@@ -1,12 +1,15 @@
 import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Shield, LayoutDashboard, Users, ScrollText, ArrowLeft, Building2, Briefcase, LogOut } from 'lucide-react';
+import { Shield, LayoutDashboard, Users, ScrollText, ArrowLeft, Building2, Briefcase, LogOut, ShieldAlert, CreditCard, FileCheck } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const navItems = [
   { label: 'Painel e métricas', icon: LayoutDashboard, path: '/admin' },
+  { label: 'Antifraude', icon: ShieldAlert, path: '/admin/antifraude' },
   { label: 'Acessos e papéis', icon: Users, path: '/admin/utilizadores' },
-  { label: 'Conformidade', icon: ScrollText, path: '/admin/auditoria' },
+  { label: 'Planos e receita', icon: CreditCard, path: '/admin/planos' },
+  { label: 'Conformidade', icon: FileCheck, path: '/admin/conformidade' },
+  { label: 'Auditoria', icon: ScrollText, path: '/admin/auditoria' },
 ];
 
 export default function AdminLayout() {
