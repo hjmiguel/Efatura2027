@@ -17,9 +17,7 @@ export default function Entrar() {
     setLoading(true);
     try {
       await base44.auth.loginViaEmailPassword(email, password);
-      const me = await base44.auth.me();
-      const dest = me?.role === 'admin' ? '/admin' : '/app';
-      window.location.href = dest;
+      window.location.href = '/app';
     } catch (err) {
       setError(err.message || 'Email ou palavra-passe incorretos.');
     } finally {
