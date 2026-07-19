@@ -2,7 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import {
   PieChart, Plus, AlertTriangle, Lightbulb, Loader2, Pencil, X, Target, BarChart3, Download, FileText, TrendingUp,
+  ShoppingCart, Car, Heart, GraduationCap, Home, CreditCard, Wallet, UtensilsCrossed, Bus, Pill, BookOpen, House,
+  Smartphone, Zap, Droplet, ShoppingBag, Plane, Gift, Dumbbell, Coffee, Film, Gamepad2, PawPrint, Baby,
 } from 'lucide-react';
+
+const ICON_MAP = {
+  ShoppingCart, Car, Heart, GraduationCap, Home, CreditCard, Wallet, UtensilsCrossed, Bus, Pill, BookOpen, House,
+  Smartphone, Zap, Droplet, ShoppingBag, Plane, Gift, Dumbbell, Coffee, Film, Gamepad2, PawPrint, Baby,
+};
+
+function CategoryIcon({ name, className = 'w-[18px] h-[18px]' }) {
+  const Icon = ICON_MAP[name] || CreditCard;
+  return <Icon className={className} strokeWidth={1.8} />;
+}
 import { formatKz } from '@/lib/format';
 import Seo from '@/components/Seo';
 import GoalRing from '@/components/app/ui/GoalRing';
@@ -226,7 +238,9 @@ export default function Orcamento() {
             return (
               <div key={b.id} className="bg-surface border border-line rounded-talao p-4 shadow-soft">
                 <div className="flex items-center gap-2.5 mb-3">
-                  <span className="text-base">{b.category_icon || '💳'}</span>
+                  <div className="w-[38px] h-[38px] rounded-[11px] bg-[#EDF2F2] flex items-center justify-center shrink-0 text-ink">
+                    <CategoryIcon name={b.category_icon} />
+                  </div>
                   <span className="flex-1 font-semibold text-sm text-ink">{b.category_name}</span>
                   {over && <AlertTriangle className="w-3.5 h-3.5 text-destructive" />}
                   {editing === b.category_id ? (
