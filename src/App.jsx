@@ -19,6 +19,7 @@ import Transacoes from './pages/app/Transacoes';
 import Contas from './pages/app/Contas';
 import Dedutiveis from './pages/app/Dedutiveis';
 import Fiscal from './pages/app/Fiscal';
+import Assistente from './pages/app/Assistente';
 import Perfil from './pages/app/Perfil';
 
 const AuthenticatedApp = () => {
@@ -60,6 +61,7 @@ const AuthenticatedApp = () => {
           <Route path="/app/contas" element={<Contas />} />
           <Route path="/app/dedutiveis" element={<Dedutiveis />} />
           <Route path="/app/fiscal" element={<Fiscal />} />
+          <Route path="/app/assistente" element={<Assistente />} />
           <Route path="/app/perfil" element={<Perfil />} />
         </Route>
       </Route>
