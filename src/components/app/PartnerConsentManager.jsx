@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Building2, Trash2, Plus, Copy, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Building2, Trash2, Plus, Copy, Check, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { formatDate } from '@/lib/format';
 
@@ -16,13 +16,33 @@ function generateApiKey() {
   return key;
 }
 
-export default function PartnerConsentManager({ consents, userNif, onChanged }) {
+export default function PartnerConsentManager({ consents: propConsents, userNif, onChanged }) {
   const [showForm, setShowForm] = useState(false);
   const [partnerName, setPartnerName] = useState('');
   const [partnerNif, setPartnerNif] = useState('');
   const [generatedKey, setGeneratedKey] = useState('');
   const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [consents, setConsents] = useState(propConsents || []);
+  const [loading, setLoading] = useState(!propConsents);
+
+  useEffect(() => {
+    if (propConsents) return;
+    loadConsents();
+  }, [propConsents]);
+
+  async function loadConsents() {
+    try {
+      const data = await base44.entities.PartnerConsent.list('-created_date', 100);
+      setConsents(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const refresh = onChanged || loadConsents;
 
   async function handleCreate() {
     if (!partnerName || !partnerNif) return;
@@ -44,7 +64,7 @@ export default function PartnerConsentManager({ consents, userNif, onChanged }) 
       setPartnerName('');
       setPartnerNif('');
       setSaving(false);
-      onChanged();
+      refresh();
     } catch (err) {
       console.error(err);
       setSaving(false);
@@ -58,7 +78,7 @@ export default function PartnerConsentManager({ consents, userNif, onChanged }) 
         consent_status: 'revoked',
         revoked_date: new Date().toISOString()
       });
-      onChanged();
+      refresh();
     } catch (err) { console.error(err); }
   }
 
@@ -68,8 +88,16 @@ export default function PartnerConsentManager({ consents, userNif, onChanged }) 
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const activeConsents = consents.filter(c => c.consent_status === 'active');
-  const revokedConsents = consents.filter(c => c.consent_status === 'revoked');
+  const activeConsents = (consents || []).filter(c => c.consent_status === 'active');
+  const revokedConsents = (consents || []).filter(c => c.consent_status === 'revoked');
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-6 h-6 text-muted-2 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-surface rounded-talao border border-line p-5">
