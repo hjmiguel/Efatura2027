@@ -262,6 +262,10 @@
 .pill-late { background: #F7E0DC; color: #D2483B; }
 .pill-part { background: #e7eef9; color: #3a64a8; }
 
+/* Hide scrollbar for horizontal chip scrollers */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
 /* Track bar */
 .track-v5 { height: 8px; border-radius: 6px; background: #eef2f0; overflow: hidden; }
 .track-v5 > i { display: block; height: 100%; border-radius: 6px; background: hsl(var(--primary)); }

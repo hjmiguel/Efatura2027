@@ -89,27 +89,32 @@ export default function Dedutiveis() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-bold text-ink">Dedutíveis IRPS</h1>
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <span className="eyebrow">§ 07 · Deduções</span>
+          <h1 className="font-heading text-2xl font-bold text-ink mt-1">Dedutíveis IRPS</h1>
+        </div>
         <button onClick={handleExportCSV} disabled={deductibleInvoices.length === 0}
-          className="inline-flex items-center gap-2 bg-surface border border-line hover:border-primary/30 text-ink font-semibold px-4 py-2.5 rounded-xl text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-          <Download className="w-4 h-4" /> Exportar CSV
+          className="inline-flex items-center gap-1.5 bg-surface border border-line hover:border-primary/30 text-ink font-medium px-3 py-2 rounded-xl text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <Download className="w-4 h-4" /> Exportar
         </button>
       </div>
 
       {/* Gold hero card */}
-      <div className="bg-gradient-to-br from-gold-soft to-gold/20 rounded-talao border border-gold/30 p-6">
-        <div className="flex items-center justify-between">
+      <div className="rounded-talao p-4 bg-gradient-to-br from-gold-soft to-gold/20 border border-gold/30 shadow-soft relative overflow-hidden">
+        <div className="absolute -right-6 -top-8 w-[100px] h-[100px] rounded-full bg-gold/10" />
+        <div className="relative flex items-center justify-between">
           <div>
-            <p className="text-sm text-ink/70 font-medium">Total acumulado para dedução IRPS {new Date().getFullYear() + 1}</p>
-            <p className="font-mono text-3xl font-bold text-ink mt-1">{formatKz(totalDeductible)}</p>
+            <p className="text-[12px] text-ink/70 font-medium">Total acumulado · IRPS {new Date().getFullYear() + 1}</p>
+            <p className="font-mono text-2xl font-bold text-ink mt-1">{formatKz(totalDeductible)}</p>
+            <p className="text-[11px] text-ink/60 mt-2">Apenas faturas pagas com o teu NIF são contabilizadas.</p>
           </div>
-          <div className="w-14 h-14 rounded-2xl bg-gold/20 flex items-center justify-center shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-gold/20 flex items-center justify-center shrink-0">
             <FileText className="w-6 h-6 text-gold" />
           </div>
         </div>
-        <p className="text-xs text-ink/60 mt-3">Apenas faturas pagas com o teu NIF são contabilizadas.</p>
       </div>
 
       {/* Without NIF warning */}
@@ -117,31 +122,31 @@ export default function Dedutiveis() {
         <div className="flex items-start gap-3 bg-danger-soft rounded-talao border border-destructive/20 p-4">
           <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-destructive">{withoutNif.length} {withoutNif.length === 1 ? 'fatura sem' : 'faturas sem'} NIF</p>
-            <p className="text-xs text-destructive/80 mt-0.5">Faturas sem o teu NIF não são dedutíveis. Contacta o fornecedor para emitir nova fatura.</p>
+            <p className="text-[13px] font-semibold text-destructive">{withoutNif.length} {withoutNif.length === 1 ? 'fatura sem' : 'faturas sem'} NIF</p>
+            <p className="text-[11.5px] text-destructive/80 mt-0.5">Faturas sem o teu NIF não são dedutíveis. Contacta o fornecedor para emitir nova fatura.</p>
           </div>
         </div>
       )}
 
       {/* Breakdown by category */}
-      <div className="bg-surface rounded-talao border border-line p-5">
-        <h2 className="font-heading font-bold text-ink mb-4">Por categoria</h2>
-        <div className="space-y-4">
+      <div className="bg-surface rounded-talao border border-line p-4 shadow-soft">
+        <span className="eyebrow">Por categoria</span>
+        <div className="mt-3 space-y-3">
           {Object.entries(deductibleLabels).map(([key, info]) => {
             const data = byCategory[key] || { total: 0, count: 0 };
             const pct = totalDeductible > 0 ? (data.total / totalDeductible) * 100 : 0;
             return (
               <div key={key}>
-                <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: info.color }} />
-                    <span className="text-sm font-medium text-ink">{info.label}</span>
-                    {data.count > 0 && <span className="text-xs text-muted-2">({data.count})</span>}
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: info.color }} />
+                    <span className="text-[13px] font-medium text-ink">{info.label}</span>
+                    {data.count > 0 && <span className="text-[11px] text-muted-2">({data.count})</span>}
                   </div>
-                  <span className="font-mono text-sm font-semibold text-ink">{formatKz(data.total)}</span>
+                  <span className="font-mono text-[13px] font-semibold text-ink">{formatKz(data.total)}</span>
                 </div>
-                <div className="h-2 rounded-full bg-muted overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: info.color }} />
+                <div className="track-v5">
+                  <i style={{ width: `${pct}%`, backgroundColor: info.color }} />
                 </div>
               </div>
             );
@@ -149,47 +154,55 @@ export default function Dedutiveis() {
         </div>
       </div>
 
-      {/* Deductible invoices list */}
+      {/* Deductible invoices list (flush) */}
       {deductibleInvoices.length > 0 && (
-        <div className="bg-surface rounded-talao border border-line divide-y divide-line">
-          <div className="px-5 py-3">
-            <h2 className="font-heading font-bold text-ink">Faturas dedutíveis</h2>
+        <div className="bg-surface rounded-talao border border-line shadow-soft px-3 pb-2">
+          <div className="px-1 pt-3 pb-1">
+            <span className="eyebrow">Faturas dedutíveis</span>
           </div>
-          {deductibleInvoices.slice(0, 10).map(inv => (
-            <div key={inv.id} className="flex items-center justify-between px-5 py-3">
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <p className="text-sm font-medium text-ink">{inv.issuer_name}</p>
-                  {inv.agt_status !== 'none' && <AgtSeal status={inv.agt_status} size={14} />}
+          <div className="ed-list">
+            {deductibleInvoices.slice(0, 10).map(inv => (
+              <div key={inv.id} className="it">
+                <div className="w-[34px] h-[34px] rounded-[10px] bg-gold-soft text-gold flex items-center justify-center shrink-0">
+                  <FileText className="w-4 h-4" />
                 </div>
-                <p className="text-xs text-muted-2">{deductibleLabels[inv.deductible_type]?.label} · {inv.paid_date ? formatDate(inv.paid_date) : formatDate(inv.issue_date)}</p>
+                <div className="flex-1 min-w-0">
+                  <div className="nm truncate flex items-center gap-1.5">
+                    {inv.issuer_name}
+                    {inv.agt_status !== 'none' && <AgtSeal status={inv.agt_status} size={14} />}
+                  </div>
+                  <div className="sb">{deductibleLabels[inv.deductible_type]?.label} · {inv.paid_date ? formatDate(inv.paid_date) : formatDate(inv.issue_date)}</div>
+                </div>
+                <span className="vl">{formatKz(inv.amount)}</span>
               </div>
-              <p className="font-mono text-sm font-semibold text-ink">{formatKz(inv.amount)}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
       {/* Family aggregate */}
-      <div className="bg-surface rounded-talao border border-line p-5">
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-surface rounded-talao border border-line p-4 shadow-soft">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-primary" />
-            <h2 className="font-heading font-bold text-ink">Agregado familiar</h2>
+            <Users className="w-4 h-4 text-primary" />
+            <span className="text-[13px] font-semibold text-ink">Agregado familiar</span>
           </div>
-          <button onClick={handleAddDep} className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-2">
-            <Plus className="w-4 h-4" /> Adicionar
+          <button onClick={handleAddDep} className="inline-flex items-center gap-1 text-[13px] font-medium text-primary hover:text-primary-2">
+            <Plus className="w-3.5 h-3.5" /> Adicionar
           </button>
         </div>
         {dependents.length === 0 ? (
-          <p className="text-sm text-muted-2 text-center py-6">Sem dependentes registados. Adiciona o teu cônjuge, filhos ou outros para o cálculo do IRPS.</p>
+          <p className="text-[12.5px] text-muted-2 text-center py-5">Sem dependentes registados. Adiciona o teu cônjuge, filhos ou outros para o cálculo do IRPS.</p>
         ) : (
-          <div className="space-y-2">
+          <div className="ed-list">
             {dependents.map(dep => (
-              <div key={dep.id} className="flex items-center justify-between bg-muted/30 rounded-xl px-4 py-3">
-                <div>
-                  <p className="text-sm font-medium text-ink">{dep.name}</p>
-                  <p className="text-xs text-muted-2">{relationshipLabels[dep.relationship] || dep.relationship}{dep.nif && ` · NIF ${dep.nif}`}</p>
+              <div key={dep.id} className="it">
+                <div className="w-[34px] h-[34px] rounded-[10px] bg-muted text-muted-foreground flex items-center justify-center shrink-0">
+                  <Users className="w-4 h-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="nm">{dep.name}</div>
+                  <div className="sb">{relationshipLabels[dep.relationship] || dep.relationship}{dep.nif && ` · NIF ${dep.nif}`}</div>
                 </div>
                 <div className="flex items-center gap-1">
                   <button onClick={() => handleEditDep(dep)} className="p-1.5 rounded text-muted-2 hover:text-ink"><Pencil className="w-3.5 h-3.5" /></button>
