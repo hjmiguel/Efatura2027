@@ -41,7 +41,7 @@ export default function Home() {
       setPendingInvoices(pending);
 
       const deductibles = allInvoices.filter(
-        (i) => i.deductible_type && i.deductible_type !== 'none' && i.has_nif !== false
+        (i) => i.deductible_type && i.deductible_type !== 'none' && i.has_nif !== false && i.status === 'paid'
       );
       const total = deductibles.reduce((sum, i) => sum + (i.amount || 0), 0);
       setDeductibleTotal(total);
