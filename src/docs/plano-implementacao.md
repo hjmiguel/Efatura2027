@@ -76,23 +76,22 @@ O objetivo: a Samara gere as suas contas, transações e faturas manualmente, se
 
 Depende da adesão à EMIS, que deve começar já em paralelo.
 
-### 2.1 Pagamentos — estrutura base
+### 2.1 Pagamentos — estrutura base — ✅ concluído
 - Página `/app/pagamentos` com quatro separadores:
-  - **Pendente:** faturas por pagar com referência
+  - **Pendente:** faturas por pagar com botões MCX/IBAN conforme dados disponíveis
   - **Pagos:** faturas pagas, com selo da AGT quando verificado
-  - **Compromissos:** agenda de pagamentos futuros
-  - **Empresas:** gestao de autorizações e consentimentos
+  - **Compromissos:** agenda de pagamentos futuros agrupada por data
+  - **Empresas:** gestão de autorizações e consentimentos (`PartnerConsentManager`)
 
-### 2.2 Diálogo de pagamento — Referência Multicaixa Express
-- Bottom sheet no mobile, diálogo no desktop
-- Três estados: escolher, confirmar, pago
+### 2.2 Diálogo de pagamento — Referência Multicaixa Express — ✅ UI concluída
+- Diálogo com três estados: confirmar, aguardar, pago
 - Mostrar entidade e referência (copiável, mono)
-- Botão "Abrir Multicaixa Express" (deep link)
-- Conciliação automática por callback (webhook)
+- Botão "Abrir Multicaixa Express" (deep link `multicaixaexpress://`)
+- Conciliação simulada (real: EMIS webhook pendente)
 
-### 2.3 Diálogo de pagamento — IBAN
-- Abrir app do banco ou conciliar com comprovativo
-- Upload de comprovativo + 4 passos de conciliação
+### 2.3 Diálogo de pagamento — IBAN — ✅ UI concluída
+- 4 passos: dados → transferir → comprovativo → conciliado
+- IBAN copiável (mono), upload de comprovativo (PDF/imagem)
 - Sem pagamento a um toque
 
 ### 2.4 Pagamento de RUPE
@@ -107,10 +106,10 @@ Depende da adesão à EMIS, que deve começar já em paralelo.
 - Empresas ligadas por baixo, cada uma com botão de revogar
 - Consentimento explícito e revogável, com registo de quando foi dado e retirado
 
-### 2.6 Subscrição Premium
-- Modal de subscrição: 2.500 Kz/mês
+### 2.6 Subscrição Premium — ✅ UI concluída
+- Modal de subscrição: 2.500 Kz/mês com benefícios listados
 - Simulação EMIS no diálogo de subscrição
-- Gestão de estado da subscrição no perfil do utilizador
+- Botão de acesso no cabeçalho da página de Pagamentos
 
 **Critério de pronto:** pagar a fatura da ENDE dentro da aplicação e a fatura fechar sozinha.
 
@@ -261,7 +260,7 @@ Depende da AGT e dos primeiros parceiros.
 |---|---|---|---|
 | Base + Início | 3 semanas | Nada | **Concluído** |
 | 1 — Núcleo do utilizador | 4 a 5 semanas | Nada | Por iniciar |
-| 2 — Pagamentos | 4 a 5 semanas | Adesão EMIS | Por iniciar |
+| 2 — Pagamentos | 4 a 5 semanas | Adesão EMIS | **UI concluída** (conciliação real pendente EMIS) |
 | 3 — Fontes automáticas | 4 semanas | AGT + parceiros | Por iniciar |
 | 4 — Assistente IA | 2 a 3 semanas | Fase 1 | Por iniciar |
 | 5 — Outros atores | 8 a 12 semanas | Operação real | Por iniciar |

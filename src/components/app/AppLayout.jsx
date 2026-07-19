@@ -12,7 +12,7 @@ const navItems = [
   { label: 'Transações', icon: ArrowLeftRight, path: '/app/transacoes' },
   { label: 'Contas', icon: Wallet, path: '/app/contas' },
   { label: 'Orçamento', icon: PieChart, path: '/app/orcamento', soon: true },
-  { label: 'Pagamentos', icon: CreditCard, path: '/app/pagamentos', soon: true },
+  { label: 'Pagamentos', icon: CreditCard, path: '/app/pagamentos' },
   { label: 'Documentos', icon: FileText, path: '/app/documentos', soon: true },
   { label: 'Dedutíveis', icon: Receipt, path: '/app/dedutiveis' },
   { label: 'Situação fiscal', icon: Landmark, path: '/app/fiscal' },

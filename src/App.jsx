@@ -18,6 +18,7 @@ import Privacidade from './pages/Privacidade';
 import Home from './pages/app/Home';
 import Transacoes from './pages/app/Transacoes';
 import Contas from './pages/app/Contas';
+import Pagamentos from './pages/app/Pagamentos';
 import Dedutiveis from './pages/app/Dedutiveis';
 import Fiscal from './pages/app/Fiscal';
 import Assistente from './pages/app/Assistente';
@@ -71,6 +72,7 @@ const AuthenticatedApp = () => {
           <Route path="/app" element={<Home />} />
           <Route path="/app/transacoes" element={<Transacoes />} />
           <Route path="/app/contas" element={<Contas />} />
+          <Route path="/app/pagamentos" element={<Pagamentos />} />
           <Route path="/app/dedutiveis" element={<Dedutiveis />} />
           <Route path="/app/fiscal" element={<Fiscal />} />
           <Route path="/app/assistente" element={<Assistente />} />
