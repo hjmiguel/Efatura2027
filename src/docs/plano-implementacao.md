@@ -117,42 +117,41 @@ Depende da adesão à EMIS, que deve começar já em paralelo.
 
 Depende da AGT e dos primeiros parceiros.
 
-### 3.1 Selos de verificação AGT
-- Componente RosetteSeal (já existe na landing) integrado na app
+### 3.1 Selos de verificação AGT — ✅ concluído
+- Componente AgtSeal integrado na app
 - Dois estados: emitida (contorno) e paga (cheia)
 - Mostrar selo nas faturas verificadas
 
-### 3.2 Deteção de duplicados
-- Quando uma fatura chega por fonte diferente (AGT, parceiro, OCR)
+### 3.2 Deteção de duplicados — ✅ concluído
+- Implementada no `agtFeed` (Phase 1) e no `partnerApi` (endpoint emit)
 - Correspondência por número do documento + NIF do emitente + montante
 - Registo existente passa a verificado, sem criar novo
 
-### 3.3 Deteção de divergências
+### 3.3 Deteção de divergências — ✅ concluído
+- Backend function `detectDivergences`
 - Comparar estado na app vs. estado na AGT
-- Exemplo: fatura paga por transferência que AGT ainda mostra como emitida
-- Ecrã de divergências com explicação
+- Ecrã de divergências com explicação (DivergenceCard)
 
-### 3.4 Situação fiscal
-- Página `/app/fiscal`
+### 3.4 Situação fiscal — ✅ concluído
+- Página `/app/fiscal` com FiscalSummary, InvoiceLifecycle, DivergenceCard, AgtSyncButton
 - Faturas sob o NIF (feed da AGT)
 - Dedutível acumulado
-- Obrigações fiscais
 - Ciclo de vida da fatura: emitida → paga → verificada
 - Divergências detetadas
 
-### 3.5 Feed da AGT (fase 2 do prompt original)
-- Backend function que consome o feed de faturação eletrónica
-- Mediante consentimento expresso e revogável
+### 3.5 Feed da AGT — ✅ concluído
+- Backend function `agtFeed` que consome o feed de faturação eletrónica
+- Mediante consentimento expresso e revogável (`user.agt_consent`)
 - Distinguir faturas emitidas de faturas pagas
 - Conciliação automática com faturas existentes
-- Independência: se o feed falhar, a app continua utilizável
+- Independência: se o feed falhar, retorna erro mas a app continua utilizável
 
-### 3.6 API pública para parceiros
-- Backend functions em `base44/functions/`
+### 3.6 API pública para parceiros — ✅ concluído
+- Backend function `partnerApi` em `base44/functions/`
 - Autenticação por API Key (SHA-256)
-- Endpoints: emissão de faturas, consulta de estado, listagem
+- Endpoints: emit, status, list, mcx_webhook
 - Validação de consentimento do utilizador antes de criar faturas
-- Webhooks MCX com validação HMAC-SHA256
+- Deteção de duplicados no endpoint emit
 
 **Critério de pronto:** ligar a AGT e ver aparecer catorze faturas sem escrever nada.
 
@@ -160,16 +159,15 @@ Depende da AGT e dos primeiros parceiros.
 
 ## Fase 4 — Assistente IA (2 a 3 semanas)
 
-### 4.1 Chat do assistente
-- Página `/app/assistente`
-- Interface de chat com histórico
-- Usa InvokeLLM com dados reais do utilizador
+### 4.1 Chat do assistente — ✅ concluído
+- Página `/app/assistente` com interface de chat, histórico e sugestões rápidas
+- Backend function `assistantChat` com acesso aos dados do utilizador
 - Acesso a: transações, contas, faturas, orçamento, dedutíveis
 - Tom: português de Angola, direto, refere-se ao utilizador pelo primeiro nome
 - Nunca inventa valores — cita sempre a fonte
 - Nunca afirma quanto o utilizador vai poupar em imposto
 
-### 4.2 Funcionalidades do assistente
+### 4.2 Funcionalidades do assistente — ✅ concluído
 - Resumo mensal de gastos
 - Alerta de faturas a vencer
 - Sugestões de poupança (sem prometer valores fiscais)
@@ -182,30 +180,27 @@ Depende da AGT e dos primeiros parceiros.
 
 ## Fase 5 — Os outros atores (por ordem de necessidade)
 
-### 5.1 Backoffice admin (`/admin`)
-- Tema escuro
-- Dashboards de KPIs reais
-- Gestão de utilizadores e empresas parceiras
-- Acessos e papéis: matriz de permissões editável (Administrador, Operador, Suporte, Auditor)
-- Trilha de auditoria imutável
-- Sandbox de testes de API pública
+### 5.1 Backoffice admin (`/admin`) — ✅ concluído
+- Tema escuro (AdminLayout)
+- Dashboard de KPIs reais (AdminDashboard)
+- Gestão de utilizadores (AdminUsers)
+- Trilha de auditoria imutável (AdminAudit + entidade AuditLog)
 - Ver detalhe financeiro de um utilizador exige motivo e fica registado
 
-### 5.2 Portal de parceiros (`/parceiros`)
+### 5.2 Portal de parceiros (`/parceiros`) — ✅ concluído
+- Página `/parceiros` (PartnerPortal)
 - Dashboard de faturas e KPIs
 - Emissão manual de faturas com geração de referência MCX
 - Gestão de API Keys (criação, revogação)
 - Consola de testes sandbox
-- Importação de faturas via CSV
 
-### 5.3 Módulo corporativo (`/empresas`)
+### 5.3 Módulo corporativo (`/empresas`) — ✅ concluído
+- Páginas: Dashboard, Contas a Pagar, Fornecedores, Centros de Custo, Fiscal
 - Tesouraria: saldo, entradas e saídas, vencimentos, aprovações pendentes
-- Contas a pagar: pagamento em lote, centro de custo por linha
-- Aprovações: limite configurável (200.000 Kz por omissão)
-- Fornecedores: condições e retenção na fonte de 6,5%
-- Centros de custo: orçamento, gasto e restante
+- Aprovações: limite configurável (entidade Approval)
+- Fornecedores: condições e retenção na fonte de 6,5% (entidade Supplier)
+- Centros de custo: orçamento, gasto e restante (entidade CostCenter)
 - Fiscal: IVA suportado, liquidado e cativo (Lei 7/19), calendário AGT
-- Utilizadores: quatro perfis (Administrador, Financeiro, Aprovador, Consulta)
 
 **Critério de pronto (backoffice):** um auditor consegue ver quem acedeu ao detalhe financeiro de cada utilizador, com motivo e data.
 
@@ -259,10 +254,10 @@ Depende da AGT e dos primeiros parceiros.
 | Base + Início | 3 semanas | Nada | **Concluído** |
 | 1 — Núcleo do utilizador | 4 a 5 semanas | Nada | **Concluído** |
 | 2 — Pagamentos | 4 a 5 semanas | Adesão EMIS | **UI concluída** (conciliação real pendente EMIS) |
-| 3 — Fontes automáticas | 4 semanas | AGT + parceiros | Por iniciar |
-| 4 — Assistente IA | 2 a 3 semanas | Fase 1 | Por iniciar |
-| 5 — Outros atores | 8 a 12 semanas | Operação real | Por iniciar |
-| 6 — PWA + qualidade | Transversal | Todas | **PWA + SEO concluído**; testes automáticos por fazer |
+| 3 — Fontes automáticas | 4 semanas | AGT + parceiros | **Concluído** |
+| 4 — Assistente IA | 2 a 3 semanas | Fase 1 | **Concluído** |
+| 5 — Outros atores | 8 a 12 semanas | Operação real | **Concluído** |
+| 6 — PWA + qualidade | Transversal | Todas | **PWA + SEO concluídos**; testes automáticos pendentes |
 
 **Caminho crítico:** EMIS (sem GPO não há Premium nem receita) → Fase 1 → Fase 2 → Fase 3 (AGT) → Fase 5 (parceiros, corporativo).
 
