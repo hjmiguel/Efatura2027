@@ -53,12 +53,12 @@ O objetivo: a Samara gere as suas contas, transações e faturas manualmente, se
 - Agregado familiar (dependentes) com adição e remoção
 - Disclaimer: nenhum escalão, taxa ou limite em código
 
-### 1.5 Perfil
+### 1.5 Perfil — ✅ concluído
 - Página `/app/perfil` com quatro abas:
   - **Conta:** nome, email, telemóvel, NIF (com nota sobre dedução)
-  - **Segurança:** alterar palavra-passe, PIN, biometria (placeholder), sessões e dispositivos
-  - **Dependentes:** agregar familiar para deduções
-  - **Privacidade:** exportar dados (CSV), eliminar conta com aviso
+  - **Segurança:** alterar palavra-passe (via link por email), PIN, biometria (placeholder), sessões e dispositivos
+  - **Dependentes:** agregar familiar para deduções (CRUD completo com DependentForm)
+  - **Privacidade:** exportar dados (CSV de transações, faturas e contas), eliminar conta com confirmação dupla
 
 ### 1.6 Documentos — ✅ concluído
 - Página `/app/documentos` com arquivo e pesquisa
