@@ -197,85 +197,76 @@ export default function Orcamento() {
       {/* ===== Tab: Orçamento ===== */}
       {activeTab === 'orcamento' && (
         <div className="space-y-3.5">
-          {/* Total card soft-gold */}
-          <div className="bg-gold-soft border border-[#f0dcb4] rounded-talao p-4 shadow-soft">
-            <div className="flex items-center justify-between mb-3">
-              <span className="eyebrow">Total do mês</span>
-              <span className={`text-sm font-bold ${totalPct > 90 ? 'text-destructive' : totalPct > 75 ? 'text-[#9a6a16]' : 'text-ok'}`}>
+          {/* Total card */}
+          <div className="bg-surface border border-line rounded-talao p-4 shadow-soft">
+            <div className="flex items-start justify-between mb-2.5">
+              <div>
+                <p className="text-[13px] text-muted-foreground">Gasto de {formatKz(totalLimit)} orçamentados</p>
+                <p className="font-mono text-[26px] font-bold text-ink mt-0.5 leading-tight">{formatKz(totalSpent)}</p>
+              </div>
+              <span className={`text-[15px] font-bold ${totalPct > 100 ? 'text-destructive' : totalPct > 75 ? 'text-[#9a6a16]' : 'text-ok'}`}>
                 {totalPct}%
               </span>
             </div>
-            <div className="flex items-end justify-between mb-3">
-              <div>
-                <div className="font-mono text-[23px] font-semibold text-ink">{formatKz(totalSpent)}</div>
-                <div className="text-[12.5px] text-muted-foreground mt-0.5">de {formatKz(totalLimit)}</div>
-              </div>
-            </div>
-            <div className="track-v5">
-              <i style={{ width: `${Math.min(totalPct, 100)}%`, background: totalPct > 90 ? 'hsl(var(--destructive))' : totalPct > 75 ? 'hsl(var(--accent))' : 'hsl(var(--primary))' }} />
+            <div className="h-2.5 rounded-full bg-muted overflow-hidden">
+              <div className="h-full rounded-full" style={{ width: `${Math.min(totalPct, 100)}%`, background: totalPct > 100 ? 'hsl(var(--destructive))' : totalPct > 75 ? 'hsl(var(--accent))' : 'hsl(var(--primary))' }} />
             </div>
           </div>
 
-          {/* Budget bars */}
-          <div className="bg-surface border border-line rounded-talao overflow-hidden shadow-soft">
-            <div className="px-4 pt-4 pb-1">
-              <span className="eyebrow">Por categoria</span>
+          {/* Category cards */}
+          {budgets.length === 0 && unbudgetedCats.length === 0 && (
+            <div className="bg-surface border border-line rounded-talao p-6 text-center text-sm text-muted-foreground">
+              Sem categorias de despesa. Cria categorias na página de Transações.
             </div>
-            <div className="px-4 pb-3">
-              {budgets.length === 0 && unbudgetedCats.length === 0 && (
-                <div className="text-center py-8 text-sm text-muted-foreground">
-                  Sem categorias de despesa. Cria categorias na página de Transações.
+          )}
+          {budgets.map((b) => {
+            const pct = b.limit > 0 ? Math.round((b.spent / b.limit) * 100) : 0;
+            const over = pct > 100;
+            const barColor = over ? 'hsl(var(--destructive))' : pct > 75 ? 'hsl(var(--accent))' : 'hsl(var(--primary))';
+            return (
+              <div key={b.id} className="bg-surface border border-line rounded-talao p-4 shadow-soft">
+                <div className="flex items-center gap-2.5 mb-3">
+                  <span className="text-base">{b.category_icon || '💳'}</span>
+                  <span className="flex-1 font-semibold text-sm text-ink">{b.category_name}</span>
+                  {over && <AlertTriangle className="w-3.5 h-3.5 text-destructive" />}
+                  {editing === b.category_id ? (
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        value={newLimit}
+                        onChange={(e) => setNewLimit(e.target.value)}
+                        className="w-24 px-2 py-1 text-xs border border-line rounded-lg font-mono"
+                        autoFocus
+                        onKeyDown={(e) => e.key === 'Enter' && saveLimit(b.category_id, b.category_name)}
+                      />
+                      <button onClick={() => saveLimit(b.category_id, b.category_name)} className="p-1 text-primary">
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => setEditing(null)} className="p-1 text-muted-2">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs text-muted-foreground">{formatKz(b.spent)} / {formatKz(b.limit)}</span>
+                      <button onClick={() => { setEditing(b.category_id); setNewLimit(String(b.limit)); }} className="p-1 text-muted-2 hover:text-primary">
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => removeBudget(b.id)} className="p-1 text-muted-2 hover:text-destructive">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
-              {budgets.map((b) => {
-                const pct = b.limit > 0 ? Math.round((b.spent / b.limit) * 100) : 0;
-                const over = pct > 100;
-                return (
-                  <div key={b.id} className="py-3 border-t border-line first:border-t-0">
-                    <div className="flex items-center gap-2.5 mb-2">
-                      <span className="text-base">{b.category_icon || '💳'}</span>
-                      <span className="flex-1 font-semibold text-sm text-ink">{b.category_name}</span>
-                      {over && <AlertTriangle className="w-3.5 h-3.5 text-destructive" />}
-                      {editing === b.category_id ? (
-                        <div className="flex items-center gap-1">
-                          <input
-                            type="number"
-                            value={newLimit}
-                            onChange={(e) => setNewLimit(e.target.value)}
-                            className="w-24 px-2 py-1 text-xs border border-line rounded-lg font-mono"
-                            autoFocus
-                            onKeyDown={(e) => e.key === 'Enter' && saveLimit(b.category_id, b.category_name)}
-                          />
-                          <button onClick={() => saveLimit(b.category_id, b.category_name)} className="p-1 text-primary">
-                            <Pencil className="w-3.5 h-3.5" />
-                          </button>
-                          <button onClick={() => setEditing(null)} className="p-1 text-muted-2">
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs text-muted-foreground">{formatKz(b.spent)} / {formatKz(b.limit)}</span>
-                          <button onClick={() => { setEditing(b.category_id); setNewLimit(String(b.limit)); }} className="p-1 text-muted-2 hover:text-primary">
-                            <Pencil className="w-3.5 h-3.5" />
-                          </button>
-                          <button onClick={() => removeBudget(b.id)} className="p-1 text-muted-2 hover:text-destructive">
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    <div className="track-v5">
-                      <i style={{ width: `${Math.min(pct, 100)}%`, background: over ? 'hsl(var(--destructive))' : pct > 75 ? 'hsl(var(--accent))' : 'hsl(var(--primary))' }} />
-                    </div>
-                    <p className={`text-[11.5px] mt-1.5 ${over ? 'text-destructive' : 'text-muted-2'}`}>
-                      {over ? `Ultrapassado em ${formatKz(b.spent - b.limit)}` : `Restam ${formatKz(b.limit - b.spent)}`}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+                <div className="h-2.5 rounded-full bg-muted overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${Math.min(pct, 100)}%`, background: barColor }} />
+                </div>
+                <p className={`text-[11.5px] mt-2 ${over ? 'text-destructive' : 'text-muted-2'}`}>
+                  {over ? `Ultrapassado em ${formatKz(b.spent - b.limit)}` : `Restam ${formatKz(b.limit - b.spent)}`}
+                </p>
+              </div>
+            );
+          })}
 
           {/* Add budget */}
           {unbudgetedCats.length > 0 && (
@@ -303,22 +294,24 @@ export default function Orcamento() {
           )}
 
           {/* AI Insight */}
-          <div className="bg-[#e9f3ee] border border-[#c8e6d5] rounded-talao p-4">
+          <div className="bg-surface border border-line rounded-talao p-4 shadow-soft">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[13px] font-bold text-ink">Insights IA</span>
+              <button onClick={generateInsight} disabled={loadingInsight || budgets.length === 0} className="text-[12px] font-medium text-primary hover:underline disabled:opacity-50">
+                {loadingInsight ? <Loader2 className="w-3.5 h-3.5 animate-spin inline" /> : 'Assistente'}
+              </button>
+            </div>
             <div className="flex items-start gap-3">
               <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <Lightbulb className="w-5 h-5 text-primary" />
+                <Target className="w-5 h-5 text-primary" />
               </div>
               <div className="flex-1">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-primary mb-1">Insights IA</div>
                 {insight ? (
-                  <p className="text-sm text-ink leading-relaxed">{insight}</p>
+                  <p className="text-[13px] text-ink leading-relaxed">{insight}</p>
                 ) : (
-                  <p className="text-sm text-muted-foreground">Gera um insight personalizado sobre os teus gastos deste mês.</p>
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">Gera um insight personalizado sobre os teus gastos deste mês.</p>
                 )}
               </div>
-              <button onClick={generateInsight} disabled={loadingInsight || budgets.length === 0} className="px-3 py-1.5 border border-primary/20 rounded-lg text-xs font-medium text-primary hover:bg-primary/5 disabled:opacity-50">
-                {loadingInsight ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Gerar'}
-              </button>
             </div>
           </div>
         </div>
