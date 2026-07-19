@@ -16,6 +16,9 @@ import Termos from './pages/Termos';
 import Privacidade from './pages/Privacidade';
 import Home from './pages/app/Home';
 import Transacoes from './pages/app/Transacoes';
+import Contas from './pages/app/Contas';
+import Dedutiveis from './pages/app/Dedutiveis';
+import Perfil from './pages/app/Perfil';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -53,6 +56,9 @@ const AuthenticatedApp = () => {
         <Route element={<AppLayout />}>
           <Route path="/app" element={<Home />} />
           <Route path="/app/transacoes" element={<Transacoes />} />
+          <Route path="/app/contas" element={<Contas />} />
+          <Route path="/app/dedutiveis" element={<Dedutiveis />} />
+          <Route path="/app/perfil" element={<Perfil />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

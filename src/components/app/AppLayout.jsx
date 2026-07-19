@@ -3,28 +3,29 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
   Home as HomeIcon, ArrowLeftRight, Wallet, CreditCard,
   FileText, Receipt, Landmark, MessageSquare, User,
-  LogOut, Bell,
+  LogOut, Bell, PieChart,
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const navItems = [
   { label: 'Início', icon: HomeIcon, path: '/app' },
   { label: 'Transações', icon: ArrowLeftRight, path: '/app/transacoes' },
-  { label: 'Orçamento', icon: Wallet, path: '/app/orcamento', soon: true },
+  { label: 'Contas', icon: Wallet, path: '/app/contas' },
+  { label: 'Orçamento', icon: PieChart, path: '/app/orcamento', soon: true },
   { label: 'Pagamentos', icon: CreditCard, path: '/app/pagamentos', soon: true },
   { label: 'Documentos', icon: FileText, path: '/app/documentos', soon: true },
-  { label: 'Dedutíveis', icon: Receipt, path: '/app/dedutiveis', soon: true },
+  { label: 'Dedutíveis', icon: Receipt, path: '/app/dedutiveis' },
   { label: 'Situação fiscal', icon: Landmark, path: '/app/fiscal', soon: true },
   { label: 'Assistente', icon: MessageSquare, path: '/app/assistente', soon: true },
-  { label: 'Perfil', icon: User, path: '/app/perfil', soon: true },
+  { label: 'Perfil', icon: User, path: '/app/perfil' },
 ];
 
 const mobileNavItems = [
   { label: 'Início', icon: HomeIcon, path: '/app' },
-  { label: 'Pagamentos', icon: CreditCard, path: '/app/pagamentos', soon: true },
-  { label: 'Dedutíveis', icon: Receipt, path: '/app/dedutiveis', soon: true },
+  { label: 'Contas', icon: Wallet, path: '/app/contas' },
   { label: 'Transações', icon: ArrowLeftRight, path: '/app/transacoes' },
-  { label: 'Perfil', icon: User, path: '/app/perfil', soon: true },
+  { label: 'Dedutíveis', icon: Receipt, path: '/app/dedutiveis' },
+  { label: 'Perfil', icon: User, path: '/app/perfil' },
 ];
 
 export default function AppLayout() {
