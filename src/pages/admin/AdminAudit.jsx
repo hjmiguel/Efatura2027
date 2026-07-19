@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { ScrollText } from 'lucide-react';
+import { Download, Shield } from 'lucide-react';
 import { formatDate } from '@/lib/format';
 
 const actionLabels = {
@@ -33,55 +33,74 @@ export default function AdminAudit() {
     finally { setLoading(false); }
   }
 
+  const exportCsv = () => {
+    const rows = [['Data', 'Ator', 'Ação', 'Papel', 'Módulo', 'Motivo']];
+    logs.forEach((l) => {
+      rows.push([formatDate(l.created_date), l.actor_name || '', actionLabels[l.action] || l.action, l.actor_role || '', l.module || '', l.reason || '']);
+    });
+    const csv = rows.map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `auditoria-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-4 border-slate-700 border-t-gold rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-line border-t-primary rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gold/15 flex items-center justify-center">
-          <ScrollText className="w-5 h-5 text-gold" />
-        </div>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-white">Trilha de auditoria</h1>
-          <p className="text-sm text-slate-500">Registo imutável de todas as ações</p>
+          <span className="eyebrow">§ 06 · Conformidade</span>
+          <h1 className="font-heading text-xl font-bold text-ink mt-1">Registo de auditoria</h1>
+          <p className="text-[12px] text-muted-foreground mt-0.5">Imutável · Lei n.º 22/11 · não se desliga</p>
         </div>
+        <span className="mark">JUL · 2026</span>
       </div>
 
-      <div className="bg-[hsl(163_30%_13%)] border border-slate-800 rounded-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-slate-500 border-b border-slate-800">
-                <th className="px-5 py-2.5 font-medium">Data</th>
-                <th className="px-5 py-2.5 font-medium">Ação</th>
-                <th className="px-5 py-2.5 font-medium">Ator</th>
-                <th className="px-5 py-2.5 font-medium">Papel</th>
-                <th className="px-5 py-2.5 font-medium">Módulo</th>
-                <th className="px-5 py-2.5 font-medium">Motivo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {logs.length === 0 ? (
-                <tr><td colSpan={6} className="px-5 py-8 text-slate-500 text-center">Sem registos.</td></tr>
-              ) : logs.map(log => (
-                <tr key={log.id} className="border-b border-slate-800/50 hover:bg-slate-800/30">
-                  <td className="px-5 py-3 text-slate-400">{formatDate(log.created_date)}</td>
-                  <td className="px-5 py-3 text-white">{actionLabels[log.action] || log.action}</td>
-                  <td className="px-5 py-3 text-slate-300">{log.actor_name}</td>
-                  <td className="px-5 py-3 text-slate-400">{log.actor_role}</td>
-                  <td className="px-5 py-3 text-slate-400">{log.module}</td>
-                  <td className="px-5 py-3 text-gold text-xs">{log.reason || '—'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="flex items-center justify-end">
+        <button onClick={exportCsv} className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-line rounded-lg text-[12px] font-medium text-ink hover:bg-muted transition-colors">
+          <Download className="w-3.5 h-3.5" /> Exportar
+        </button>
+      </div>
+
+      {/* Audit timeline */}
+      <div className="bg-surface border border-line rounded-talao overflow-hidden shadow-soft">
+        {logs.length === 0 ? (
+          <p className="px-5 py-10 text-sm text-muted-2 text-center">Sem registos.</p>
+        ) : (
+          <div className="ed-list px-5">
+            {logs.map((log) => (
+              <div key={log.id} className="it">
+                <div className="flex-1">
+                  <div className="nm">{log.actor_name || 'Sistema'}</div>
+                  <div className="sb">
+                    {actionLabels[log.action] || log.action.replace(/_/g, ' ')} · {log.module}
+                    {log.target_id && ` · ${log.target_entity}`}
+                    {log.reason && <span className="text-[#9a6a16]"> · motivo: {log.reason}</span>}
+                  </div>
+                </div>
+                <span className="vl text-[11px] font-normal text-muted-2">{formatDate(log.created_date)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-start gap-2.5 bg-[#e7eef9] border border-[#c3d5ee] rounded-talao p-4">
+        <Shield className="w-4 h-4 text-brandblue shrink-0 mt-0.5" />
+        <p className="text-[12px] text-brandblue leading-relaxed">
+          O registo é imutável e não se desliga, nem pelo administrador. Os acessos a dados de utilizadores aparecem assinalados. É a diferença entre poder fazer e poder fazer sem ninguém saber.
+        </p>
       </div>
     </div>
   );

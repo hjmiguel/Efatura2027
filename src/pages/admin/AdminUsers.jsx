@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Users, Shield, ScrollText, UserPlus, X, Loader2, CheckCircle2 } from 'lucide-react';
+import { UserPlus, X, Loader2, CheckCircle2, Shield, Users, Search } from 'lucide-react';
 import { formatDate } from '@/lib/format';
 
 export default function AdminUsers() {
@@ -9,13 +9,12 @@ export default function AdminUsers() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [reason, setReason] = useState('');
   const [showDetail, setShowDetail] = useState(false);
-
-  // Invite state
   const [showInvite, setShowInvite] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('user');
   const [inviting, setInviting] = useState(false);
   const [inviteResult, setInviteResult] = useState(null);
+  const [search, setSearch] = useState('');
 
   useEffect(() => { load(); }, []);
 
@@ -39,9 +38,7 @@ export default function AdminUsers() {
       load();
     } catch (err) {
       setInviteResult({ ok: false, message: err.message || 'Erro ao enviar convite.' });
-    } finally {
-      setInviting(false);
-    }
+    } finally { setInviting(false); }
   }
 
   function closeInvite() {
@@ -51,7 +48,7 @@ export default function AdminUsers() {
     setInviteResult(null);
   }
 
-  async function viewDetail(user) {
+  function viewDetail(user) {
     setSelectedUser(user);
     setShowDetail(true);
   }
@@ -67,7 +64,7 @@ export default function AdminUsers() {
         target_entity: 'User',
         target_id: selectedUser.id,
         reason: reason.trim(),
-        module: 'admin'
+        module: 'admin',
       });
       setShowDetail(false);
       setReason('');
@@ -75,110 +72,133 @@ export default function AdminUsers() {
     } catch (err) { console.error(err); }
   }
 
+  const filtered = users.filter((u) =>
+    !search ||
+    (u.full_name || '').toLowerCase().includes(search.toLowerCase()) ||
+    (u.email || '').toLowerCase().includes(search.toLowerCase()) ||
+    (u.nif || '').includes(search)
+  );
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-4 border-slate-700 border-t-gold rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-line border-t-primary rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gold/15 flex items-center justify-center">
-          <Users className="w-5 h-5 text-gold" />
-        </div>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-white">Utilizadores</h1>
-          <p className="text-sm text-slate-500">Consulta de detalhe requer motivo</p>
+          <span className="eyebrow">§ 04 · Acessos e papéis</span>
+          <h1 className="font-heading text-xl font-bold text-ink mt-1">Utilizadores finais</h1>
+          <p className="text-[12px] text-muted-foreground mt-0.5">Consulta de detalhe requer motivo e fica registada</p>
         </div>
         <button
           onClick={() => setShowInvite(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gold text-ink text-sm font-medium hover:bg-gold/90 transition-colors"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary text-white rounded-xl text-[13px] font-medium hover:bg-primary-2 transition-colors"
         >
-          <UserPlus className="w-4 h-4" />
-          Convidar utilizador
+          <UserPlus className="w-4 h-4" /> Convidar
         </button>
       </div>
 
-      <div className="bg-[hsl(163_30%_13%)] border border-slate-800 rounded-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-slate-500 border-b border-slate-800">
-                <th className="px-5 py-2.5 font-medium">Nome</th>
-                <th className="px-5 py-2.5 font-medium">Email</th>
-                <th className="px-5 py-2.5 font-medium">Papel</th>
-                <th className="px-5 py-2.5 font-medium">NIF</th>
-                <th className="px-5 py-2.5 font-medium">Registado</th>
-                <th className="px-5 py-2.5 font-medium"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(u => (
-                <tr key={u.id} className="border-b border-slate-800/50 hover:bg-slate-800/30">
-                  <td className="px-5 py-3 text-white">{u.full_name || '—'}</td>
-                  <td className="px-5 py-3 text-slate-400">{u.email}</td>
-                  <td className="px-5 py-3">
-                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                      u.role === 'admin' ? 'bg-gold/15 text-gold' : 'bg-slate-700 text-slate-300'
-                    }`}>{u.role || 'user'}</span>
-                  </td>
-                  <td className="px-5 py-3 text-slate-400 font-mono">{u.nif || '—'}</td>
-                  <td className="px-5 py-3 text-slate-500">{formatDate(u.created_date)}</td>
-                  <td className="px-5 py-3">
-                    <button onClick={() => viewDetail(u)} className="text-gold hover:underline text-xs">
-                      Ver detalhe
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* Search */}
+      <div className="relative">
+        <Search className="w-4 h-4 text-muted-2 absolute left-3 top-1/2 -translate-y-1/2" />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Procurar por nome, email ou NIF..."
+          className="w-full pl-9 pr-4 py-2.5 bg-surface border border-line rounded-xl text-sm focus:outline-none focus:border-primary/40"
+        />
       </div>
 
+      {/* Users table */}
+      <div className="bg-surface border border-line rounded-talao overflow-hidden shadow-soft">
+        {filtered.length === 0 ? (
+          <p className="px-5 py-10 text-sm text-muted-2 text-center">Nenhum utilizador encontrado.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-muted-2 border-b border-line">
+                  <th className="px-5 py-2.5 font-medium text-[11px]">Utilizador</th>
+                  <th className="px-5 py-2.5 font-medium text-[11px]">NIF</th>
+                  <th className="px-5 py-2.5 font-medium text-[11px]">Papel</th>
+                  <th className="px-5 py-2.5 font-medium text-[11px]">Registo</th>
+                  <th className="px-5 py-2.5 font-medium text-[11px]"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((u) => (
+                  <tr key={u.id} className="border-b border-line/50 last:border-0 hover:bg-[#f8fbf9]">
+                    <td className="px-5 py-3">
+                      <div className="text-ink font-medium">{u.full_name || '—'}</div>
+                      <div className="text-[11px] text-muted-2">{u.email}</div>
+                    </td>
+                    <td className="px-5 py-3 font-mono text-[12px] text-muted-foreground">{u.nif || '—'}</td>
+                    <td className="px-5 py-3">
+                      <span className={`${u.role === 'admin' ? 'pill-part' : 'bg-muted text-muted-foreground'} text-[10.5px] font-bold px-2.5 py-0.5 rounded-full`}>
+                        {u.role === 'admin' ? 'Admin' : 'Utilizador'}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 text-muted-foreground text-[12px]">{formatDate(u.created_date)}</td>
+                    <td className="px-5 py-3">
+                      <button onClick={() => viewDetail(u)} className="text-[12px] font-semibold text-primary hover:underline">
+                        Ver detalhe
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-start gap-2.5 bg-gold-soft border border-[#e6cfa0] rounded-talao p-4">
+        <Shield className="w-4 h-4 text-[#9a6a16] shrink-0 mt-0.5" />
+        <p className="text-[12px] text-[#8a6420] leading-relaxed">
+          Ver o detalhe financeiro de um utilizador exige indicar um motivo e fica registado na auditoria com o nome de quem viu. Suspender é gerível; ler os dados não é um ato livre.
+        </p>
+      </div>
+
+      {/* Invite modal */}
       {showInvite && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={closeInvite}>
-          <div className="bg-[hsl(163_30%_13%)] border border-slate-800 rounded-xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={closeInvite}>
+          <div className="bg-surface border border-line rounded-talao p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <UserPlus className="w-5 h-5 text-gold" />
-                <h3 className="font-heading font-bold text-white">Convidar utilizador</h3>
+                <UserPlus className="w-5 h-5 text-primary" />
+                <h3 className="font-heading font-bold text-ink">Convidar utilizador</h3>
               </div>
-              <button onClick={closeInvite} className="text-slate-500 hover:text-white">
-                <X className="w-4 h-4" />
-              </button>
+              <button onClick={closeInvite} className="text-muted-2 hover:text-ink"><X className="w-4 h-4" /></button>
             </div>
-            <p className="text-sm text-slate-400 mb-4">
-              O convite é enviado por email com um link para definir palavra-passe.
-            </p>
+            <p className="text-[13px] text-muted-foreground mb-4">O convite é enviado por email com um link para definir palavra-passe.</p>
             <form onSubmit={handleInvite} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs text-slate-500 block">Email</label>
+              <div>
+                <label className="text-[11px] text-muted-2 block mb-1">Email</label>
                 <input
                   type="email"
                   value={inviteEmail}
-                  onChange={e => setInviteEmail(e.target.value)}
+                  onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="nome@exemplo.ao"
                   autoFocus
-                  className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-gold/40"
+                  className="w-full px-3 py-2 rounded-lg border border-line text-sm focus:outline-none focus:border-primary/40"
                   required
                 />
               </div>
-              <div className="space-y-1.5">
-                <label className="text-xs text-slate-500 block">Papel</label>
+              <div>
+                <label className="text-[11px] text-muted-2 block mb-1">Papel</label>
                 <div className="flex gap-2">
-                  {['user', 'admin'].map(r => (
+                  {['user', 'admin'].map((r) => (
                     <button
                       key={r}
                       type="button"
                       onClick={() => setInviteRole(r)}
                       className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        inviteRole === r
-                          ? 'bg-gold text-ink'
-                          : 'bg-slate-900 border border-slate-700 text-slate-300 hover:bg-slate-800'
+                        inviteRole === r ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-muted/70'
                       }`}
                     >
                       {r === 'user' ? 'Utilizador' : 'Admin'}
@@ -187,21 +207,19 @@ export default function AdminUsers() {
                 </div>
               </div>
               {inviteResult && (
-                <div className={`flex items-start gap-2 p-3 rounded-lg text-sm ${
-                  inviteResult.ok ? 'bg-green-950/40 text-green-300' : 'bg-red-950/40 text-red-300'
-                }`}>
+                <div className={`flex items-start gap-2 p-3 rounded-lg text-sm ${inviteResult.ok ? 'bg-green-soft text-ok' : 'bg-danger-soft text-destructive'}`}>
                   {inviteResult.ok && <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />}
                   <span>{inviteResult.message}</span>
                 </div>
               )}
               <div className="flex gap-2">
-                <button type="button" onClick={closeInvite} className="flex-1 px-4 py-2 rounded-lg border border-slate-700 text-slate-300 text-sm hover:bg-slate-800">
+                <button type="button" onClick={closeInvite} className="flex-1 px-4 py-2 rounded-lg border border-line text-muted-foreground text-sm hover:bg-muted">
                   Fechar
                 </button>
                 <button
                   type="submit"
                   disabled={inviting || !inviteEmail.trim()}
-                  className="flex-1 px-4 py-2 rounded-lg bg-gold text-ink text-sm font-medium disabled:opacity-40 inline-flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-40 inline-flex items-center justify-center gap-2"
                 >
                   {inviting ? (<><Loader2 className="w-4 h-4 animate-spin" /> A enviar...</>) : 'Enviar convite'}
                 </button>
@@ -211,30 +229,30 @@ export default function AdminUsers() {
         </div>
       )}
 
+      {/* Detail reason modal */}
       {showDetail && selectedUser && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowDetail(false)}>
-          <div className="bg-[hsl(163_30%_13%)] border border-slate-800 rounded-xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowDetail(false)}>
+          <div className="bg-surface border border-line rounded-talao p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2 mb-4">
-              <Shield className="w-5 h-5 text-gold" />
-              <h3 className="font-heading font-bold text-white">Consulta de detalhe financeiro</h3>
+              <Shield className="w-5 h-5 text-[#9a6a16]" />
+              <h3 className="font-heading font-bold text-ink">Consulta de detalhe financeiro</h3>
             </div>
-            <p className="text-sm text-slate-400 mb-4">
-              Vais aceder ao detalhe financeiro de <span className="text-white font-medium">{selectedUser.full_name || selectedUser.email}</span>.
-              Esta ação fica registada na trilha de auditoria.
+            <p className="text-[13px] text-muted-foreground mb-4">
+              Vais aceder ao detalhe financeiro de <span className="text-ink font-medium">{selectedUser.full_name || selectedUser.email}</span>. Esta ação fica registada na trilha de auditoria.
             </p>
-            <label className="text-xs text-slate-500 block mb-1.5">Motivo (obrigatório)</label>
+            <label className="text-[11px] text-muted-2 block mb-1.5">Motivo (obrigatório)</label>
             <textarea
               value={reason}
-              onChange={e => setReason(e.target.value)}
+              onChange={(e) => setReason(e.target.value)}
               rows={3}
               placeholder="Ex: Auditoria de rotina, a pedido do utilizador..."
-              className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-gold/40"
+              className="w-full px-3 py-2 rounded-lg border border-line text-sm focus:outline-none focus:border-primary/40"
             />
             <div className="flex gap-2 mt-4">
-              <button onClick={() => { setShowDetail(false); setReason(''); }} className="flex-1 px-4 py-2 rounded-lg border border-slate-700 text-slate-300 text-sm hover:bg-slate-800">
+              <button onClick={() => { setShowDetail(false); setReason(''); }} className="flex-1 px-4 py-2 rounded-lg border border-line text-muted-foreground text-sm hover:bg-muted">
                 Cancelar
               </button>
-              <button onClick={confirmViewDetail} disabled={!reason.trim()} className="flex-1 px-4 py-2 rounded-lg bg-gold text-ink text-sm font-medium disabled:opacity-40">
+              <button onClick={confirmViewDetail} disabled={!reason.trim()} className="flex-1 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-40">
                 Confirmar e registar
               </button>
             </div>
