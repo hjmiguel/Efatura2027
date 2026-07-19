@@ -102,6 +102,10 @@
       ],
       "default": "none",
       "description": "Estado de verifica\u00e7\u00e3o pela AGT. Emitted = registada sob o NIF. Paid = AGT confirmou liquida\u00e7\u00e3o"
+    },
+    "user_nif": {
+      "type": "string",
+      "description": "NIF do contribuinte dono da fatura"
     }
   },
   "required": [

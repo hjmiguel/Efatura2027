@@ -15,7 +15,7 @@ const navItems = [
   { label: 'Pagamentos', icon: CreditCard, path: '/app/pagamentos', soon: true },
   { label: 'Documentos', icon: FileText, path: '/app/documentos', soon: true },
   { label: 'Dedutíveis', icon: Receipt, path: '/app/dedutiveis' },
-  { label: 'Situação fiscal', icon: Landmark, path: '/app/fiscal', soon: true },
+  { label: 'Situação fiscal', icon: Landmark, path: '/app/fiscal' },
   { label: 'Assistente', icon: MessageSquare, path: '/app/assistente', soon: true },
   { label: 'Perfil', icon: User, path: '/app/perfil' },
 ];

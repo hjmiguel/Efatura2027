@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { formatKz, formatDate } from '@/lib/format';
 import DependentForm from '@/components/app/DependentForm';
 import { Plus, Download, AlertTriangle, Pencil, Trash2, Users, FileText } from 'lucide-react';
+import AgtSeal from '@/components/app/AgtSeal';
 
 const deductibleLabels = {
   saude: { label: 'Saúde', color: '#DC2626' },
@@ -157,7 +158,10 @@ export default function Dedutiveis() {
           {deductibleInvoices.slice(0, 10).map(inv => (
             <div key={inv.id} className="flex items-center justify-between px-5 py-3">
               <div>
-                <p className="text-sm font-medium text-ink">{inv.issuer_name}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-sm font-medium text-ink">{inv.issuer_name}</p>
+                  {inv.agt_status !== 'none' && <AgtSeal status={inv.agt_status} size={14} />}
+                </div>
                 <p className="text-xs text-muted-2">{deductibleLabels[inv.deductible_type]?.label} · {inv.paid_date ? formatDate(inv.paid_date) : formatDate(inv.issue_date)}</p>
               </div>
               <p className="font-mono text-sm font-semibold text-ink">{formatKz(inv.amount)}</p>

@@ -1,0 +1,61 @@
+{
+  "name": "PartnerConsent",
+  "type": "object",
+  "properties": {
+    "partner_name": {
+      "type": "string",
+      "description": "Nome da empresa parceira"
+    },
+    "partner_nif": {
+      "type": "string",
+      "description": "NIF da empresa parceira"
+    },
+    "api_key_hash": {
+      "type": "string",
+      "description": "Hash SHA-256 da API key do parceiro"
+    },
+    "api_key_preview": {
+      "type": "string",
+      "description": "Primeiros caracteres da API key para identifica\u00e7\u00e3o visual"
+    },
+    "consent_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "revoked"
+      ],
+      "default": "active"
+    },
+    "consent_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revoked_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "emit",
+          "status",
+          "list"
+        ]
+      },
+      "description": "Permiss\u00f5es concedidas ao parceiro"
+    },
+    "user_nif": {
+      "type": "string",
+      "description": "NIF do utilizador que deu consentimento"
+    }
+  },
+  "required": [
+    "partner_name",
+    "partner_nif",
+    "api_key_hash",
+    "consent_status",
+    "scopes"
+  ]
+}

@@ -15,6 +15,16 @@
     "phone": {
       "type": "string",
       "description": "N\u00famero de telem\u00f3vel"
+    },
+    "agt_consent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Consentimento para o feed de fatura\u00e7\u00e3o eletr\u00f3nica da AGT"
+    },
+    "agt_consent_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data do consentimento AGT"
     }
   },
   "required": [
