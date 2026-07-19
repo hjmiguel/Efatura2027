@@ -1,0 +1,48 @@
+{
+  "name": "Transaction",
+  "type": "object",
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do movimento"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Montante em kwanza. Positivo para entrada, negativo para sa\u00edda"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "income",
+        "expense",
+        "transfer"
+      ]
+    },
+    "account_id": {
+      "description": "Conta a que o movimento pertence",
+      "type": "string"
+    },
+    "category_id": {
+      "description": "Categoria do movimento",
+      "type": "string"
+    },
+    "invoice_id": {
+      "description": "Fatura associada, se houver",
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "description",
+    "amount",
+    "date",
+    "type",
+    "account_id"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "Dependent",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do dependente"
+    },
+    "relationship": {
+      "type": "string",
+      "enum": [
+        "conjuge",
+        "filho",
+        "pai",
+        "mae",
+        "outro"
+      ],
+      "description": "Grau de parentesco"
+    },
+    "nif": {
+      "type": "string",
+      "description": "NIF do dependente"
+    },
+    "birth_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "name",
+    "relationship"
+  ]
+}

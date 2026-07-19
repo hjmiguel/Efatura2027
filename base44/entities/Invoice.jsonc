@@ -1,0 +1,113 @@
+{
+  "name": "Invoice",
+  "type": "object",
+  "properties": {
+    "issuer_name": {
+      "type": "string",
+      "description": "Nome do emissor (ENDE, Unitel, etc.)"
+    },
+    "issuer_nif": {
+      "type": "string",
+      "description": "NIF do emissor"
+    },
+    "document_number": {
+      "type": "string",
+      "description": "N\u00famero do documento"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Montante em kwanza"
+    },
+    "issue_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "mcx_reference",
+        "iban",
+        "rupe",
+        "manual"
+      ],
+      "description": " M\u00e9todo de pagamento"
+    },
+    "entity": {
+      "type": "string",
+      "description": "Entidade Multicaixa Express"
+    },
+    "reference": {
+      "type": "string",
+      "description": "Refer\u00eancia Multicaixa Express"
+    },
+    "iban": {
+      "type": "string",
+      "description": "IBAN para pagamento por transfer\u00eancia"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "paid",
+        "overdue"
+      ],
+      "default": "pending"
+    },
+    "paid_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "category_id": {
+      "type": "string",
+      "description": "Categoria da despesa"
+    },
+    "has_nif": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se a fatura cont\u00e9m o NIF do contribuinte"
+    },
+    "deductible_type": {
+      "type": "string",
+      "enum": [
+        "none",
+        "saude",
+        "educacao",
+        "habitacao",
+        "pensao_alimentos",
+        "previdencia"
+      ],
+      "default": "none"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "photo_ocr",
+        "partner",
+        "agt"
+      ],
+      "default": "manual",
+      "description": "Origem da fatura"
+    },
+    "agt_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "emitted",
+        "paid"
+      ],
+      "default": "none",
+      "description": "Estado de verifica\u00e7\u00e3o pela AGT. Emitted = registada sob o NIF. Paid = AGT confirmou liquida\u00e7\u00e3o"
+    }
+  },
+  "required": [
+    "issuer_name",
+    "amount",
+    "due_date",
+    "status"
+  ]
+}
