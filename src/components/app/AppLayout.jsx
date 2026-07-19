@@ -203,7 +203,7 @@ export default function AppLayout() {
 
       {/* ===== Main content ===== */}
       <main className="md:ml-[264px] xl:mr-[340px] pb-24 md:pb-0 min-h-screen">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-4 md:py-6">
           <Outlet />
         </div>
       </main>
