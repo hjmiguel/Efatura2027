@@ -244,6 +244,28 @@
   outline-offset: 3px;
 }
 
+/* ===== LINGUAGEM EDITORIAL v5.1 ===== */
+.eyebrow { font-size: 9.5px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: #93A099; line-height: 1; }
+.mark { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 10px; letter-spacing: .14em; color: #93A099; line-height: 1; }
+.hairline { border-top: 1px solid var(--border); margin: 14px 0; }
+
+/* Editorial list — no individual cards, hairline separators */
+.ed-list .it { display: flex; align-items: center; gap: 11px; padding: 12px 0; border-top: 1px solid var(--border); }
+.ed-list .it:first-child { border-top: 0; }
+.ed-list .it .nm { flex: 1; font-size: 13.5px; font-weight: 600; letter-spacing: -.1px; }
+.ed-list .it .sb { font-size: 11.5px; color: #6B7A74; font-weight: 400; margin-top: 1px; }
+.ed-list .it .vl { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 13.5px; font-weight: 600; text-align: right; }
+
+/* Pills v5.1 */
+.pill-pend { background: #F6E2BC; color: #9a6a16; }
+.pill-paid { background: #DCF0E6; color: #1C8A6A; }
+.pill-late { background: #F7E0DC; color: #D2483B; }
+.pill-part { background: #e7eef9; color: #3a64a8; }
+
+/* Track bar */
+.track-v5 { height: 8px; border-radius: 6px; background: #eef2f0; overflow: hidden; }
+.track-v5 > i { display: block; height: 100%; border-radius: 6px; background: hsl(var(--primary)); }
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .reveal-up, .reveal-left, .reveal-right, .reveal-scale {
