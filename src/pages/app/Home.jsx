@@ -149,7 +149,7 @@ export default function Home() {
 
       {/* ===== Quick actions ===== */}
       <div className="flex gap-2.5">
-        <QuickAction to="/app/transacoes" icon={Plus} label="Registar" />
+        <QuickAction to="/app/adicionar" icon={Plus} label="Registar" />
         <QuickAction to="/app/documentos" icon={FileText} label="Documento" />
         <QuickAction to="/app/pagamentos" icon={CreditCard} label="Pagar" />
         <QuickAction to="/app/pagamentos" icon={Building2} label="Conectar" />

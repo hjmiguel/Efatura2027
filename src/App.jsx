@@ -19,6 +19,7 @@ import Onboarding from './pages/Onboarding';
 import Termos from './pages/Termos';
 import Privacidade from './pages/Privacidade';
 import Home from './pages/app/Home';
+import Adicionar from './pages/app/Adicionar';
 import Orcamento from './pages/app/Orcamento';
 import Transacoes from './pages/app/Transacoes';
 import Contas from './pages/app/Contas';
@@ -78,6 +79,7 @@ const AuthenticatedApp = () => {
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
         <Route element={<AppLayout />}>
           <Route path="/app" element={<Home />} />
+          <Route path="/app/adicionar" element={<Adicionar />} />
           <Route path="/app/orcamento" element={<Orcamento />} />
           <Route path="/app/transacoes" element={<Transacoes />} />
           <Route path="/app/contas" element={<Contas />} />
