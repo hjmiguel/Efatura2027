@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import {
-  Clock, CheckCircle2, CalendarDays, Crown,
+  CheckCircle2, CalendarDays, Crown,
   Smartphone, Landmark, Receipt, ChevronRight, FileText, AlertCircle,
 } from 'lucide-react';
 import { formatKz, formatDate, daysUntil } from '@/lib/format';
 import Seo from '@/components/Seo';
 import AgtSeal from '@/components/app/AgtSeal';
-import PartnerConsentManager from '@/components/app/PartnerConsentManager';
 import McxPaymentDialog from '@/components/app/McxPaymentDialog';
 import IbanPaymentDialog from '@/components/app/IbanPaymentDialog';
 import RupePaymentDialog from '@/components/app/RupePaymentDialog';
 import PremiumModal from '@/components/app/PremiumModal';
+import EmpresasTab from '@/components/app/payments/EmpresasTab';
 
 const tabs = [
   { id: 'pendente', label: 'Pendente' },
@@ -59,6 +59,7 @@ export default function Pagamentos() {
     const d = new Date(i.paid_date || i.due_date);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
+  const paidThisMonthAmount = paidThisMonth.reduce((s, i) => s + (i.amount || 0), 0);
 
   if (loading) {
     return (
@@ -86,23 +87,12 @@ export default function Pagamentos() {
       {/* Two stats */}
       <div className="grid grid-cols-2 gap-2.5">
         <div className="bg-surface border border-line rounded-talao p-4 shadow-soft">
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <Clock className="w-3.5 h-3.5 text-destructive" />
-            <span className="eyebrow">Pendente</span>
-          </div>
-          <div className="font-mono text-[20px] font-bold text-destructive">{formatKz(totalPending)}</div>
-          <div className="text-[12px] text-muted-foreground mt-0.5">
-            {pending.length} {pending.length === 1 ? 'fatura' : 'faturas'}
-            {overdueCount > 0 && ` · ${overdueCount} ${overdueCount === 1 ? 'vencida' : 'vencidas'}`}
-          </div>
+          <div className="font-mono text-[20px] font-bold text-ink">{formatKz(totalPending)}</div>
+          <div className="text-[12px] text-muted-foreground mt-0.5">Pendente (Kz)</div>
         </div>
         <div className="bg-surface border border-line rounded-talao p-4 shadow-soft">
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-ok" />
-            <span className="eyebrow">Pago este mês</span>
-          </div>
-          <div className="font-mono text-[20px] font-bold text-ok">{paidThisMonth.length}</div>
-          <div className="text-[12px] text-muted-foreground mt-0.5">faturas liquidadas</div>
+          <div className="font-mono text-[20px] font-bold text-ink">{formatKz(paidThisMonthAmount)}</div>
+          <div className="text-[12px] text-muted-foreground mt-0.5">Pago este mês</div>
         </div>
       </div>
 
@@ -112,8 +102,8 @@ export default function Pagamentos() {
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-              tab === t.id ? 'bg-primary text-white' : 'text-muted-foreground hover:text-ink'
+            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors border ${
+              tab === t.id ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-muted-foreground hover:text-ink'
             }`}
           >
             {t.label}
@@ -149,7 +139,7 @@ export default function Pagamentos() {
       {tab === 'compromissos' && <CompromissosView invoices={invoices} />}
 
       {/* ===== Empresas ===== */}
-      {tab === 'empresas' && <PartnerConsentManager />}
+      {tab === 'empresas' && <EmpresasTab />}
 
       {/* Payment dialogs */}
       {payDialog?.type === 'mcx' && (
