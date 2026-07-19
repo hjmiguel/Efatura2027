@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import Seo from '@/components/Seo';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Mail, Lock, Loader2, LogIn } from 'lucide-react';
+import { Loader2, ArrowLeft } from 'lucide-react';
 import GoogleIcon from '@/components/GoogleIcon';
 
 export default function Entrar() {
@@ -33,48 +30,86 @@ export default function Entrar() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
+    <div className="min-h-screen flex bg-[#f4f4f4]">
       <Seo title="Entrar" description="Acede à tua conta Gestão+ para gerir faturas, pagamentos e dedutíveis IRPS." path="/entrar" />
-      <div className="w-full max-w-md">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary mb-4">
-            <LogIn className="w-7 h-7 text-white" />
+
+      {/* Left pane — dark */}
+      <div className="hidden md:flex md:w-[40%] flex-col justify-between p-10 bg-ink text-white relative overflow-hidden">
+        {/* Logo */}
+        <div className="flex items-center gap-2">
+          <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gold" />
+            <span className="font-heading font-bold text-white text-sm relative">G+</span>
           </div>
-          <h1 className="font-heading text-3xl font-bold text-ink">Entrar</h1>
-          <p className="text-muted-foreground mt-2 text-sm">Acede à tua conta Gestão+</p>
+          <span className="font-heading font-bold text-lg">Gestão+</span>
         </div>
 
-        <div className="bg-surface rounded-talao shadow-talao border border-line p-8">
-          <Button
-            variant="outline"
-            className="w-full h-12 text-sm font-medium mb-6"
-            onClick={handleGoogle}
+        {/* Headline */}
+        <div className="max-w-sm">
+          <p className="text-xs font-medium uppercase tracking-wider text-white/60 mb-4">Edição A1 • Luanda</p>
+          <h1 className="font-heading text-4xl xl:text-5xl font-bold leading-tight">
+            O teu dinheiro,<br />
+            <span className="text-gold">em dia.</span>
+          </h1>
+          <p className="text-white/70 text-sm mt-5 leading-relaxed">
+            Junta faturas, paga por Multicaixa Express e sabe sempre quanto te sobra.
+          </p>
+        </div>
+
+        {/* Footer */}
+        <p className="text-[10px] font-medium uppercase tracking-wider text-white/40">
+          Conforme a Lei 22/11 • EMIS
+        </p>
+      </div>
+
+      {/* Right pane — light */}
+      <div className="flex-1 flex flex-col">
+        {/* Top bar */}
+        <div className="p-6">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-2 hover:text-ink transition-colors"
           >
-            <GoogleIcon className="w-5 h-5 mr-2" />
-            Entrar com Google
-          </Button>
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Voltar
+          </Link>
+        </div>
 
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-line" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-surface px-3 text-muted-2">ou</span>
-            </div>
-          </div>
+        {/* Center form */}
+        <div className="flex-1 flex items-center justify-center px-6 pb-6">
+          <div className="w-full max-w-sm">
+            <p className="text-xs font-medium uppercase tracking-wider text-muted-2 mb-2">Entrar</p>
+            <h2 className="font-heading text-2xl font-bold text-ink mb-8">Bem-vindo de volta.</h2>
 
-          {error && (
-            <div className="mb-4 p-3 rounded-lg bg-danger-soft text-destructive text-sm">
-              {error}
-            </div>
-          )}
+            {/* Google button */}
+            <button
+              type="button"
+              onClick={handleGoogle}
+              className="w-full h-12 flex items-center justify-center gap-2 bg-white border border-line rounded-lg text-sm font-medium text-ink hover:bg-muted transition-colors"
+            >
+              <GoogleIcon className="w-5 h-5" />
+              Entrar com Google
+            </button>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-2" />
-                <Input
+            {/* Separator */}
+            <div className="flex items-center gap-3 my-6">
+              <div className="flex-1 h-px bg-line" />
+              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-2">Ou email</span>
+              <div className="flex-1 h-px bg-line" />
+            </div>
+
+            {error && (
+              <div className="mb-4 p-3 rounded-lg bg-danger-soft text-destructive text-sm">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <label htmlFor="email" className="text-[10px] font-medium uppercase tracking-wider text-muted-2">
+                  Email
+                </label>
+                <input
                   id="email"
                   type="email"
                   autoComplete="email"
@@ -82,51 +117,61 @@ export default function Entrar() {
                   placeholder="o.teu@email.ao"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-12"
+                  className="w-full h-12 px-4 bg-[#e8edf2] border border-transparent rounded-lg text-sm text-ink placeholder:text-muted-2 focus:outline-none focus:border-ink transition-colors"
                   required
                 />
               </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Palavra-passe</Label>
-                <Link to="/forgot-password" className="text-xs text-primary hover:underline">
-                  Esqueceste-te?
-                </Link>
-              </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-2" />
-                <Input
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="password" className="text-[10px] font-medium uppercase tracking-wider text-muted-2">
+                    Palavra-passe
+                  </label>
+                  <Link to="/forgot-password" className="text-xs text-ink hover:underline">
+                    Esqueceste-te?
+                  </Link>
+                </div>
+                <input
                   id="password"
                   type="password"
                   autoComplete="current-password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 h-12"
+                  className="w-full h-12 px-4 bg-[#e8edf2] border border-transparent rounded-lg text-sm text-ink placeholder:text-muted-2 focus:outline-none focus:border-ink transition-colors"
                   required
                 />
               </div>
-            </div>
-            <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  A entrar...
-                </>
-              ) : (
-                'Entrar'
-              )}
-            </Button>
-          </form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 flex items-center justify-center gap-2 bg-ink text-white rounded-lg text-sm font-medium hover:bg-ink/90 transition-colors disabled:opacity-60"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    A entrar...
+                  </>
+                ) : (
+                  'Entrar'
+                )}
+              </button>
+            </form>
+
+            <p className="text-center text-xs text-muted-2 mt-6">
+              Ainda não tens conta?{' '}
+              <Link to="/registo" className="text-ink font-medium hover:underline">
+                Criar
+              </Link>
+            </p>
+          </div>
         </div>
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          Ainda não tens conta?{' '}
-          <Link to="/registo" className="text-primary font-medium hover:underline">
-            Criar conta
-          </Link>
-        </p>
+        {/* Footer */}
+        <div className="p-6 text-right">
+          <p className="text-[10px] font-medium uppercase tracking-wider text-muted-2">
+            © 2026 Gestão+ • Luanda
+          </p>
+        </div>
       </div>
     </div>
   );
