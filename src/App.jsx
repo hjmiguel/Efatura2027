@@ -21,6 +21,17 @@ import Dedutiveis from './pages/app/Dedutiveis';
 import Fiscal from './pages/app/Fiscal';
 import Assistente from './pages/app/Assistente';
 import Perfil from './pages/app/Perfil';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminAudit from './pages/admin/AdminAudit';
+import PartnerPortal from './pages/partners/PartnerPortal';
+import CorporateLayout from './pages/corporate/CorporateLayout';
+import CorporateDashboard from './pages/corporate/CorporateDashboard';
+import CorporatePayables from './pages/corporate/CorporatePayables';
+import CorporateSuppliers from './pages/corporate/CorporateSuppliers';
+import CorporateCostCenters from './pages/corporate/CorporateCostCenters';
+import CorporateFiscal from './pages/corporate/CorporateFiscal';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -63,6 +74,28 @@ const AuthenticatedApp = () => {
           <Route path="/app/fiscal" element={<Fiscal />} />
           <Route path="/app/assistente" element={<Assistente />} />
           <Route path="/app/perfil" element={<Perfil />} />
+        </Route>
+      </Route>
+      {/* Admin backoffice */}
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
+        <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/utilizadores" element={<AdminUsers />} />
+          <Route path="/admin/auditoria" element={<AdminAudit />} />
+        </Route>
+      </Route>
+      {/* Partner portal */}
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
+        <Route path="/parceiros" element={<PartnerPortal />} />
+      </Route>
+      {/* Corporate module */}
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
+        <Route element={<CorporateLayout />}>
+          <Route path="/empresas" element={<CorporateDashboard />} />
+          <Route path="/empresas/pagamentos" element={<CorporatePayables />} />
+          <Route path="/empresas/fornecedores" element={<CorporateSuppliers />} />
+          <Route path="/empresas/centros" element={<CorporateCostCenters />} />
+          <Route path="/empresas/fiscal" element={<CorporateFiscal />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

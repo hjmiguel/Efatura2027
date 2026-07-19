@@ -1,0 +1,34 @@
+{
+  "name": "CostCenter",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "C\u00f3digo do centro de custo"
+    },
+    "name": {
+      "type": "string",
+      "description": "Nome do centro de custo"
+    },
+    "budget_monthly": {
+      "type": "number",
+      "description": "Or\u00e7amento mensal em kwanza"
+    },
+    "budget_yearly": {
+      "type": "number",
+      "description": "Or\u00e7amento anual em kwanza"
+    },
+    "responsible_name": {
+      "type": "string",
+      "description": "Respons\u00e1vel pelo centro de custo"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "code",
+    "name"
+  ]
+}

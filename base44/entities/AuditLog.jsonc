@@ -1,0 +1,84 @@
+{
+  "name": "AuditLog",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "login",
+        "view_user_detail",
+        "update_user",
+        "delete_user",
+        "create_invoice",
+        "update_invoice",
+        "revoke_consent",
+        "api_key_create",
+        "api_key_revoke",
+        "approval_grant",
+        "approval_reject",
+        "export_data",
+        "settings_change"
+      ],
+      "description": "Tipo de a\u00e7\u00e3o registada"
+    },
+    "actor_id": {
+      "type": "string",
+      "description": "ID do utilizador que executou a a\u00e7\u00e3o"
+    },
+    "actor_name": {
+      "type": "string",
+      "description": "Nome do utilizador que executou a a\u00e7\u00e3o"
+    },
+    "actor_role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "operator",
+        "support",
+        "auditor",
+        "partner",
+        "corporate_admin",
+        "corporate_finance",
+        "corporate_approver",
+        "corporate_read"
+      ],
+      "description": "Papel do ator"
+    },
+    "target_entity": {
+      "type": "string",
+      "description": "Entidade afetada (User, Invoice, PartnerConsent, etc.)"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "ID do registo afetado"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Motivo da a\u00e7\u00e3o (obrigat\u00f3rio para acesso a detalhe financeiro)"
+    },
+    "details": {
+      "type": "string",
+      "description": "Detalhes adicionais em texto livre"
+    },
+    "ip_address": {
+      "type": "string",
+      "description": "Endere\u00e7o IP de origem"
+    },
+    "module": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "partner",
+        "corporate",
+        "app"
+      ],
+      "description": "M\u00f3dulo onde a a\u00e7\u00e3o ocorreu"
+    }
+  },
+  "required": [
+    "action",
+    "actor_id",
+    "actor_name",
+    "module"
+  ]
+}
