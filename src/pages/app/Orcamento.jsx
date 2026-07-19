@@ -5,6 +5,12 @@ import {
 } from 'lucide-react';
 import { formatKz } from '@/lib/format';
 import Seo from '@/components/Seo';
+import GoalRing from '@/components/app/ui/GoalRing';
+
+const mockGoals = [
+  { id: 1, name: 'Fundo de emergência', current: 310000, target: 500000, pct: 62, deadline: 'dezembro', suggestion: 32000, color: '#E68F33' },
+  { id: 2, name: 'Viagem em família', current: 140000, target: 500000, pct: 28, deadline: 'abril', suggestion: 45000, color: '#4C7A53' },
+];
 
 const CURRENT_MONTH = () => {
   const d = new Date();
@@ -160,12 +166,17 @@ export default function Orcamento() {
       <Seo title="Orçamento" description="Define limites mensais por categoria e acompanha os teus gastos." path="/app/orcamento" />
 
       {/* Header */}
-      <div>
-        <span className="eyebrow">§ 03 · Limites e metas</span>
-        <h1 className="font-heading text-2xl font-bold text-ink mt-1">Orçamento</h1>
-        <p className="text-sm text-muted-foreground mt-0.5 capitalize">
-          {now.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' })}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <span className="eyebrow">§ 03 · Limites e metas</span>
+          <h1 className="font-heading text-2xl font-bold text-ink mt-1">Planeamento</h1>
+          <p className="text-sm text-muted-foreground mt-0.5 capitalize">
+            {now.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' })}
+          </p>
+        </div>
+        <button className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary text-white rounded-full text-sm font-medium btn-hover btn-primary-hover shrink-0">
+          <Plus className="w-4 h-4" /> Novo
+        </button>
       </div>
 
       {/* Tab bar */}
@@ -174,8 +185,8 @@ export default function Orcamento() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              activeTab === tab.id ? 'bg-primary text-white' : 'text-muted-foreground hover:text-ink'
+            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors border ${
+              activeTab === tab.id ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-muted-foreground hover:text-ink'
             }`}
           >
             {tab.label}
@@ -316,18 +327,23 @@ export default function Orcamento() {
       {/* ===== Tab: Metas ===== */}
       {activeTab === 'metas' && (
         <div className="space-y-3.5">
-          <div className="bg-surface border border-dashed border-line rounded-talao p-8 text-center">
-            <div className="w-14 h-14 rounded-full bg-gold-soft flex items-center justify-center mx-auto mb-3">
-              <Target className="w-7 h-7 text-[#9a6a16]" />
+          {mockGoals.map((goal) => (
+            <div key={goal.id} className="bg-surface border border-line rounded-talao p-4 shadow-soft flex items-center gap-4">
+              <GoalRing pct={goal.pct} color={goal.color} label={`${goal.pct}%`} />
+              <div className="flex-1 min-w-0">
+                <h3 className="font-heading font-bold text-[15px] text-ink">{goal.name}</h3>
+                <p className="text-[12.5px] text-muted-foreground mt-0.5">
+                  {formatKz(goal.current)} / {formatKz(goal.target)} Kz · até {goal.deadline}
+                </p>
+                <p className="text-[12px] text-ink mt-1.5">
+                  Sugestão: poupa <span className="font-mono font-bold text-ink">{formatKz(goal.suggestion)}</span> por mês
+                </p>
+              </div>
             </div>
-            <h3 className="font-heading font-semibold text-ink">Sem metas ativas</h3>
-            <p className="text-sm text-muted-foreground mt-1 max-w-xs mx-auto">
-              Define um objetivo de poupança — como um fundo de emergência — e acompanha o teu progresso mensal.
-            </p>
-            <button className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-medium">
-              <Plus className="w-4 h-4" /> Nova meta
-            </button>
-          </div>
+          ))}
+          <button className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-white rounded-talao text-sm font-medium btn-hover btn-primary-hover">
+            <Plus className="w-4 h-4" /> Nova meta
+          </button>
         </div>
       )}
 
