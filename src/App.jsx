@@ -15,6 +15,7 @@ import Entrar from './pages/Entrar';
 import Termos from './pages/Termos';
 import Privacidade from './pages/Privacidade';
 import Home from './pages/app/Home';
+import Transacoes from './pages/app/Transacoes';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -51,6 +52,7 @@ const AuthenticatedApp = () => {
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
         <Route element={<AppLayout />}>
           <Route path="/app" element={<Home />} />
+          <Route path="/app/transacoes" element={<Transacoes />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

@@ -9,7 +9,7 @@ import { base44 } from '@/api/base44Client';
 
 const navItems = [
   { label: 'Início', icon: HomeIcon, path: '/app' },
-  { label: 'Transações', icon: ArrowLeftRight, path: '/app/transacoes', soon: true },
+  { label: 'Transações', icon: ArrowLeftRight, path: '/app/transacoes' },
   { label: 'Orçamento', icon: Wallet, path: '/app/orcamento', soon: true },
   { label: 'Pagamentos', icon: CreditCard, path: '/app/pagamentos', soon: true },
   { label: 'Documentos', icon: FileText, path: '/app/documentos', soon: true },
@@ -23,7 +23,7 @@ const mobileNavItems = [
   { label: 'Início', icon: HomeIcon, path: '/app' },
   { label: 'Pagamentos', icon: CreditCard, path: '/app/pagamentos', soon: true },
   { label: 'Dedutíveis', icon: Receipt, path: '/app/dedutiveis', soon: true },
-  { label: 'Fiscal', icon: Landmark, path: '/app/fiscal', soon: true },
+  { label: 'Transações', icon: ArrowLeftRight, path: '/app/transacoes' },
   { label: 'Perfil', icon: User, path: '/app/perfil', soon: true },
 ];
 
