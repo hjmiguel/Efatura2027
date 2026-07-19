@@ -216,16 +216,17 @@ Depende da AGT e dos primeiros parceiros.
 
 ## Fase 6 — Infraestrutura, PWA e qualidade (transversal)
 
-### 6.1 PWA
-- Manifesto, service worker, prompt de instalação
-- Update toast quando há nova versão
-- Ícones e splash screens
+### 6.1 PWA — ✅ concluído
+- Manifesto (`public/manifest.json`), service worker (`public/sw.js`) com cache network-first para navegação e cache-first para estáticos
+- Hook `usePWA` com prompt de instalação e deteção de atualização
+- Toast de atualização (`PwaUpdateToast`) integrado no `App.jsx`
+- Favicon SVG próprio (G+ verde/dourado) e meta tags Apple
 
-### 6.2 SEO e metadados
-- Titles e descriptions únicos por rota
-- sitemap.xml e robots.txt
-- Meta tags Open Graph e Twitter Card
-- Favicon personalizado
+### 6.2 SEO e metadados — ✅ concluído
+- Componente `Seo` com title/description únicos por rota (Landing, Entrar, Registo, Termos, Privacidade)
+- `sitemap.xml` e `robots.txt` (permite públicas, bloqueia `/app`, `/admin`, `/parceiros`, `/empresas`)
+- Meta tags Open Graph e Twitter Card no `index.html` e atualizadas dinamicamente por rota
+- Favicon SVG personalizado
 
 ### 6.3 Acessibilidade
 - Foco de teclado visível (contorno dourado de 2px)
@@ -264,7 +265,7 @@ Depende da AGT e dos primeiros parceiros.
 | 3 — Fontes automáticas | 4 semanas | AGT + parceiros | Por iniciar |
 | 4 — Assistente IA | 2 a 3 semanas | Fase 1 | Por iniciar |
 | 5 — Outros atores | 8 a 12 semanas | Operação real | Por iniciar |
-| 6 — PWA + qualidade | Transversal | Todas | Parcial (animações, acessibilidade) |
+| 6 — PWA + qualidade | Transversal | Todas | **PWA + SEO concluído**; testes automáticos por fazer |
 
 **Caminho crítico:** EMIS (sem GPO não há Premium nem receita) → Fase 1 → Fase 2 → Fase 3 (AGT) → Fase 5 (parceiros, corporativo).
 

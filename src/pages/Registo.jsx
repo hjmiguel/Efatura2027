@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import Seo from '@/components/Seo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -72,6 +73,7 @@ export default function Registo() {
   if (showOtp) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
+        <Seo title="Criar conta" description="Cria a tua conta Gestão+ e começa a organizar as tuas finanças pessoais." path="/registo" />
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary mb-4">
@@ -133,6 +135,7 @@ export default function Registo() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
+      <Seo title="Criar conta" description="Cria a tua conta Gestão+ e começa a organizar as tuas finanças pessoais." path="/registo" />
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary mb-4">

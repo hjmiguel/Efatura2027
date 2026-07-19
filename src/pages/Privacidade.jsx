@@ -1,4 +1,5 @@
 import React from 'react';
+import Seo from '@/components/Seo';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
 
@@ -60,6 +61,7 @@ const sections = [
 export default function Privacidade() {
   return (
     <div className="min-h-screen bg-background">
+      <Seo title="Política de Privacidade" description="Como a Gestão+ recolhe, trata e protege os teus dados pessoais e financeiros." path="/privacidade" />
       <Navbar />
       <main className="pt-28 pb-16 sm:pt-32 sm:pb-24">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">

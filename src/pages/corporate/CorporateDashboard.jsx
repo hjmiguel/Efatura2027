@@ -13,14 +13,14 @@ export default function CorporateDashboard() {
 
   async function load() {
     try {
-      const [accts, txns, apprs] = await Promise.all([
+      const [accts, txns, approvalList] = await Promise.all([
         base44.entities.Account.list(),
         base44.entities.Transaction.list('-date', 50),
         base44.entities.Approval.list('-created_date', 20),
       ]);
       setAccounts(accts);
       setTransactions(txns);
-      setApprovals(aprs);
+      setApprovals(approvalList);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }

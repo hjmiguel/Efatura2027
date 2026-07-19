@@ -4,6 +4,7 @@ import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import PwaUpdateToast from '@/components/PwaUpdateToast';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -114,6 +115,7 @@ function App() {
           <AuthenticatedApp />
         </Router>
         <Toaster />
+        <PwaUpdateToast />
       </QueryClientProvider>
     </AuthProvider>
   )

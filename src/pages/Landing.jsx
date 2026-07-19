@@ -1,4 +1,5 @@
 import React from 'react';
+import Seo from '@/components/Seo';
 import Navbar from '@/components/landing/Navbar';
 import Hero from '@/components/landing/Hero';
 import AGTBand from '@/components/landing/AGTBand';
@@ -17,6 +18,11 @@ import ScrollProgressBar from '@/components/landing/ScrollProgressBar';
 export default function Landing() {
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="O teu dinheiro, em dia."
+        description="Junta as tuas faturas, paga por Multicaixa Express e prepara o teu IRPS. Gestão financeira feita para Angola."
+        path="/"
+      />
       <ScrollProgressBar />
       <Navbar />
       <main>
