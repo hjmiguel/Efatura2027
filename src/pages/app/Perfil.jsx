@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { LogOut, User, Shield, Users, Lock } from 'lucide-react';
+import { LogOut, User, Shield, Users, Lock, Crown, WifiOff, Download } from 'lucide-react';
 import ProfileAccount from '@/components/app/profile/ProfileAccount';
 import ProfileSecurity from '@/components/app/profile/ProfileSecurity';
 import ProfileDependents from '@/components/app/profile/ProfileDependents';
 import ProfilePrivacy from '@/components/app/profile/ProfilePrivacy';
+import { usePWA } from '@/hooks/usePWA';
 
 const tabs = [
   { id: 'conta', label: 'Conta', icon: User },
@@ -17,6 +18,7 @@ export default function Perfil() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('conta');
+  const { installAvailable: canInstall, promptInstall: installApp } = usePWA();
 
   useEffect(() => { loadUser(); }, []);
 
@@ -40,16 +42,59 @@ export default function Perfil() {
     );
   }
 
+  const initials = (user?.full_name || 'U').trim().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-bold text-ink">Perfil</h1>
-        <button
-          onClick={handleLogout}
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-destructive transition-colors"
-        >
-          <LogOut className="w-4 h-4" /> Sair
-        </button>
+    <div className="space-y-4">
+      {/* Profile card */}
+      <div className="bg-surface border border-line rounded-talao p-4 shadow-soft flex items-center gap-3.5">
+        <div className="w-[52px] h-[52px] rounded-full bg-gradient-to-br from-primary to-primary-2 text-white flex items-center justify-center font-heading font-bold text-lg shrink-0">
+          {initials}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-heading font-semibold text-ink truncate">{user?.full_name || 'Utilizador'}</p>
+          <p className="text-[12.5px] text-muted-foreground truncate">{user?.email}</p>
+          {user?.nif && (
+            <span className="inline-block mt-1.5 text-[10px] font-bold font-mono px-2 py-0.5 rounded-full bg-gold-soft text-[#8a6420]">
+              NIF {user.nif}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Premium card */}
+      <div className="rounded-talao p-4 bg-gradient-to-br from-ink to-primary-2 text-white shadow-talao relative overflow-hidden">
+        <div className="absolute -right-6 -top-8 w-[120px] h-[120px] rounded-full bg-gold/10" />
+        <div className="relative flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gold/20 flex items-center justify-center shrink-0">
+            <Crown className="w-5 h-5 text-gold" />
+          </div>
+          <div className="flex-1">
+            <p className="font-heading font-bold text-[15px]">Gestão+ Premium</p>
+            <p className="text-[12px] text-white/70 mt-0.5">Relatórios ilimitados, sync automático e mais.</p>
+          </div>
+          <button className="px-3 py-2 bg-gold text-ink rounded-lg text-[13px] font-bold shrink-0">
+            Subscrever
+          </button>
+        </div>
+      </div>
+
+      {/* PWA card */}
+      <div className="bg-gold-soft border border-[#f0dcb4] rounded-talao p-4 shadow-soft">
+        <div className="flex items-center gap-2.5 mb-2">
+          <WifiOff className="w-4 h-4 text-[#9a6a16]" />
+          <span className="text-[13px] font-semibold text-ink">Modo offline</span>
+        </div>
+        <p className="text-[12.5px] text-[#8a6420] leading-relaxed mb-3">
+          Instala a app no teu telemóvel para aceder às faturas e pagamentos sem ligação à internet.
+        </p>
+        {canInstall ? (
+          <button onClick={installApp} className="inline-flex items-center gap-1.5 px-3 py-2 bg-surface border border-line rounded-lg text-[13px] font-medium text-ink">
+            <Download className="w-4 h-4" /> Instalar app
+          </button>
+        ) : (
+          <p className="text-[11px] text-[#9a6a16] font-medium">Já instalada ou a instalar pelo menu do browser.</p>
+        )}
       </div>
 
       {/* Tabs */}
@@ -78,6 +123,14 @@ export default function Perfil() {
         {activeTab === 'dependentes' && <ProfileDependents />}
         {activeTab === 'privacidade' && <ProfilePrivacy />}
       </div>
+
+      {/* Logout */}
+      <button
+        onClick={handleLogout}
+        className="w-full flex items-center justify-center gap-2 py-3 bg-danger-soft text-destructive rounded-talao text-sm font-semibold hover:bg-destructive/10 transition-colors"
+      >
+        <LogOut className="w-4 h-4" /> Terminar sessão
+      </button>
     </div>
   );
 }

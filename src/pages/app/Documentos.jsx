@@ -1,39 +1,45 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
 import {
   Camera, FileUp, Crop, ScanLine, FileCheck2, Loader2, Search,
-  Plus, ChevronRight, X, RotateCw,
+  Plus, ChevronRight, X, RotateCw, HardDrive,
 } from 'lucide-react';
-import { formatKz } from '@/lib/format';
+import { formatKz, formatDate } from '@/lib/format';
 import Seo from '@/components/Seo';
+
+const docTabs = [
+  { id: 'todos', label: 'Todos' },
+  { id: 'faturas', label: 'Faturas' },
+  { id: 'recibos', label: 'Recibos' },
+  { id: 'outros', label: 'Outros' },
+];
 
 export default function Documentos() {
   const [loading, setLoading] = useState(true);
   const [invoices, setInvoices] = useState([]);
   const [search, setSearch] = useState('');
   const [ocrOpen, setOcrOpen] = useState(false);
+  const [tab, setTab] = useState('todos');
 
-  useEffect(() => {
-    load();
-  }, []);
+  useEffect(() => { load(); }, []);
 
   async function load() {
     try {
       const data = await base44.entities.Invoice.filter({ source: 'photo_ocr' }, '-created_date', 100);
       setInvoices(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
   }
 
-  const filtered = invoices.filter(
-    (i) =>
-      i.issuer_name?.toLowerCase().includes(search.toLowerCase()) ||
-      i.document_number?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = invoices.filter((i) => {
+    const matchesSearch = i.issuer_name?.toLowerCase().includes(search.toLowerCase()) ||
+      i.document_number?.toLowerCase().includes(search.toLowerCase());
+    if (!matchesSearch) return false;
+    if (tab === 'faturas') return i.status === 'pending';
+    if (tab === 'recibos') return i.status === 'paid';
+    if (tab === 'outros') return i.status === 'overdue';
+    return true;
+  });
 
   if (loading) {
     return (
@@ -43,19 +49,35 @@ export default function Documentos() {
     );
   }
 
+  // Storage usage (simplified: 1 doc ≈ 0.5MB, limit 50MB)
+  const usedMb = (invoices.length * 0.5).toFixed(1);
+  const storagePct = Math.min((invoices.length * 0.5 / 50) * 100, 100);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Seo title="Documentos" description="Arquiva e extrai dados das tuas faturas com OCR." path="/app/documentos" />
 
-      <div className="flex items-center justify-between gap-4">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-ink">Documentos</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Faturas extraídas por foto</p>
+          <span className="eyebrow">§ 06 · Arquivo</span>
+          <h1 className="font-heading text-2xl font-bold text-ink mt-1">Documentos</h1>
         </div>
-        <Button onClick={() => setOcrOpen(true)} className="btn-hover btn-primary-hover">
-          <Camera className="w-4 h-4 mr-1.5" />
-          Nova fatura
-        </Button>
+        <button onClick={() => setOcrOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-2 bg-primary text-white rounded-xl text-sm font-medium btn-hover btn-primary-hover">
+          <Camera className="w-4 h-4" /> Upload
+        </button>
+      </div>
+
+      {/* Storage bar */}
+      <div className="bg-surface border border-line rounded-talao p-4 shadow-soft">
+        <div className="flex items-center gap-2 mb-2">
+          <HardDrive className="w-4 h-4 text-muted-2" />
+          <span className="text-[13px] font-medium text-ink">Armazenamento</span>
+          <span className="text-[12px] text-muted-2 ml-auto font-mono">{usedMb} / 50 MB</span>
+        </div>
+        <div className="track-v5">
+          <i style={{ width: `${storagePct}%` }} />
+        </div>
       </div>
 
       {/* Search */}
@@ -69,35 +91,42 @@ export default function Documentos() {
         />
       </div>
 
+      {/* Tab bar */}
+      <div className="flex gap-1 bg-surface border border-line rounded-xl p-1 overflow-x-auto">
+        {docTabs.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+              tab === t.id ? 'bg-primary text-white' : 'text-muted-foreground hover:text-ink'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
       {/* Document list */}
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-3">
             <FileUp className="w-7 h-7 text-muted-2" />
           </div>
-          <p className="font-medium text-ink">
-            {search ? 'Nenhum resultado' : 'Sem documentos'}
-          </p>
+          <p className="font-medium text-ink">{search ? 'Nenhum resultado' : 'Sem documentos'}</p>
           <p className="text-sm text-muted-foreground mt-1 max-w-xs">
             {search ? 'Tenta outra pesquisa.' : 'Fotografa uma fatura para extrair os dados automaticamente.'}
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {filtered.map((inv) => (
-            <div key={inv.id} className="bg-surface border border-line rounded-2xl p-4 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <FileCheck2 className="w-5 h-5 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-ink truncate">{inv.issuer_name}</p>
-                <p className="text-xs text-muted-2">
-                  {inv.document_number || 'Sem nº'} · {inv.amount ? formatKz(inv.amount) : 'Sem valor'}
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-muted-2 shrink-0" />
-            </div>
-          ))}
+        <div className="bg-surface border border-line rounded-talao overflow-hidden shadow-soft">
+          <div className="px-4 pt-3 pb-1">
+            <span className="eyebrow">{filtered.length} {filtered.length === 1 ? 'documento' : 'documentos'}</span>
+          </div>
+          <div className="px-3 pb-2">
+            {filtered.map((inv) => (
+              <DocRow key={inv.id} invoice={inv} />
+            ))}
+          </div>
         </div>
       )}
 
@@ -106,10 +135,38 @@ export default function Documentos() {
   );
 }
 
+function DocRow({ invoice }) {
+  const statusPill = invoice.status === 'paid'
+    ? <span className="pill-paid text-[10px] font-bold px-2 py-0.5 rounded-full">Paga</span>
+    : invoice.status === 'overdue'
+    ? <span className="pill-late text-[10px] font-bold px-2 py-0.5 rounded-full">Vencida</span>
+    : <span className="pill-pend text-[10px] font-bold px-2 py-0.5 rounded-full">Pendente</span>;
+
+  return (
+    <div className="flex items-center gap-3 py-3 border-t border-line first:border-t-0 px-1">
+      <div className="w-[38px] h-[38px] rounded-[11px] bg-[#e9f3ee] text-primary flex items-center justify-center shrink-0">
+        <FileCheck2 className="w-[18px] h-[18px]" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <p className="font-semibold text-[13.5px] text-ink truncate">{invoice.issuer_name}</p>
+          {statusPill}
+        </div>
+        <p className="text-[11.5px] text-muted-foreground mt-0.5">
+          {invoice.document_number || 'Sem nº'} · {formatDate(invoice.issue_date)}
+        </p>
+      </div>
+      <div className="text-right shrink-0">
+        <p className="font-mono text-[13.5px] font-semibold text-ink">{invoice.amount ? formatKz(invoice.amount) : '—'}</p>
+      </div>
+      <ChevronRight className="w-4 h-4 text-muted-2 shrink-0" />
+    </div>
+  );
+}
+
 function OcrFlow({ onClose, onDone }) {
   const [step, setStep] = useState(1);
   const [file, setFile] = useState(null);
-  const [fileUrl, setFileUrl] = useState(null);
   const [preview, setPreview] = useState(null);
   const [rotation, setRotation] = useState(0);
   const [extracting, setExtracting] = useState(false);
@@ -136,35 +193,24 @@ function OcrFlow({ onClose, onDone }) {
     setExtracting(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setFileUrl(file_url);
-
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt:
-          'Extrai os dados desta fatura angolana. Devolve JSON com: issuer_name (nome do emitente), issuer_nif (NIF do emitente), document_number (número do documento), amount (montante numérico em kwanza, sem texto), issue_date (YYYY-MM-DD), due_date (YYYY-MM-DD se existir), entity (entidade Multicaixa se existir), reference (referência Multicaixa se existir), iban (IBAN se existir), has_nif (true se a fatura contiver o NIF do cliente). Se um campo não existir, usa null.',
+        prompt: 'Extrai os dados desta fatura angolana. Devolve JSON com: issuer_name, issuer_nif, document_number, amount (numérico em kwanza), issue_date (YYYY-MM-DD), due_date, entity (Multicaixa), reference (Multicaixa), iban, has_nif (boolean). Se um campo não existir, usa null.',
         file_urls: [file_url],
         response_json_schema: {
           type: 'object',
           properties: {
-            issuer_name: { type: 'string' },
-            issuer_nif: { type: 'string' },
-            document_number: { type: 'string' },
-            amount: { type: 'number' },
-            issue_date: { type: 'string' },
-            due_date: { type: 'string' },
-            entity: { type: 'string' },
-            reference: { type: 'string' },
-            iban: { type: 'string' },
-            has_nif: { type: 'boolean' },
+            issuer_name: { type: 'string' }, issuer_nif: { type: 'string' },
+            document_number: { type: 'string' }, amount: { type: 'number' },
+            issue_date: { type: 'string' }, due_date: { type: 'string' },
+            entity: { type: 'string' }, reference: { type: 'string' },
+            iban: { type: 'string' }, has_nif: { type: 'boolean' },
           },
         },
       });
       setExtracted(res);
       setStep(4);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setExtracting(false);
-    }
+    } catch (err) { console.error(err); }
+    finally { setExtracting(false); }
   };
 
   const saveInvoice = async () => {
@@ -177,37 +223,24 @@ function OcrFlow({ onClose, onDone }) {
         amount: extracted.amount || 0,
         issue_date: extracted.issue_date || new Date().toISOString().slice(0, 10),
         due_date: extracted.due_date || extracted.issue_date || new Date().toISOString().slice(0, 10),
-        entity: extracted.entity || '',
-        reference: extracted.reference || '',
+        entity: extracted.entity || '', reference: extracted.reference || '',
         iban: extracted.iban || '',
         has_nif: extracted.has_nif !== false,
-        status: 'pending',
-        source: 'photo_ocr',
+        status: 'pending', source: 'photo_ocr',
         payment_method: extracted.entity ? 'mcx_reference' : extracted.iban ? 'iban' : 'manual',
       });
       onDone();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
+    } catch (err) { console.error(err); }
+    finally { setSaving(false); }
   };
 
   return (
     <div className="fixed inset-0 z-50 bg-ink/60 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
-      <div
-        className="bg-surface w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-talao-lg max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
+      <div className="bg-surface w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-talao-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="sticky top-0 bg-surface z-10 flex items-center justify-between px-5 py-4 border-b border-line">
           <h2 className="font-heading font-bold text-ink">Nova fatura</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground">
-            <X className="w-5 h-5" />
-          </button>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground"><X className="w-5 h-5" /></button>
         </div>
-
-        {/* Stepper */}
         <div className="px-5 py-4">
           <div className="flex items-center gap-2 mb-6">
             {steps.map((s, i) => (
@@ -223,13 +256,9 @@ function OcrFlow({ onClose, onDone }) {
             ))}
           </div>
 
-          {/* Step 1: Capture */}
           {step === 1 && (
             <div className="space-y-3">
-              <button
-                onClick={() => fileRef.current?.click()}
-                className="w-full flex flex-col items-center justify-center gap-3 border-2 border-dashed border-line rounded-2xl py-12 hover:border-primary/40 hover:bg-muted/30 transition-colors"
-              >
+              <button onClick={() => fileRef.current?.click()} className="w-full flex flex-col items-center justify-center gap-3 border-2 border-dashed border-line rounded-2xl py-12 hover:border-primary/40 hover:bg-muted/30 transition-colors">
                 <Camera className="w-10 h-10 text-muted-2" />
                 <span className="font-medium text-ink">Tirar foto da fatura</span>
                 <span className="text-xs text-muted-2">ou escolher ficheiro da galeria</span>
@@ -238,35 +267,23 @@ function OcrFlow({ onClose, onDone }) {
             </div>
           )}
 
-          {/* Step 2: Crop/Adjust */}
           {step === 2 && preview && (
             <div className="space-y-4">
               <div className="bg-ink/5 rounded-2xl overflow-hidden flex items-center justify-center" style={{ minHeight: 200 }}>
-                <img
-                  src={preview}
-                  alt="Pré-visualização"
-                  className="max-h-72 object-contain"
-                  style={{ transform: `rotate(${rotation}deg)` }}
-                />
+                <img src={preview} alt="Pré-visualização" className="max-h-72 object-contain" style={{ transform: `rotate(${rotation}deg)` }} />
               </div>
               <div className="flex items-center justify-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => setRotation((r) => (r + 90) % 360)}>
-                  <RotateCw className="w-4 h-4 mr-1.5" />
-                  Rodar
-                </Button>
+                <button onClick={() => setRotation((r) => (r + 90) % 360)} className="inline-flex items-center gap-1.5 px-3 py-2 border border-line rounded-lg text-sm font-medium text-ink">
+                  <RotateCw className="w-4 h-4" /> Rodar
+                </button>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => { setStep(1); setFile(null); setPreview(null); }} className="flex-1">
-                  Voltar
-                </Button>
-                <Button onClick={() => setStep(3)} className="flex-1">
-                  Continuar
-                </Button>
+                <button onClick={() => { setStep(1); setFile(null); setPreview(null); }} className="flex-1 py-2.5 border border-line rounded-lg text-sm font-medium">Voltar</button>
+                <button onClick={() => setStep(3)} className="flex-1 py-2.5 bg-primary text-white rounded-lg text-sm font-medium">Continuar</button>
               </div>
             </div>
           )}
 
-          {/* Step 3: Extract */}
           {step === 3 && (
             <div className="space-y-4 text-center py-8">
               {extracting ? (
@@ -280,21 +297,15 @@ function OcrFlow({ onClose, onDone }) {
                   <ScanLine className="w-10 h-10 text-primary mx-auto" />
                   <p className="font-medium text-ink">Pronta para extrair</p>
                   <p className="text-sm text-muted-foreground">Vamos ler os dados da fatura automaticamente.</p>
-                  <Button onClick={extract} className="btn-hover btn-primary-hover">
-                    <ScanLine className="w-4 h-4 mr-1.5" />
-                    Extrair dados
-                  </Button>
+                  <button onClick={extract} className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium">
+                    <ScanLine className="w-4 h-4" /> Extrair dados
+                  </button>
                 </>
               )}
-              {!extracting && (
-                <Button variant="ghost" onClick={() => setStep(2)} className="text-sm">
-                  Voltar
-                </Button>
-              )}
+              {!extracting && <button onClick={() => setStep(2)} className="text-sm text-muted-foreground mt-2">Voltar</button>}
             </div>
           )}
 
-          {/* Step 4: Review */}
           {step === 4 && extracted && (
             <div className="space-y-4">
               <div className="bg-green-soft rounded-xl p-3 flex items-center gap-2">
@@ -311,22 +322,15 @@ function OcrFlow({ onClose, onDone }) {
               <ExtractedField label="Referência MCX" value={extracted.reference} onChange={(v) => setExtracted({ ...extracted, reference: v })} mono />
               <ExtractedField label="IBAN" value={extracted.iban} onChange={(v) => setExtracted({ ...extracted, iban: v })} mono />
               <label className="flex items-center gap-2 text-sm text-ink">
-                <input
-                  type="checkbox"
-                  checked={extracted.has_nif !== false}
-                  onChange={(e) => setExtracted({ ...extracted, has_nif: e.target.checked })}
-                  className="w-4 h-4 rounded"
-                />
+                <input type="checkbox" checked={extracted.has_nif !== false} onChange={(e) => setExtracted({ ...extracted, has_nif: e.target.checked })} className="w-4 h-4 rounded" />
                 A fatura contém o meu NIF
               </label>
               <div className="flex gap-2 pt-2">
-                <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
-                  Voltar
-                </Button>
-                <Button onClick={saveInvoice} disabled={saving} className="flex-1 btn-hover btn-primary-hover">
-                  {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
+                <button onClick={() => setStep(2)} className="flex-1 py-2.5 border border-line rounded-lg text-sm font-medium">Voltar</button>
+                <button onClick={saveInvoice} disabled={saving} className="flex-1 py-2.5 bg-primary text-white rounded-lg text-sm font-medium disabled:opacity-50">
+                  {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin inline" /> : <Plus className="w-4 h-4 mr-2 inline" />}
                   Guardar fatura
-                </Button>
+                </button>
               </div>
             </div>
           )}
@@ -340,12 +344,7 @@ function ExtractedField({ label, value, onChange, mono, type = 'text' }) {
   return (
     <div>
       <label className="text-xs text-muted-2 block mb-1">{label}</label>
-      <input
-        type={type}
-        value={value || ''}
-        onChange={(e) => onChange(e.target.value)}
-        className={`w-full px-3 py-2 text-sm border border-line rounded-lg bg-surface focus:border-primary/40 focus:outline-none ${mono ? 'font-mono' : ''}`}
-      />
+      <input type={type} value={value || ''} onChange={(e) => onChange(e.target.value)} className={`w-full px-3 py-2 text-sm border border-line rounded-lg bg-surface focus:border-primary/40 focus:outline-none ${mono ? 'font-mono' : ''}`} />
     </div>
   );
 }
