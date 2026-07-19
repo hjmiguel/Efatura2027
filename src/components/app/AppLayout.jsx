@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
   LayoutGrid, ArrowLeftRight, PieChart, CreditCard, Sparkles,
-  FileText, Landmark, User, Bell, LogOut, Receipt,
+  FileText, Landmark, Bell, LogOut, Receipt,
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { getFirstName } from '@/lib/format';
+import RightRail from '@/components/app/RightRail';
 
 const mainNav = [
   { label: 'Início', icon: LayoutGrid, path: '/app' },
@@ -15,11 +16,10 @@ const mainNav = [
   { label: 'Assistente', icon: Sparkles, path: '/app/assistente' },
 ];
 
-const moreNav = [
-  { label: 'Documentos', icon: FileText, path: '/app/documentos' },
-  { label: 'Situação fiscal', icon: Landmark, path: '/app/fiscal' },
+const archiveNav = [
   { label: 'Dedutíveis', icon: Receipt, path: '/app/dedutiveis' },
-  { label: 'Perfil', icon: User, path: '/app/perfil' },
+  { label: 'Situação fiscal', icon: Landmark, path: '/app/fiscal' },
+  { label: 'Documentos', icon: FileText, path: '/app/documentos' },
 ];
 
 export default function AppLayout() {
@@ -40,26 +40,31 @@ export default function AppLayout() {
   };
 
   const firstName = getFirstName(user?.full_name) || 'utilizador';
+  const initials = (user?.full_name || 'U')
+    .trim()
+    .split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 
-  /* ---- Desktop sidebar ---- */
   const SidebarLink = ({ item }) => {
     const active = isActive(item.path);
     return (
       <Link
         to={item.path}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-[11px] transition-colors text-sm ${
           active
-            ? 'bg-primary text-white font-medium'
-            : 'text-muted-foreground hover:text-ink hover:bg-muted'
+            ? 'bg-primary text-[#eafff7] font-semibold'
+            : 'text-muted-foreground font-medium hover:text-ink hover:bg-[#f1f5f3]'
         }`}
       >
-        {item.icon && <item.icon className="w-4 h-4 shrink-0" />}
-        <span className="text-sm">{item.label}</span>
+        {item.icon && <item.icon className="w-[17px] h-[17px] shrink-0" strokeWidth={1.8} />}
+        <span>{item.label}</span>
       </Link>
     );
   };
 
-  /* ---- Mobile bottom nav ---- */
   const BottomLink = ({ item }) => {
     const active = isActive(item.path);
     return (
@@ -78,35 +83,92 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen bg-background">
       {/* ===== Desktop sidebar ===== */}
-      <aside className="hidden md:flex fixed inset-y-0 left-0 w-60 flex-col bg-surface border-r border-line z-30">
-        <div className="px-6 py-5">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center relative overflow-hidden">
-              <div className="absolute top-0 inset-x-0 h-1 bg-gold" />
-              <span className="font-heading font-bold text-white text-sm relative">G+</span>
+      <aside className="hidden md:flex fixed inset-y-0 left-0 w-[264px] flex-col bg-surface border-r border-line z-30">
+        {/* Brand */}
+        <div className="px-5 pt-6 pb-2">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center relative overflow-hidden">
+              <div
+                className="absolute top-0 inset-x-0 h-1.5 bg-gold"
+                style={{
+                  WebkitMask:
+                    'radial-gradient(circle at 5px -1px, transparent 3px, #000 3px) repeat-x',
+                  WebkitMaskSize: '10px 6px',
+                  mask: 'radial-gradient(circle at 5px -1px, transparent 3px, #000 3px) repeat-x',
+                  maskSize: '10px 6px',
+                }}
+              />
+              <span className="font-heading font-bold text-[#eafff7] text-[15px] relative">G+</span>
             </div>
-            <span className="font-heading font-bold text-ink text-lg">Gestão+</span>
+            <div>
+              <div className="font-heading font-semibold text-ink text-[17px] leading-tight">Gestão+</div>
+              <div className="font-mono text-[9.5px] tracking-[.16em] text-muted-2 mt-0.5">EDIÇÃO · LUANDA</div>
+            </div>
           </Link>
         </div>
-        <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
-          {mainNav.map((item) => (
-            <SidebarLink key={item.path} item={item} />
-          ))}
-          <div className="pt-4 pb-1 px-3">
-            <span className="text-[9.5px] font-bold uppercase tracking-[.13em] text-muted-2">Mais</span>
+
+        {/* Navigation */}
+        <nav className="flex-1 px-3 overflow-y-auto">
+          <div className="pt-4 pb-1.5 px-3">
+            <span className="mark">§ NAVEGAÇÃO</span>
           </div>
-          {moreNav.map((item) => (
-            <SidebarLink key={item.path} item={item} />
-          ))}
+          <div className="space-y-0.5">
+            {mainNav.map((item) => (
+              <SidebarLink key={item.path} item={item} />
+            ))}
+          </div>
+
+          <div className="pt-5 pb-1.5 px-3">
+            <span className="mark">§ ARQUIVO</span>
+          </div>
+          <div className="space-y-0.5">
+            {archiveNav.map((item) => (
+              <SidebarLink key={item.path} item={item} />
+            ))}
+          </div>
         </nav>
-        <div className="px-3 py-4 border-t border-line">
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-muted-foreground hover:text-destructive hover:bg-danger-soft transition-colors w-full"
-          >
-            <LogOut className="w-4 h-4 shrink-0" />
-            <span className="text-sm">Sair</span>
-          </button>
+
+        {/* Premium card */}
+        <div className="px-4 pt-2">
+          <div className="border border-line rounded-2xl p-4">
+            <div className="mark">PLANO PREMIUM</div>
+            <div className="font-heading font-semibold text-[19px] mt-1.5 text-ink">
+              2.500 Kz <span className="text-[13px] text-muted-foreground font-normal font-body">/ mês</span>
+            </div>
+            <div className="text-[12px] text-muted-foreground mt-1.5 leading-snug">
+              Assistente sem limites e relatórios avançados.
+            </div>
+            <Link
+              to="/app/perfil"
+              className="block w-full mt-3 bg-primary text-[#eafff7] rounded-[10px] py-2.5 font-heading font-semibold text-[11.5px] tracking-[.08em] text-center hover:bg-primary-2 transition-colors"
+            >
+              SUBSCREVER
+            </Link>
+          </div>
+        </div>
+
+        {/* User profile */}
+        <div className="px-3 pt-3 pb-4 border-t border-line mt-3">
+          <div className="flex items-center gap-2.5 px-2 py-1.5">
+            <Link to="/app/perfil" className="w-[34px] h-[34px] rounded-full bg-green-soft text-primary flex items-center justify-center font-bold text-[13px] shrink-0">
+              {initials}
+            </Link>
+            <Link to="/app/perfil" className="flex-1 min-w-0">
+              <div className="text-[13.5px] font-semibold text-ink leading-tight truncate">
+                {user?.full_name || 'Utilizador'}
+              </div>
+              {user?.nif && (
+                <div className="font-mono text-[10px] text-muted-2 mt-0.5">NIF · {user.nif}</div>
+              )}
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="p-1.5 rounded-lg text-muted-2 hover:text-destructive hover:bg-danger-soft transition-colors shrink-0"
+              title="Terminar sessão"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -115,7 +177,7 @@ export default function AppLayout() {
         <div className="flex items-center gap-2.5 px-[18px] py-3">
           <Link to="/app/perfil" className="shrink-0">
             <div className="w-[42px] h-[42px] rounded-full bg-primary text-white flex items-center justify-center font-heading font-bold text-base">
-              G+
+              {initials || 'G+'}
             </div>
           </Link>
           <div className="flex-1 min-w-0">
@@ -140,11 +202,14 @@ export default function AppLayout() {
       </header>
 
       {/* ===== Main content ===== */}
-      <main className="md:ml-60 pb-24 md:pb-0">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 md:py-6">
+      <main className="md:ml-[264px] xl:mr-[340px] pb-24 md:pb-0 min-h-screen">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
           <Outlet />
         </div>
       </main>
+
+      {/* ===== Right rail (desktop xl+) ===== */}
+      <RightRail />
 
       {/* ===== Mobile bottom nav ===== */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur-md border-t border-line">
