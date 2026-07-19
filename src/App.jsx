@@ -16,9 +16,11 @@ import Entrar from './pages/Entrar';
 import Termos from './pages/Termos';
 import Privacidade from './pages/Privacidade';
 import Home from './pages/app/Home';
+import Orcamento from './pages/app/Orcamento';
 import Transacoes from './pages/app/Transacoes';
 import Contas from './pages/app/Contas';
 import Pagamentos from './pages/app/Pagamentos';
+import Documentos from './pages/app/Documentos';
 import Dedutiveis from './pages/app/Dedutiveis';
 import Fiscal from './pages/app/Fiscal';
 import Assistente from './pages/app/Assistente';
@@ -70,9 +72,11 @@ const AuthenticatedApp = () => {
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
         <Route element={<AppLayout />}>
           <Route path="/app" element={<Home />} />
+          <Route path="/app/orcamento" element={<Orcamento />} />
           <Route path="/app/transacoes" element={<Transacoes />} />
           <Route path="/app/contas" element={<Contas />} />
           <Route path="/app/pagamentos" element={<Pagamentos />} />
+          <Route path="/app/documentos" element={<Documentos />} />
           <Route path="/app/dedutiveis" element={<Dedutiveis />} />
           <Route path="/app/fiscal" element={<Fiscal />} />
           <Route path="/app/assistente" element={<Assistente />} />

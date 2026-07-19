@@ -38,12 +38,11 @@ O objetivo: a Samara gere as suas contas, transações e faturas manualmente, se
 - Tipos: conta à ordem, poupança, numerário
 - IBAN com formatação mono
 
-### 1.3 Orçamento
-- Página `/app/orcamento`
-- Definir limite mensal por categoria
-- Barras de progresso: gasto vs. limite
-- Insights simples da IA (InvokeLLM): " Gastaste 80% do orçamento de alimentação a meio do mês"
-- Sem cálculo de impostos
+### 1.3 Orçamento — ✅ concluído
+- Página `/app/orcamento` com entidade `Budget` (limite mensal por categoria)
+- Barras de progresso: gasto vs. limite (verde/dourado/vermelho conforme %)
+- Insight IA via InvokeLLM (sem prometer valores fiscais)
+- Definir, editar e remover limites; total mensal agregado
 
 ### 1.4 Dedutíveis e IRPS
 - Página `/app/dedutiveis`
@@ -61,12 +60,11 @@ O objetivo: a Samara gere as suas contas, transações e faturas manualmente, se
   - **Dependentes:** agregar familiar para deduções
   - **Privacidade:** exportar dados (CSV), eliminar conta com aviso
 
-### 1.6 Documentos
-- Página `/app/documentos`
-- Upload de fatura por foto ou ficheiro
-- OCR em 4 passos: capturar, cortar, extrair (InvokeLLM com visão), revisar
-- Arquivo e pesquisa de documentos
-- Criar fatura a partir do documento extraído
+### 1.6 Documentos — ✅ concluído
+- Página `/app/documentos` com arquivo e pesquisa
+- OCR em 4 passos: capturar (câmara/galeria) → cortar/rodar → extrair (InvokeLLM com visão) → revisar
+- Fatura criada com `source: photo_ocr` a partir dos dados extraídos
+- Deteção automática de entidade/referência MCX, IBAN e NIF
 
 **Critério de pronto:** a Samara fotografa uma fatura da farmácia, a aplicação lê o valor, marca como dedutível em saúde, e o acumulado anual sobe.
 
@@ -259,7 +257,7 @@ Depende da AGT e dos primeiros parceiros.
 | Fase | Duração | Depende de | Estado |
 |---|---|---|---|
 | Base + Início | 3 semanas | Nada | **Concluído** |
-| 1 — Núcleo do utilizador | 4 a 5 semanas | Nada | Por iniciar |
+| 1 — Núcleo do utilizador | 4 a 5 semanas | Nada | **Concluído** |
 | 2 — Pagamentos | 4 a 5 semanas | Adesão EMIS | **UI concluída** (conciliação real pendente EMIS) |
 | 3 — Fontes automáticas | 4 semanas | AGT + parceiros | Por iniciar |
 | 4 — Assistente IA | 2 a 3 semanas | Fase 1 | Por iniciar |

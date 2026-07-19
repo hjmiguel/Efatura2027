@@ -1,0 +1,32 @@
+{
+  "name": "Budget",
+  "type": "object",
+  "properties": {
+    "category_id": {
+      "type": "string",
+      "description": "ID da categoria associada ao or\u00e7amento"
+    },
+    "category_name": {
+      "type": "string",
+      "description": "Nome da categoria (denormalizado para display)"
+    },
+    "month": {
+      "type": "string",
+      "description": "M\u00eas do or\u00e7amento no formato YYYY-MM"
+    },
+    "limit": {
+      "type": "number",
+      "description": "Limite mensal em kwanza"
+    },
+    "spent": {
+      "type": "number",
+      "default": 0,
+      "description": "Total gasto no m\u00eas (calculado)"
+    }
+  },
+  "required": [
+    "category_id",
+    "month",
+    "limit"
+  ]
+}
