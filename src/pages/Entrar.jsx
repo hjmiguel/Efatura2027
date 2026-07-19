@@ -17,7 +17,7 @@ export default function Entrar() {
     setLoading(true);
     try {
       await base44.auth.loginViaEmailPassword(email, password);
-      window.location.href = '/';
+      window.location.href = '/app/perfil';
     } catch (err) {
       setError(err.message || 'Email ou palavra-passe incorretos.');
     } finally {
@@ -26,7 +26,7 @@ export default function Entrar() {
   };
 
   const handleGoogle = () => {
-    base44.auth.loginWithProvider('google', '/');
+    base44.auth.loginWithProvider('google', '/app/perfil');
   };
 
   return (
