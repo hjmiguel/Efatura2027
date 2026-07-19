@@ -94,7 +94,7 @@ const AuthenticatedApp = () => {
           <Route path="/app/perfil" element={<Perfil />} />
         </Route>
       </Route>
-      {/* Admin backoffice */}
+      {/* Admin backoffice — §01–§06 */}
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminDashboard />} />

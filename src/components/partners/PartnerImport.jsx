@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Upload, FileSpreadsheet, Check, AlertTriangle, X, ArrowLeft, Download } from 'lucide-react';
+import { FileSpreadsheet, Check, AlertTriangle, X, ArrowLeft, Download } from 'lucide-react';
 
 const STEPS = ['upload', 'mapping', 'validation', 'done'];
 

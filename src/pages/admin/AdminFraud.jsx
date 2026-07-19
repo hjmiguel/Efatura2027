@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { ShieldAlert, ShieldCheck, AlertTriangle, Lock, Unlock } from 'lucide-react';
+import { ShieldAlert, ShieldCheck, AlertTriangle, Lock } from 'lucide-react';
 import { formatKz } from '@/lib/format';
 
 export default function AdminFraud() {
