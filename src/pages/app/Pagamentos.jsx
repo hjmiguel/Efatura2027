@@ -4,7 +4,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
   Clock, CheckCircle2, CalendarDays, Building2, Crown,
-  Smartphone, Landmark, Receipt, AlertCircle, ChevronRight,
+  Smartphone, Landmark, Receipt, AlertCircle, ChevronRight, FileText,
 } from 'lucide-react';
 import { formatKz, formatDate, daysUntil } from '@/lib/format';
 import Seo from '@/components/Seo';
@@ -12,6 +12,7 @@ import AgtSeal from '@/components/app/AgtSeal';
 import PartnerConsentManager from '@/components/app/PartnerConsentManager';
 import McxPaymentDialog from '@/components/app/McxPaymentDialog';
 import IbanPaymentDialog from '@/components/app/IbanPaymentDialog';
+import RupePaymentDialog from '@/components/app/RupePaymentDialog';
 import PremiumModal from '@/components/app/PremiumModal';
 
 export default function Pagamentos() {
@@ -105,10 +106,11 @@ export default function Pagamentos() {
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="grid grid-cols-4 w-full">
+        <TabsList className="grid grid-cols-5 w-full">
           <TabsTrigger value="pendente" className="text-xs sm:text-sm">Pendente</TabsTrigger>
           <TabsTrigger value="pagos" className="text-xs sm:text-sm">Pagos</TabsTrigger>
           <TabsTrigger value="compromissos" className="text-xs sm:text-sm">Compromissos</TabsTrigger>
+          <TabsTrigger value="estado" className="text-xs sm:text-sm">Estado</TabsTrigger>
           <TabsTrigger value="empresas" className="text-xs sm:text-sm">Empresas</TabsTrigger>
         </TabsList>
 
@@ -137,6 +139,11 @@ export default function Pagamentos() {
           <CompromissosView invoices={invoices} />
         </TabsContent>
 
+        {/* Estado (RUPE) */}
+        <TabsContent value="estado" className="mt-4">
+          <EstadoView invoices={invoices} onPay={(inv) => setPayDialog({ type: 'rupe', invoice: inv })} />
+        </TabsContent>
+
         {/* Empresas */}
         <TabsContent value="empresas" className="mt-4">
           <PartnerConsentManager />
@@ -154,6 +161,14 @@ export default function Pagamentos() {
       )}
       {payDialog?.type === 'iban' && (
         <IbanPaymentDialog
+          invoice={payDialog.invoice}
+          open={!!payDialog}
+          onOpenChange={(v) => !v && setPayDialog(null)}
+          onPaid={markPaid}
+        />
+      )}
+      {payDialog?.type === 'rupe' && (
+        <RupePaymentDialog
           invoice={payDialog.invoice}
           open={!!payDialog}
           onOpenChange={(v) => !v && setPayDialog(null)}
@@ -190,6 +205,7 @@ function PendingRow({ invoice, onPay }) {
 
   const hasMcx = invoice.payment_method === 'mcx_reference' || (invoice.entity && invoice.reference);
   const hasIban = invoice.payment_method === 'iban' || invoice.iban;
+  const hasRupe = invoice.payment_method === 'rupe';
 
   return (
     <div className="bg-surface border border-line rounded-2xl p-4 flex items-center gap-4">
@@ -218,7 +234,13 @@ function PendingRow({ invoice, onPay }) {
               IBAN
             </Button>
           )}
-          {!hasMcx && !hasIban && (
+          {hasRupe && (
+            <Button size="sm" variant="outline" onClick={() => onPay('rupe')} className="h-7 text-xs px-2.5 border-primary/30 text-primary">
+              <Landmark className="w-3 h-3 mr-1" />
+              RUPE
+            </Button>
+          )}
+          {!hasMcx && !hasIban && !hasRupe && (
             <span className="text-xs text-muted-2">Sem dados de pagamento</span>
           )}
         </div>
@@ -291,6 +313,60 @@ function CompromissosView({ invoices }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function EstadoView({ invoices, onPay }) {
+  const rupeInvoices = invoices.filter(
+    (i) => (i.status === 'pending' || i.status === 'overdue') && i.payment_method === 'rupe'
+  );
+
+  if (rupeInvoices.length === 0) {
+    return (
+      <EmptyState
+        icon={Landmark}
+        title="Sem pagamentos ao Estado"
+        text="As faturas com RUPE (Referência Única de Pagamento) emitidas pela AGT aparecem aqui."
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-primary/5 border border-primary/15 rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <p className="text-sm text-muted-foreground">Total ao Estado</p>
+          <p className="font-mono text-xl font-bold text-primary">
+            {formatKz(rupeInvoices.reduce((s, i) => s + (i.amount || 0), 0))}
+          </p>
+        </div>
+        <Landmark className="w-8 h-8 text-primary/30" />
+      </div>
+      <div className="bg-gold-soft/40 border border-gold/20 rounded-xl p-3 flex gap-2">
+        <FileText className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+        <p className="text-xs text-ink leading-relaxed">
+          O pagamento de RUPE gera um <strong>DAR</strong> (Documento de Arrecadação de Receitas). A app não gera a RUPE — paga uma referência já emitida pela AGT. Não há conciliação automática.
+        </p>
+      </div>
+      {rupeInvoices.map((inv) => (
+        <div key={inv.id} className="bg-surface border border-line rounded-2xl p-4 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <Landmark className="w-5 h-5 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-ink truncate">{inv.issuer_name}</p>
+            <p className="text-xs text-muted-2 font-mono">RUPE: {inv.reference || '—'}</p>
+          </div>
+          <div className="text-right shrink-0">
+            <p className="font-mono font-semibold text-ink">{formatKz(inv.amount)}</p>
+            <Button size="sm" onClick={() => onPay(inv)} className="h-7 text-xs px-2.5 mt-1">
+              <Landmark className="w-3 h-3 mr-1" />
+              Pagar
+            </Button>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

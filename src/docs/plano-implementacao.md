@@ -92,11 +92,11 @@ Depende da adesão à EMIS, que deve começar já em paralelo.
 - IBAN copiável (mono), upload de comprovativo (PDF/imagem)
 - Sem pagamento a um toque
 
-### 2.4 Pagamento de RUPE
-- Canal "Pagamentos ao Estado"
-- Referência única de 20 dígitos
-- Gera DAR, não conciliação normal
-- A app não gera RUPE, paga uma já emitida pela AGT
+### 2.4 Pagamento de RUPE — ✅ concluído
+- Separador "Estado" na página de Pagamentos
+- Diálogo com referência RUPE de 20 dígitos (copiável, mono)
+- Gera DAR, sem conciliação automática
+- A app não gera RUPE — paga uma referência já emitida pela AGT
 
 ### 2.5 Empresas e autorizações
 - Separador Empresas dentro de Pagamentos
