@@ -71,7 +71,7 @@ module.exports = {
   			brandblue: '#3a64a8',
   			surface: '#FFFFFF',
   			line: '#E2E8E4',
-  			'muted-2': '#93A099'
+  			'muted-2': '#6E7A73'
   		},
   		fontFamily: {
   			heading: ['Space Grotesk', 'ui-sans-serif', 'system-ui', 'sans-serif'],

@@ -78,7 +78,7 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="block text-sm font-medium text-muted-foreground hover:text-ink py-2.5"
+                className="block text-sm font-medium text-muted-foreground hover:text-ink py-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg px-2"
               >
                 {link.label}
               </a>

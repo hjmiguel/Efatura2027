@@ -75,6 +75,7 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-background">
+      <a href="#main-content" className="skip-link">Saltar para o conteúdo</a>
       <header className="sticky top-0 z-30 bg-surface border-b border-line">
         <div className="px-4 md:px-8 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -98,13 +99,13 @@ export default function AdminLayout() {
         <aside className="hidden md:flex flex-col w-[240px] shrink-0 bg-ink text-white min-h-[calc(100vh-3.5rem)] py-5 px-3 sticky top-14">
           {navSections.map((section) => (
             <div key={section.label} className="mb-4">
-              <div className="px-3 pb-2"><span className="text-[9.5px] font-bold tracking-[.16em] text-white/40 uppercase">{section.label}</span></div>
+              <div className="px-3 pb-2"><span className="text-[9.5px] font-bold tracking-[.16em] text-white/60 uppercase">{section.label}</span></div>
               <nav className="space-y-0.5">
                 {section.items.map((item) => {
                   const active = isActive(item.path);
                   const badge = getBadge(item.path);
                   return (
-                    <Link key={item.path} to={item.path} className={`flex items-center gap-2.5 px-3 py-2.5 rounded-[11px] text-sm transition-colors ${active ? 'bg-primary text-[#eafff7] font-semibold' : 'text-white/70 font-medium hover:text-white hover:bg-white/5'}`}>
+                    <Link key={item.path} to={item.path} aria-current={active ? 'page' : undefined} className={`flex items-center gap-2.5 px-3 py-2.5 rounded-[11px] text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${active ? 'bg-primary text-[#eafff7] font-semibold' : 'text-white/70 font-medium hover:text-white hover:bg-white/5'}`}>
                       <item.icon className="w-[16px] h-[16px] shrink-0" strokeWidth={1.8} />
                       <span className="flex-1">{item.label}</span>
                       {badge > 0 && <span className="bg-destructive text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">{badge}</span>}
@@ -116,7 +117,7 @@ export default function AdminLayout() {
           ))}
 
           <div className="mb-4">
-            <div className="px-3 pb-2"><span className="text-[9.5px] font-bold tracking-[.16em] text-white/40 uppercase">Módulos</span></div>
+            <div className="px-3 pb-2"><span className="text-[9.5px] font-bold tracking-[.16em] text-white/60 uppercase">Módulos</span></div>
             <div className="space-y-0.5">
               <Link to="/parceiros" className="flex items-center gap-2.5 px-3 py-2.5 rounded-[11px] text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-colors">
                 <Briefcase className="w-[16px] h-[16px] shrink-0" strokeWidth={1.8} /> Portal de parceiros
@@ -132,9 +133,9 @@ export default function AdminLayout() {
               <div className="w-[32px] h-[32px] rounded-full bg-gold-soft text-[#9a6a16] flex items-center justify-center font-bold text-[12px] shrink-0">{initials}</div>
               <div className="flex-1 min-w-0">
                 <div className="text-[12.5px] font-semibold text-white leading-tight truncate">{user?.full_name || 'Admin'}</div>
-                <div className="font-mono text-[9.5px] text-white/40 mt-0.5">ADMINISTRADOR</div>
+                <div className="font-mono text-[9.5px] text-white/60 mt-0.5">ADMINISTRADOR</div>
               </div>
-              <button onClick={handleLogout} className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-colors shrink-0" title="Sair">
+              <button onClick={handleLogout} aria-label="Terminar sessão" className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" title="Sair">
                 <LogOut className="w-4 h-4" />
               </button>
             </div>
@@ -158,7 +159,7 @@ export default function AdminLayout() {
         </div>
       </div>
 
-      <main className="flex-1 px-4 md:px-8 py-6 pb-24 md:pb-8 max-w-6xl">
+      <main id="main-content" className="flex-1 px-4 md:px-8 py-6 pb-24 md:pb-8 max-w-6xl">
         <Outlet />
       </main>
     </div>

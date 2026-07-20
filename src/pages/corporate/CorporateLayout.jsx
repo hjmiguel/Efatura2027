@@ -23,6 +23,7 @@ export default function CorporateLayout() {
 
   return (
     <div className="min-h-screen bg-background">
+      <a href="#main-content" className="skip-link">Saltar para o conteúdo</a>
       <aside className="hidden md:flex fixed inset-y-0 left-0 w-60 flex-col bg-surface border-r border-line z-30">
         <div className="px-6 py-5 flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-ink flex items-center justify-center">
@@ -38,7 +39,8 @@ export default function CorporateLayout() {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+              aria-current={isActive(item.path) ? 'page' : undefined}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                 isActive(item.path) ? 'bg-primary text-white font-medium' : 'text-muted-foreground hover:text-ink hover:bg-muted'
               }`}
             >
@@ -69,7 +71,7 @@ export default function CorporateLayout() {
         </div>
         <div className="flex gap-1 px-2 pb-2 overflow-x-auto">
           {navItems.map(item => (
-            <Link key={item.path} to={item.path} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap ${
+            <Link key={item.path} to={item.path} aria-current={isActive(item.path) ? 'page' : undefined} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               isActive(item.path) ? 'bg-primary text-white' : 'text-muted-foreground bg-muted'
             }`}>
               <item.icon className="w-3.5 h-3.5" />
@@ -79,7 +81,7 @@ export default function CorporateLayout() {
         </div>
       </header>
 
-      <main className="md:ml-60 p-4 sm:p-6">
+      <main id="main-content" className="md:ml-60 p-4 sm:p-6">
         <div className="max-w-5xl mx-auto">
           <Outlet />
         </div>

@@ -53,7 +53,8 @@ export default function AppLayout() {
     return (
       <Link
         to={item.path}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-[11px] transition-colors text-sm ${
+        aria-current={active ? 'page' : undefined}
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-[11px] transition-colors text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
           active
             ? 'bg-primary text-[#eafff7] font-semibold'
             : 'text-muted-foreground font-medium hover:text-ink hover:bg-[#f1f5f3]'
@@ -70,7 +71,8 @@ export default function AppLayout() {
     return (
       <Link
         to={item.path}
-        className={`flex flex-col items-center gap-1 py-1.5 px-2 w-[62px] ${
+        aria-current={active ? 'page' : undefined}
+        className={`flex flex-col items-center gap-1 py-1.5 px-2 w-[62px] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
           active ? 'text-primary' : 'text-muted-2'
         }`}
       >
@@ -82,6 +84,7 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen bg-background">
+      <a href="#main-content" className="skip-link">Saltar para o conteúdo</a>
       {/* ===== Desktop sidebar ===== */}
       <aside className="hidden md:flex fixed inset-y-0 left-0 w-[264px] flex-col bg-surface border-r border-line z-30">
         {/* Brand */}
@@ -163,7 +166,8 @@ export default function AppLayout() {
             </Link>
             <button
               onClick={handleLogout}
-              className="p-1.5 rounded-lg text-muted-2 hover:text-destructive hover:bg-danger-soft transition-colors shrink-0"
+              aria-label="Terminar sessão"
+              className="p-1.5 rounded-lg text-muted-2 hover:text-destructive hover:bg-danger-soft transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               title="Terminar sessão"
             >
               <LogOut className="w-4 h-4" />
@@ -188,13 +192,14 @@ export default function AppLayout() {
               Bem-vindo de volta
             </div>
           </div>
-          <button className="relative w-10 h-10 rounded-[11px] border border-line bg-surface flex items-center justify-center text-primary">
+          <button aria-label="Notificações" className="relative w-10 h-10 rounded-[11px] border border-line bg-surface flex items-center justify-center text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
             <Bell className="w-5 h-5" />
             <span className="absolute top-[7px] right-2 w-2 h-2 rounded-full bg-destructive border-2 border-surface" />
           </button>
           <Link
             to="/app/documentos"
-            className="w-10 h-10 rounded-[11px] border border-line bg-surface flex items-center justify-center text-primary"
+            aria-label="Documentos"
+            className="w-10 h-10 rounded-[11px] border border-line bg-surface flex items-center justify-center text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             <FileText className="w-5 h-5" />
           </Link>
@@ -202,7 +207,7 @@ export default function AppLayout() {
       </header>
 
       {/* ===== Main content ===== */}
-      <main className="md:ml-[264px] xl:mr-[340px] pb-24 md:pb-0 min-h-screen">
+      <main id="main-content" className="md:ml-[264px] xl:mr-[340px] pb-24 md:pb-0 min-h-screen">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 md:py-6">
           <Outlet />
         </div>
@@ -212,7 +217,7 @@ export default function AppLayout() {
       <RightRail />
 
       {/* ===== Mobile bottom nav ===== */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur-md border-t border-line">
+      <nav aria-label="Navegação principal" className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur-md border-t border-line">
         <div className="flex items-center justify-around px-1.5 pb-3 pt-1">
           {mainNav.map((item) => (
             <BottomLink key={item.path} item={item} />

@@ -220,11 +220,16 @@ Depende da AGT e dos primeiros parceiros.
 - Meta tags Open Graph e Twitter Card no `index.html` e atualizadas dinamicamente por rota
 - Favicon SVG personalizado
 
-### 6.3 Acessibilidade
+### 6.3 Acessibilidade — ✅ concluído
 - Foco de teclado visível (contorno dourado de 2px)
 - prefers-reduced-motion respeitado em todas as animações
 - Navegação por teclado em todos os fluxos
-- Contraste de cor verificado
+- Contraste de cor verificado (muted-2 escurecido de #93A099 → #6E7A73, sidebar admin white/40 → white/60)
+- Link "Saltar para o conteúdo" em AppLayout, AdminLayout e CorporateLayout
+- aria-label em todos os botões de ícone (notificações, logout, documentos)
+- aria-current="page" em links de navegação ativos
+- focus-visible:ring em todos os links de navegação
+- Classe .sr-only adicionada para texto apenas para leitores de ecrã
 
 ### 6.4 Testes automáticos
 - **Aritmética:** para cada ecrã com totais, soma das parcelas = total
