@@ -19,7 +19,7 @@ const actionLabels = {
   settings_change: 'Alteração de configurações',
 };
 
-export default function AdminAudit() {
+export default function AuditTab() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -49,31 +49,18 @@ export default function AdminAudit() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-4 border-line border-t-primary rounded-full animate-spin"></div>
-      </div>
-    );
+    return <div className="flex items-center justify-center py-10"><div className="w-8 h-8 border-4 border-line border-t-primary rounded-full animate-spin"></div></div>;
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
-          <span className="eyebrow">§ 06 · Conformidade</span>
-          <h1 className="font-heading text-xl font-bold text-ink mt-1">Registo de auditoria</h1>
-          <p className="text-[12px] text-muted-foreground mt-0.5">Imutável · Lei n.º 22/11 · não se desliga</p>
-        </div>
-        <span className="mark">JUL · 2026</span>
-      </div>
-
-      <div className="flex items-center justify-end">
+        <h2 className="font-heading font-semibold text-[15px] text-ink">Registo de auditoria</h2>
         <button onClick={exportCsv} className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-line rounded-lg text-[12px] font-medium text-ink hover:bg-muted transition-colors">
           <Download className="w-3.5 h-3.5" /> Exportar
         </button>
       </div>
 
-      {/* Audit timeline */}
       <div className="bg-surface border border-line rounded-talao overflow-hidden shadow-soft">
         {logs.length === 0 ? (
           <p className="px-5 py-10 text-sm text-muted-2 text-center">Sem registos.</p>
@@ -99,7 +86,7 @@ export default function AdminAudit() {
       <div className="flex items-start gap-2.5 bg-[#e7eef9] border border-[#c3d5ee] rounded-talao p-4">
         <Shield className="w-4 h-4 text-brandblue shrink-0 mt-0.5" />
         <p className="text-[12px] text-brandblue leading-relaxed">
-          O registo é imutável e não se desliga, nem pelo administrador. Os acessos a dados de utilizadores aparecem assinalados. É a diferença entre poder fazer e poder fazer sem ninguém saber.
+          O registo é imutável e não se desliga, nem pelo administrador. Os acessos a dados de utilizadores aparecem assinalados.
         </p>
       </div>
     </div>
