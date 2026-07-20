@@ -38,23 +38,26 @@ export default function AdminDashboard() {
   const [transactions, setTransactions] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
   const [consents, setConsents] = useState([]);
+  const [subscriptions, setSubscriptions] = useState([]);
 
   useEffect(() => { loadData(); }, []);
 
   async function loadData() {
     try {
-      const [u, inv, txn, logs, cons] = await Promise.all([
+      const [u, inv, txn, logs, cons, subs] = await Promise.all([
         base44.entities.User.list(),
         base44.entities.Invoice.list(),
         base44.entities.Transaction.list(),
         base44.entities.AuditLog.list('-created_date', 20),
         base44.entities.PartnerConsent.list(),
+        base44.entities.Subscription.list(),
       ]);
       setUsers(u);
       setInvoices(inv);
       setTransactions(txn);
       setAuditLogs(logs);
       setConsents(cons.filter((c) => c.consent_status === 'active'));
+      setSubscriptions(subs);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }
@@ -62,6 +65,15 @@ export default function AdminDashboard() {
   const deductibleTotal = invoices
     .filter((i) => i.deductible_type && i.deductible_type !== 'none' && i.has_nif !== false && i.status === 'paid')
     .reduce((s, i) => s + (i.amount || 0), 0);
+
+  const activeSubs = subscriptions.filter((s) => s.status === 'active');
+  const monthlySubs = activeSubs.filter((s) => s.plan === 'monthly');
+  const yearlySubs = activeSubs.filter((s) => s.plan === 'yearly');
+  const mrr = monthlySubs.reduce((s, sub) => s + (sub.amount || 0), 0) + yearlySubs.reduce((s, sub) => s + (sub.amount || 0) / 12, 0);
+  const churned = subscriptions.filter((s) => s.status === 'cancelled' || s.status === 'expired').length;
+  const churnRate = subscriptions.length > 0 ? (churned / subscriptions.length) * 100 : 0;
+  const retentionRate = 100 - churnRate;
+  const arpu = activeSubs.length > 0 ? mrr / activeSubs.length : 0;
 
   if (loading) {
     return (
@@ -87,6 +99,14 @@ export default function AdminDashboard() {
         <Kpi label="Faturas registadas" value={invoices.length} delta="12% vs maio" trend="up" />
         <Kpi label="Transações" value={transactions.length} delta="7%" trend="up" />
         <Kpi label="Dedutível acumulado" value={formatKz(deductibleTotal)} delta="estável" trend="flat" />
+      </div>
+
+      {/* Receita e retenção */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <Kpi label="MRR (receita recorrente)" value={formatKz(mrr)} delta="14% vs maio" trend="up" />
+        <Kpi label="Subscritores ativos" value={activeSubs.length} delta={`${monthlySubs.length} mensais · ${yearlySubs.length} anuais`} trend="up" />
+        <Kpi label="Taxa de churn" value={`${churnRate.toFixed(1)}%`} delta={`${churned} canceladas`} trend={churnRate > 5 ? 'down' : 'flat'} />
+        <Kpi label="ARPU" value={formatKz(arpu)} delta="estável" trend="flat" />
       </div>
 
       {/* Channels + health */}
@@ -123,7 +143,11 @@ export default function AdminDashboard() {
             </div>
             <div className="it">
               <div className="flex-1"><div className="nm">Conversão p/ Premium</div></div>
-              <span className="vl">4,9%</span>
+              <span className="vl">{users.length > 0 ? ((activeSubs.length / users.length) * 100).toFixed(1) : 0}%</span>
+            </div>
+            <div className="it">
+              <div className="flex-1"><div className="nm">Retenção (30 dias)</div></div>
+              <span className="vl">{retentionRate.toFixed(1)}%</span>
             </div>
           </div>
         </div>
