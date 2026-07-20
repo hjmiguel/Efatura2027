@@ -173,7 +173,7 @@ export default function AppLayout() {
       </aside>
 
       {/* ===== Mobile app bar ===== */}
-      <header className="md:hidden sticky top-0 z-30 bg-surface border-b border-line">
+      <header className="md:hidden sticky top-0 z-30 bg-surface border-b border-line pt-[env(safe-area-inset-top,12px)]">
         <div className="flex items-center gap-2.5 px-[18px] py-3">
           <Link to="/app/perfil" className="shrink-0">
             <div className="w-[42px] h-[42px] rounded-full bg-primary text-white flex items-center justify-center font-heading font-bold text-base">
@@ -213,7 +213,7 @@ export default function AppLayout() {
 
       {/* ===== Mobile bottom nav ===== */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur-md border-t border-line">
-        <div className="flex items-center justify-around px-1.5 pb-3 pt-1">
+        <div className="flex items-center justify-around px-1.5 pt-1 pb-[calc(12px+env(safe-area-inset-bottom,0px))]">
           {mainNav.map((item) => (
             <BottomLink key={item.path} item={item} />
           ))}

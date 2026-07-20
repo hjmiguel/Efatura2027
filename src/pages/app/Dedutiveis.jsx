@@ -4,6 +4,7 @@ import { formatKz, formatDate } from '@/lib/format';
 import DependentForm from '@/components/app/DependentForm';
 import { Plus, Download, AlertTriangle, Pencil, Trash2, Users, FileText } from 'lucide-react';
 import AgtSeal from '@/components/app/AgtSeal';
+import MobileTopBar from '@/components/app/MobileTopBar';
 
 const deductibleLabels = {
   saude: { label: 'Saúde', color: '#DC2626' },
@@ -90,6 +91,8 @@ export default function Dedutiveis() {
 
   return (
     <div className="space-y-4">
+      <MobileTopBar title="Dedutíveis IRPS" />
+
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
