@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { getFirstName } from '@/lib/format';
+import { AnimatePresence, motion } from 'framer-motion';
 import RightRail from '@/components/app/RightRail';
 
 const mainNav = [
@@ -204,7 +205,17 @@ export default function AppLayout() {
       {/* ===== Main content ===== */}
       <main className="md:ml-[264px] xl:mr-[340px] pb-24 md:pb-0 min-h-screen">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 md:py-6">
-          <Outlet />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, x: 16 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -16 }}
+              transition={{ duration: 0.22, ease: [0.22, 0.68, 0.3, 1] }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
 

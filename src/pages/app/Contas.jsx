@@ -31,6 +31,16 @@ export default function Contas() {
     catch (err) { console.error('Erro:', err); }
   }
 
+  function handleSaved(item) {
+    setAccounts((prev) => {
+      const exists = prev.some((a) => a.id === item.id);
+      if (exists) {
+        return prev.map((a) => (a.id === item.id ? { ...a, ...item } : a));
+      }
+      return [...prev, item];
+    });
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -88,7 +98,7 @@ export default function Contas() {
         )}
       </div>
 
-      <AccountForm open={formOpen} onClose={() => setFormOpen(false)} onSaved={loadAccounts} account={editing} />
+      <AccountForm open={formOpen} onClose={() => setFormOpen(false)} onSaved={handleSaved} account={editing} />
     </div>
   );
 }
