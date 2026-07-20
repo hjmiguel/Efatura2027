@@ -5,6 +5,7 @@ import ProfileAccount from '@/components/app/profile/ProfileAccount';
 import ProfileSecurity from '@/components/app/profile/ProfileSecurity';
 import ProfileDependents from '@/components/app/profile/ProfileDependents';
 import ProfilePrivacy from '@/components/app/profile/ProfilePrivacy';
+import PremiumModal from '@/components/app/PremiumModal';
 import { usePWA } from '@/hooks/usePWA';
 
 const tabs = [
@@ -18,6 +19,7 @@ export default function Perfil() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('conta');
+  const [premiumOpen, setPremiumOpen] = useState(false);
   const { installAvailable: canInstall, promptInstall: installApp } = usePWA();
 
   useEffect(() => { loadUser(); }, []);
@@ -73,7 +75,7 @@ export default function Perfil() {
             <p className="font-heading font-bold text-[15px]">Gestão+ Premium</p>
             <p className="text-[12px] text-white/70 mt-0.5">Relatórios ilimitados, sync automático e mais.</p>
           </div>
-          <button className="px-3 py-2 bg-gold text-ink rounded-lg text-[13px] font-bold shrink-0">
+          <button onClick={() => setPremiumOpen(true)} className="px-3 py-2 bg-gold text-ink rounded-lg text-[13px] font-bold shrink-0">
             Subscrever
           </button>
         </div>
@@ -123,6 +125,9 @@ export default function Perfil() {
         {activeTab === 'dependentes' && <ProfileDependents />}
         {activeTab === 'privacidade' && <ProfilePrivacy />}
       </div>
+
+      {/* Premium modal */}
+      <PremiumModal open={premiumOpen} onOpenChange={setPremiumOpen} />
 
       {/* Logout */}
       <button
