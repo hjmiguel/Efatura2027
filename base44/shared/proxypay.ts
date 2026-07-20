@@ -67,4 +67,55 @@ async function acknowledgePayment(paymentId) {
   return true;
 }
 
-export { PROXYPAY_API_BASE, PROXYPAY_ENTITY, generateReferenceId, createReference, getPayments, acknowledgePayment };
+/**
+ * Processa um pagamento Proxypay: ativa a subscrição pendente correspondente
+ * e faz acknowledge no Proxypay. Idempotente — ignora se já processada.
+ * Partilhado entre webhook e polling para evitar duplicação de lógica.
+ */
+async function processSubscriptionPayment(base44, reference, paymentId) {
+  if (!reference) return { skipped: true, reason: "no_reference" };
+
+  const subscriptions = await base44.asServiceRole.entities.Subscription.filter({
+    proxypay_reference: reference,
+    status: 'pending',
+  });
+
+  if (subscriptions.length === 0) {
+    return { skipped: true, reason: "not_found_or_already_processed" };
+  }
+
+  const subscription = subscriptions[0];
+  const today = new Date();
+  const endDate = new Date();
+  endDate.setDate(endDate.getDate() + (subscription.plan === 'yearly' ? 365 : 30));
+
+  await base44.asServiceRole.entities.Subscription.update(subscription.id, {
+    status: 'active',
+    start_date: today.toISOString().slice(0, 10),
+    end_date: endDate.toISOString().slice(0, 10),
+    proxypay_payment_id: String(paymentId || ''),
+  });
+
+  // Acknowledge no Proxypay (para remover o pagamento da lista de pendentes)
+  let ackId = String(paymentId || '');
+  if (!ackId) {
+    try {
+      const payments = await getPayments();
+      const match = Array.isArray(payments) ? payments.find(p => String(p.reference) === reference) : null;
+      if (match) ackId = String(match.id);
+    } catch (e) {
+      console.error("getPayments fallback:", e.message);
+    }
+  }
+  if (ackId) {
+    try { await acknowledgePayment(ackId); } catch (e) { console.error("Acknowledge:", e.message); }
+  }
+
+  return { activated: true, subscription_id: subscription.id };
+}
+
+export {
+  PROXYPAY_API_BASE, PROXYPAY_ENTITY,
+  generateReferenceId, createReference, getPayments, acknowledgePayment,
+  processSubscriptionPayment,
+};
