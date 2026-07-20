@@ -1,17 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Crown, Check, Loader2, Sparkles } from 'lucide-react';
+import { Crown, Check, Loader2, Sparkles, Smartphone, Copy, ExternalLink } from 'lucide-react';
 import { formatKz } from '@/lib/format';
+import { base44 } from '@/api/base44Client';
 
 const PREMIUM_PRICE = 2500;
+const MCX_DEEP_LINK = 'multicaixaexpress://';
 
 export default function PremiumModal({ open, onOpenChange }) {
   const [step, setStep] = useState('info');
   const [processing, setProcessing] = useState(false);
+  const [payment, setPayment] = useState(null);
+  const [copiedField, setCopiedField] = useState(null);
+  const pollRef = useRef(null);
 
-  React.useEffect(() => {
-    if (open) setStep('info');
+  useEffect(() => {
+    if (open) {
+      setStep('info');
+      setPayment(null);
+    }
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
   }, [open]);
 
   const benefits = [
@@ -24,10 +33,43 @@ export default function PremiumModal({ open, onOpenChange }) {
 
   const subscribe = async () => {
     setProcessing(true);
-    // Simulated EMIS subscription flow
-    await new Promise((r) => setTimeout(r, 1500));
-    setProcessing(false);
-    setStep('done');
+    try {
+      const res = await base44.functions.invoke('createSubscription', { plan: 'monthly' });
+      setPayment(res.data);
+      setStep('payment');
+      startPolling(res.data.subscription_id);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const startPolling = (subscriptionId) => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    pollRef.current = setInterval(async () => {
+      try {
+        const sub = await base44.entities.Subscription.get(subscriptionId);
+        if (sub.status === 'active') {
+          clearInterval(pollRef.current);
+          pollRef.current = null;
+          setStep('done');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }, 5000);
+    setTimeout(() => { if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; } }, 300000);
+  };
+
+  const copy = (value, field) => {
+    navigator.clipboard?.writeText(value);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 1800);
+  };
+
+  const openMcx = () => {
+    window.location.href = MCX_DEEP_LINK;
   };
 
   return (
@@ -63,7 +105,7 @@ export default function PremiumModal({ open, onOpenChange }) {
               {processing ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  A processar...
+                  A gerar referência...
                 </>
               ) : (
                 <>
@@ -74,6 +116,49 @@ export default function PremiumModal({ open, onOpenChange }) {
             </Button>
             <p className="text-xs text-muted-2 text-center">
               Pagamento via Multicaixa Express. Cancela quando quiseres.
+            </p>
+          </div>
+        )}
+
+        {step === 'payment' && payment && (
+          <div className="space-y-4">
+            <div className="bg-muted/50 rounded-xl p-4 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Montante</span>
+                <span className="font-mono font-semibold text-ink">{formatKz(payment.amount)}</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-2">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                A aguardar confirmação do pagamento...
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 bg-surface border border-line rounded-xl px-4 py-3">
+              <div className="min-w-0">
+                <p className="text-xs text-muted-2 mb-0.5">Entidade</p>
+                <p className="font-mono text-lg font-bold text-ink">{payment.entity}</p>
+              </div>
+              <button onClick={() => copy(payment.entity, 'entity')} className="shrink-0 p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-colors">
+                {copiedField === 'entity' ? <Check className="w-4 h-4 text-ok" /> : <Copy className="w-4 h-4" />}
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 bg-surface border border-line rounded-xl px-4 py-3">
+              <div className="min-w-0">
+                <p className="text-xs text-muted-2 mb-0.5">Referência</p>
+                <p className="font-mono text-lg font-bold text-ink tracking-wide break-all">{payment.reference}</p>
+              </div>
+              <button onClick={() => copy(payment.reference, 'ref')} className="shrink-0 p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-colors">
+                {copiedField === 'ref' ? <Check className="w-4 h-4 text-ok" /> : <Copy className="w-4 h-4" />}
+              </button>
+            </div>
+
+            <Button onClick={openMcx} className="w-full h-12 font-medium btn-hover btn-primary-hover">
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Abrir Multicaixa Express
+            </Button>
+            <p className="text-xs text-muted-2 text-center">
+              Introduz a entidade e referência na app Multicaixa Express. A subscrição ativa-se automaticamente após o pagamento.
             </p>
           </div>
         )}

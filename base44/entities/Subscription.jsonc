@@ -1,0 +1,62 @@
+{
+  "name": "Subscription",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID do utilizador subscritor"
+    },
+    "plan": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "yearly"
+      ],
+      "default": "monthly",
+      "description": "Tipo de plano"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Montante em kwanza"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "expired",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Estado da subscri\u00e7\u00e3o"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "In\u00edcio da subscri\u00e7\u00e3o"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fim da subscri\u00e7\u00e3o"
+    },
+    "proxypay_reference": {
+      "type": "string",
+      "description": "Refer\u00eancia Multicaixa Express gerada pelo Proxypay"
+    },
+    "proxypay_entity": {
+      "type": "string",
+      "description": "Entidade Proxypay (11367)"
+    },
+    "proxypay_payment_id": {
+      "type": "string",
+      "description": "ID do pagamento no Proxypay (para acknowledge)"
+    }
+  },
+  "required": [
+    "user_id",
+    "plan",
+    "amount",
+    "status"
+  ]
+}
