@@ -11,9 +11,11 @@ function getBaseUrl() {
 }
 
 async function sendText(phone, message) {
+  const clientToken = Deno.env.get("ZAPI_CLIENT_TOKEN");
+  if (!clientToken) throw new Error("ZAPI_CLIENT_TOKEN não configurado");
   const res = await fetch(`${getBaseUrl()}/send-text`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "Client-Token": clientToken },
     body: JSON.stringify({ phone, message }),
   });
   if (!res.ok) {
