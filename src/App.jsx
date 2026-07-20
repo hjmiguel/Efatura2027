@@ -36,6 +36,7 @@ import AdminAccess from './pages/admin/AdminAccess';
 import AdminFraud from './pages/admin/AdminFraud';
 import AdminPlans from './pages/admin/AdminPlans';
 import AdminCompliance from './pages/admin/AdminCompliance';
+import AdminTestes from './pages/admin/AdminTestes';
 import PartnerPortal from './pages/partners/PartnerPortal';
 import CorporateLayout from './pages/corporate/CorporateLayout';
 import CorporateDashboard from './pages/corporate/CorporateDashboard';
@@ -103,6 +104,7 @@ const AuthenticatedApp = () => {
           <Route path="/admin/acessos" element={<AdminAccess />} />
           <Route path="/admin/planos" element={<AdminPlans />} />
           <Route path="/admin/conformidade" element={<AdminCompliance />} />
+          <Route path="/admin/testes" element={<AdminTestes />} />
         </Route>
       </Route>
       {/* Partner portal */}

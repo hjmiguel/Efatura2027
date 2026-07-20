@@ -231,12 +231,15 @@ Depende da AGT e dos primeiros parceiros.
 - focus-visible:ring em todos os links de navegação
 - Classe .sr-only adicionada para texto apenas para leitores de ecrã
 
-### 6.4 Testes automáticos
-- **Aritmética:** para cada ecrã com totais, soma das parcelas = total
-- **Semântica de cor:** nenhum elemento negativo usa dourado, nenhum positivo usa vermelho
-- **Duplicados:** inserir a mesma fatura pelas três fontes, confirmar que fica um registo
-- **Independência:** desligar o feed da AGT e confirmar que a app continua utilizável
-- **Fatura sem NIF:** confirmar que não entra no acumulado dedutível e gera aviso
+### 6.4 Testes automáticos — ✅ concluído
+- Framework de testes em `src/lib/tests/` com 5 suites e 40+ casos
+- **Aritmética:** soma das parcelas = total (património, pendentes, pagos, categorias, despesas/receitas mensais)
+- **Semântica de cor:** negativos não usam dourado, positivos não usam vermelho
+- **Duplicados:** 3 fontes (manual, OCR, AGT/parceiro) com mesma chave → 1 registo
+- **Independência:** feed AGT em baixo, cálculos locais continuam a funcionar
+- **Fatura sem NIF:** não entra no acumulado dedutível nem no agrupamento por tipo
+- Página de execução em `/admin/testes` com KPIs, resultados detalhados e regras garantidas
+- Funções de negócio puras em `src/lib/business/` (finance, deductibles, duplicates, colors)
 
 ### 6.5 Regras de negócio garantidas no código
 1. A app nunca recebe nem reencaminha dinheiro de terceiros

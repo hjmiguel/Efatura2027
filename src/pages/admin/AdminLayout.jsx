@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Shield, LayoutDashboard, Users, ArrowLeft, Building2, Briefcase, LogOut, ShieldAlert, CreditCard, FileCheck, Store } from 'lucide-react';
+import { Shield, LayoutDashboard, Users, ArrowLeft, Building2, Briefcase, LogOut, ShieldAlert, CreditCard, FileCheck, Store, FlaskConical } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const navSections = [
@@ -21,6 +21,7 @@ const navSections = [
     items: [
       { label: 'Planos e receita', icon: CreditCard, path: '/admin/planos' },
       { label: 'Conformidade', icon: FileCheck, path: '/admin/conformidade' },
+      { label: 'Testes automáticos', icon: FlaskConical, path: '/admin/testes' },
     ],
   },
 ];
