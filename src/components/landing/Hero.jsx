@@ -36,13 +36,13 @@ export default function Hero() {
                   Criar conta grátis
                   <ArrowRight className="w-4 h-4" />
                 </Link>
-                <a
-                  href="#como-funciona"
+                <Link
+                  to="/onboarding"
                   className="inline-flex items-center justify-center gap-2 bg-surface hover:bg-line text-ink font-semibold px-6 py-3.5 rounded-xl border border-line btn-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   <PlayCircle className="w-4 h-4" />
                   Ver como funciona
-                </a>
+                </Link>
               </div>
             </Reveal>
             <Reveal delay={0.36}>
