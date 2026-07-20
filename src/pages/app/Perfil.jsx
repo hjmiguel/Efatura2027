@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { LogOut, User, Shield, Users, Lock, Crown, WifiOff, Download } from 'lucide-react';
+import { LogOut, User, Shield, Users, Lock, Crown, WifiOff, Download, ChevronRight } from 'lucide-react';
 import ProfileAccount from '@/components/app/profile/ProfileAccount';
 import ProfileSecurity from '@/components/app/profile/ProfileSecurity';
 import ProfileDependents from '@/components/app/profile/ProfileDependents';
@@ -63,6 +64,20 @@ export default function Perfil() {
           )}
         </div>
       </div>
+
+      {/* Admin / Corporate / Partner quick links */}
+      {user?.role === 'admin' && (
+        <Link to="/admin" className="block bg-surface border border-line rounded-talao p-4 shadow-soft flex items-center gap-3 hover:border-primary/30 transition-colors">
+          <div className="w-10 h-10 rounded-xl bg-gold-soft flex items-center justify-center shrink-0">
+            <Shield className="w-5 h-5 text-[#9a6a16]" />
+          </div>
+          <div className="flex-1">
+            <p className="font-heading font-semibold text-[15px] text-ink">Backoffice admin</p>
+            <p className="text-[12px] text-muted-foreground mt-0.5">Utilizadores, auditoria, antifraude e planos.</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-2 shrink-0" />
+        </Link>
+      )}
 
       {/* Premium card */}
       <div className="rounded-talao p-4 bg-gradient-to-br from-ink to-primary-2 text-white shadow-talao relative overflow-hidden">

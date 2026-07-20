@@ -45,7 +45,7 @@ export default function Registo() {
       if (result?.access_token) {
         base44.auth.setToken(result.access_token);
       }
-      window.location.href = '/';
+      window.location.href = '/app';
     } catch (err) {
       setError(err.message || 'Código de verificação inválido.');
     } finally {
@@ -67,7 +67,7 @@ export default function Registo() {
   };
 
   const handleGoogle = () => {
-    base44.auth.loginWithProvider('google', '/');
+    base44.auth.loginWithProvider('google', '/app');
   };
 
   if (showOtp) {
