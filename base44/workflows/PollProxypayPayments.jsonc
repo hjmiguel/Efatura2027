@@ -1,4 +1,23 @@
 {
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "*/5 * * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Poll Proxypay Payments",
+  "description": "Verifica pagamentos Proxypay a cada 5 min como fallback ao webhook \u2014 ativa subscri\u00e7\u00f5es pendentes e faz acknowledge.",
   "definition": {
     "document": {
       "dsl": "1.0.0",
@@ -17,29 +36,10 @@
           "then": "end",
           "x-base44": {
             "title": "Verificar pagamentos Proxypay",
-            "description": "Polling a cada 15 min"
+            "description": "Polling a cada 5 min"
           }
         }
       }
     ]
-  },
-  "trigger": {
-    "condition": null,
-    "config": {
-      "trigger_type": "scheduled",
-      "events": [],
-      "schedule_mode": "recurring",
-      "cron_expression": "*/15 * * * *",
-      "one_time_date": null,
-      "timezone": "UTC",
-      "interval_value": null,
-      "interval_unit": null,
-      "interval_anchor": null,
-      "ends_type": "never",
-      "ends_on_date": null,
-      "ends_after_count": null
-    }
-  },
-  "name": "Poll Proxypay Payments",
-  "description": "Verifica pagamentos Proxypay a cada 15 min como fallback ao webhook \u2014 ativa subscri\u00e7\u00f5es pendentes e faz acknowledge."
+  }
 }
