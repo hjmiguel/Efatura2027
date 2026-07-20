@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { formatKz, formatKzShort, getFirstName, formatDateShort } from '@/lib/format';
 import { Plus, FileText, CreditCard, Building2, ArrowUpRight, ArrowDownRight, AlertTriangle } from 'lucide-react';
-import PullToRefresh from '@/components/app/PullToRefresh';
 
 const dedLabels = {
   saude: { label: 'Saúde', emoji: '🏥' },
@@ -96,7 +95,6 @@ export default function Home() {
   }
 
   return (
-    <PullToRefresh onRefresh={loadData}>
     <div className="space-y-3.5">
       {/* ===== Balance hero ===== */}
       <div className="rounded-[22px] p-[18px] bg-gradient-to-br from-primary to-primary-2 text-[#eafff7] shadow-talao relative overflow-hidden">
@@ -275,7 +273,6 @@ export default function Home() {
         </div>
       </div>
     </div>
-    </PullToRefresh>
   );
 }
 

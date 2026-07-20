@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import { formatKz, formatDate } from '@/lib/format';
 import Seo from '@/components/Seo';
-import MobileTopBar from '@/components/app/MobileTopBar';
 
 const docTabs = [
   { id: 'todos', label: 'Todos' },
@@ -57,8 +56,6 @@ export default function Documentos() {
   return (
     <div className="space-y-4">
       <Seo title="Documentos" description="Arquiva e extrai dados das tuas faturas com OCR." path="/app/documentos" />
-
-      <MobileTopBar title="Documentos" />
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4">

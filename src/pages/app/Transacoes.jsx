@@ -4,7 +4,6 @@ import { base44 } from '@/api/base44Client';
 import { formatKz, formatDateShort, formatDate } from '@/lib/format';
 import TransactionForm from '@/components/app/TransactionForm';
 import { Plus, Search, ArrowDownLeft, ArrowUpRight, Trash2, Pencil } from 'lucide-react';
-import PullToRefresh from '@/components/app/PullToRefresh';
 
 const typeTabs = [
   { id: 'all', label: 'Todas' },
@@ -71,16 +70,6 @@ export default function Transacoes() {
     } catch (err) { console.error('Erro ao eliminar:', err); }
   }
 
-  function handleSaved(item) {
-    setTransactions((prev) => {
-      const exists = prev.some((t) => t.id === item.id);
-      if (exists) {
-        return prev.map((t) => (t.id === item.id ? { ...t, ...item } : t));
-      }
-      return [item, ...prev];
-    });
-  }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -90,7 +79,6 @@ export default function Transacoes() {
   }
 
   return (
-    <PullToRefresh onRefresh={loadData}>
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
@@ -250,12 +238,11 @@ export default function Transacoes() {
       <TransactionForm
         open={formOpen}
         onClose={() => setFormOpen(false)}
-        onSaved={handleSaved}
+        onSaved={loadData}
         transaction={editing}
         accounts={accounts}
         categories={categories}
       />
     </div>
-    </PullToRefresh>
   );
 }

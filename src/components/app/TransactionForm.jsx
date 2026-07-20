@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { base44 } from '@/api/base44Client';
-import BottomSheetSelect from '@/components/app/BottomSheetSelect';
 
 export default function TransactionForm({ open, onClose, onSaved, transaction, accounts, categories }) {
   const [saving, setSaving] = useState(false);
@@ -61,12 +60,11 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
       };
 
       if (transaction) {
-        const updated = await base44.entities.Transaction.update(transaction.id, data);
-        onSaved(updated);
+        await base44.entities.Transaction.update(transaction.id, data);
       } else {
-        const created = await base44.entities.Transaction.create(data);
-        onSaved(created);
+        await base44.entities.Transaction.create(data);
       }
+      onSaved();
       onClose();
     } catch (err) {
       console.error('Erro ao guardar transação:', err);
@@ -148,32 +146,33 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
 
           <div>
             <Label htmlFor="account">Conta</Label>
-            <BottomSheetSelect
+            <select
               id="account"
               value={form.account_id}
-              onChange={(v) => setForm({ ...form, account_id: v })}
-              options={[
-                { value: '', label: 'Selecionar conta' },
-                ...accounts.map((a) => ({ value: a.id, label: `${a.bank_name} — ${a.name}` })),
-              ]}
-              placeholder="Selecionar conta"
-              label="Conta"
-            />
+              onChange={(e) => setForm({ ...form, account_id: e.target.value })}
+              required
+              className="mt-1.5 w-full h-10 rounded-lg border border-input bg-surface px-3 text-sm"
+            >
+              <option value="">Selecionar conta</option>
+              {accounts.map((a) => (
+                <option key={a.id} value={a.id}>{a.bank_name} — {a.name}</option>
+              ))}
+            </select>
           </div>
 
           <div>
             <Label htmlFor="category">Categoria</Label>
-            <BottomSheetSelect
+            <select
               id="category"
               value={form.category_id}
-              onChange={(v) => setForm({ ...form, category_id: v })}
-              options={[
-                { value: '', label: 'Sem categoria' },
-                ...filteredCategories.map((c) => ({ value: c.id, label: c.name })),
-              ]}
-              placeholder="Sem categoria"
-              label="Categoria"
-            />
+              onChange={(e) => setForm({ ...form, category_id: e.target.value })}
+              className="mt-1.5 w-full h-10 rounded-lg border border-input bg-surface px-3 text-sm"
+            >
+              <option value="">Sem categoria</option>
+              {filteredCategories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
           </div>
 
           <DialogFooter>

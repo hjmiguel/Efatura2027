@@ -87,7 +87,6 @@
   body {
     @apply bg-background text-foreground font-body antialiased;
     overflow-x: hidden;
-    overscroll-behavior-y: none;
   }
 
   section[id] {
@@ -287,27 +286,4 @@
   .steps-line { width: 80% !important; transition: none !important; }
   .scroll-progress { display: none !important; }
   .card-hover:hover, .btn-hover:hover { transform: none !important; }
-}
-
-/* ===== Native WebView polish (iOS + Android) ===== */
-button, a, li, [role="tab"], nav, header, aside, .eyebrow, .mark {
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Financial text — allow copy/select */
-.font-mono, .vl, input, textarea {
-  -webkit-user-select: text;
-  user-select: text;
-}
-
-/* Min 44px touch target on mobile */
-@media (max-width: 767px) {
-  button, [role="tab"] {
-    min-height: 44px;
-  }
-  .ed-list .it button {
-    min-height: auto;
-  }
 }

@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { base44 } from '@/api/base44Client';
-import BottomSheetSelect from '@/components/app/BottomSheetSelect';
 
 const COLORS = ['#12715C', '#E8A23D', '#3a64a8', '#1C8A6A', '#DC2626', '#7C3AED'];
 const typeLabels = { checking: 'Conta à ordem', savings: 'Poupança', cash: 'Numerário' };
@@ -46,12 +45,11 @@ export default function AccountForm({ open, onClose, onSaved, account }) {
         is_active: form.is_active,
       };
       if (account) {
-        const updated = await base44.entities.Account.update(account.id, data);
-        onSaved(updated);
+        await base44.entities.Account.update(account.id, data);
       } else {
-        const created = await base44.entities.Account.create(data);
-        onSaved(created);
+        await base44.entities.Account.create(data);
       }
+      onSaved();
       onClose();
     } catch (err) {
       console.error('Erro ao guardar conta:', err);
@@ -82,13 +80,9 @@ export default function AccountForm({ open, onClose, onSaved, account }) {
             </div>
             <div>
               <Label htmlFor="acc-type">Tipo</Label>
-              <BottomSheetSelect
-                id="acc-type"
-                value={form.type}
-                onChange={(v) => setForm({ ...form, type: v })}
-                options={Object.entries(typeLabels).map(([v, l]) => ({ value: v, label: l }))}
-                label="Tipo de conta"
-              />
+              <select id="acc-type" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="mt-1.5 w-full h-10 rounded-lg border border-input bg-surface px-3 text-sm">
+                {Object.entries(typeLabels).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+              </select>
             </div>
           </div>
           <div>

@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { getFirstName } from '@/lib/format';
-import { AnimatePresence, motion } from 'framer-motion';
 import RightRail from '@/components/app/RightRail';
 
 const mainNav = [
@@ -174,7 +173,7 @@ export default function AppLayout() {
       </aside>
 
       {/* ===== Mobile app bar ===== */}
-      <header className="md:hidden sticky top-0 z-30 bg-surface border-b border-line pt-[env(safe-area-inset-top,12px)]">
+      <header className="md:hidden sticky top-0 z-30 bg-surface border-b border-line">
         <div className="flex items-center gap-2.5 px-[18px] py-3">
           <Link to="/app/perfil" className="shrink-0">
             <div className="w-[42px] h-[42px] rounded-full bg-primary text-white flex items-center justify-center font-heading font-bold text-base">
@@ -205,17 +204,7 @@ export default function AppLayout() {
       {/* ===== Main content ===== */}
       <main className="md:ml-[264px] xl:mr-[340px] pb-24 md:pb-0 min-h-screen">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 md:py-6">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, x: 16 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -16 }}
-              transition={{ duration: 0.22, ease: [0.22, 0.68, 0.3, 1] }}
-            >
-              <Outlet />
-            </motion.div>
-          </AnimatePresence>
+          <Outlet />
         </div>
       </main>
 
@@ -224,7 +213,7 @@ export default function AppLayout() {
 
       {/* ===== Mobile bottom nav ===== */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur-md border-t border-line">
-        <div className="flex items-center justify-around px-1.5 pt-1 pb-[calc(12px+env(safe-area-inset-bottom,0px))]">
+        <div className="flex items-center justify-around px-1.5 pb-3 pt-1">
           {mainNav.map((item) => (
             <BottomLink key={item.path} item={item} />
           ))}

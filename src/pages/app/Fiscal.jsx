@@ -8,7 +8,6 @@ import FiscalSummary from '@/components/app/FiscalSummary';
 import AgtSyncButton from '@/components/app/AgtSyncButton';
 import PartnerConsentManager from '@/components/app/PartnerConsentManager';
 import { AlertTriangle, FileText, Landmark } from 'lucide-react';
-import MobileTopBar from '@/components/app/MobileTopBar';
 
 const sourceLabels = { manual: 'Manual', photo_ocr: 'Foto/OCR', partner: 'Parceiro', agt: 'AGT' };
 
@@ -58,8 +57,6 @@ export default function Fiscal() {
 
   return (
     <div className="space-y-4">
-      <MobileTopBar title="Situação fiscal" />
-
       {/* Header */}
       <div>
         <span className="eyebrow">§ 08 · Fiscal</span>
