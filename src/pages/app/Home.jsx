@@ -72,8 +72,8 @@ export default function Home() {
         const d = new Date(t.date);
         return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
       });
-      setMonthIncome(monthTxns.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0));
-      setMonthExpense(monthTxns.filter((t) => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0));
+      setMonthIncome(monthTxns.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0));
+      setMonthExpense(monthTxns.filter((t) => t.type === 'expense').reduce((s, t) => s + Math.abs(t.amount), 0));
     } catch (err) {
       console.error('Erro ao carregar dados:', err);
     } finally {
@@ -84,6 +84,7 @@ export default function Home() {
   const patrimonio = accounts.reduce((sum, a) => sum + (a.balance || 0), 0);
   const pendingTotal = pendingInvoices.reduce((s, i) => s + (i.amount || 0), 0);
   const urgentCount = pendingInvoices.filter((i) => i.status === 'overdue').length;
+  const disponibilidade = patrimonio - pendingTotal;
   const monthName = new Date().toLocaleDateString('pt-PT', { month: 'long' });
 
   if (loading) {
@@ -120,6 +121,20 @@ export default function Home() {
               </div>
             </div>
           </div>
+          {pendingInvoices.length > 0 && (
+            <div
+              className={`flex items-center gap-2 mt-3 rounded-xl px-3 py-2 ${
+                disponibilidade >= 0 ? 'bg-white/10' : 'bg-danger-soft/90'
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full shrink-0 ${disponibilidade >= 0 ? 'bg-green-soft' : 'bg-destructive'}`} />
+              <span className={`text-[12.5px] font-medium ${disponibilidade >= 0 ? 'text-[#cdeee2]' : 'text-destructive'}`}>
+                {disponibilidade >= 0
+                  ? 'Contas deste mês cobertas'
+                  : `Faltam ${Math.round(Math.abs(disponibilidade)).toLocaleString('pt-AO')} Kz para as contas deste mês`}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
