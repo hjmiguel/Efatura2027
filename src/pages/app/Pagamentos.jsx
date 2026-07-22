@@ -12,6 +12,7 @@ import IbanPaymentDialog from '@/components/app/IbanPaymentDialog';
 import RupePaymentDialog from '@/components/app/RupePaymentDialog';
 import PremiumModal from '@/components/app/PremiumModal';
 import EmpresasTab from '@/components/app/payments/EmpresasTab';
+import CompromissosView from '@/components/app/payments/CompromissosView';
 
 const tabs = [
   { id: 'pendente', label: 'Pendente' },
@@ -23,6 +24,7 @@ const tabs = [
 export default function Pagamentos() {
   const [loading, setLoading] = useState(true);
   const [invoices, setInvoices] = useState([]);
+  const [patrimonio, setPatrimonio] = useState(0);
   const [tab, setTab] = useState('pendente');
   const [payDialog, setPayDialog] = useState(null);
   const [premiumOpen, setPremiumOpen] = useState(false);
@@ -31,8 +33,12 @@ export default function Pagamentos() {
 
   async function load() {
     try {
-      const data = await base44.entities.Invoice.list();
+      const [data, accounts] = await Promise.all([
+        base44.entities.Invoice.list(),
+        base44.entities.Account.list(),
+      ]);
       setInvoices(data);
+      setPatrimonio(accounts.reduce((s, a) => s + (a.balance || 0), 0));
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }
@@ -136,7 +142,7 @@ export default function Pagamentos() {
       )}
 
       {/* ===== Compromissos ===== */}
-      {tab === 'compromissos' && <CompromissosView invoices={invoices} />}
+      {tab === 'compromissos' && <CompromissosView invoices={invoices} patrimonio={patrimonio} />}
 
       {/* ===== Empresas ===== */}
       {tab === 'empresas' && <EmpresasTab />}
@@ -237,46 +243,6 @@ function PaidRow({ invoice }) {
         {invoice.agt_status && invoice.agt_status !== 'none' && <AgtSeal status={invoice.agt_status} size={18} />}
         <p className="font-mono font-semibold text-[15px] text-ink">{formatKz(invoice.amount)}</p>
       </div>
-    </div>
-  );
-}
-
-function CompromissosView({ invoices }) {
-  const future = invoices
-    .filter((i) => i.status === 'pending' && i.due_date && daysUntil(i.due_date) >= 0)
-    .sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
-  const total = future.reduce((s, i) => s + (i.amount || 0), 0);
-
-  if (future.length === 0) {
-    return <EmptyState icon={CalendarDays} title="Sem compromissos" text="Não tens pagamentos futuros agendados." />;
-  }
-
-  return (
-    <div className="space-y-3">
-      <div className="bg-gold-soft border border-[#f0dcb4] rounded-talao p-4 flex items-center justify-between">
-        <div>
-          <span className="eyebrow">Total comprometido</span>
-          <p className="font-mono text-[20px] font-bold text-ink mt-0.5">{formatKz(total)}</p>
-        </div>
-        <CalendarDays className="w-8 h-8 text-[#9a6a16]/30" />
-      </div>
-      {future.map((inv) => {
-        const days = daysUntil(inv.due_date);
-        return (
-          <div key={inv.id} className="bg-surface border border-line rounded-talao p-3.5 shadow-soft flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-muted flex flex-col items-center justify-center shrink-0">
-              <span className="text-[9px] uppercase text-muted-2">{new Date(inv.due_date).toLocaleDateString('pt-PT', { month: 'short' })}</span>
-              <span className="font-heading font-bold text-ink text-sm leading-none">{new Date(inv.due_date).getDate()}</span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-[14px] text-ink truncate">{inv.issuer_name}</p>
-              <p className="text-[12px] text-muted-foreground">{days === 0 ? 'Hoje' : days === 1 ? 'Amanhã' : `Em ${days} dias`}</p>
-            </div>
-            <p className="font-mono font-semibold text-[14px] text-ink shrink-0">{formatKz(inv.amount)}</p>
-            <ChevronRight className="w-4 h-4 text-muted-2 shrink-0" />
-          </div>
-        );
-      })}
     </div>
   );
 }
