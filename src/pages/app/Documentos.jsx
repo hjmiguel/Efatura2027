@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { formatKz, formatDate } from '@/lib/format';
 import Seo from '@/components/Seo';
+import InvoiceDetailDialog from '@/components/app/InvoiceDetailDialog';
 
 const docTabs = [
   { id: 'todos', label: 'Todos' },
@@ -20,6 +21,7 @@ export default function Documentos() {
   const [search, setSearch] = useState('');
   const [ocrOpen, setOcrOpen] = useState(false);
   const [tab, setTab] = useState('todos');
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
 
   useEffect(() => { load(); }, []);
 
@@ -124,7 +126,7 @@ export default function Documentos() {
           </div>
           <div className="px-3 pb-2">
             {filtered.map((inv) => (
-              <DocRow key={inv.id} invoice={inv} />
+              <DocRow key={inv.id} invoice={inv} onClick={() => setSelectedInvoice(inv)} />
             ))}
           </div>
         </div>
@@ -135,7 +137,7 @@ export default function Documentos() {
   );
 }
 
-function DocRow({ invoice }) {
+function DocRow({ invoice, onClick }) {
   const statusPill = invoice.status === 'paid'
     ? <span className="pill-paid text-[10px] font-bold px-2 py-0.5 rounded-full">Paga</span>
     : invoice.status === 'overdue'
@@ -143,7 +145,7 @@ function DocRow({ invoice }) {
     : <span className="pill-pend text-[10px] font-bold px-2 py-0.5 rounded-full">Pendente</span>;
 
   return (
-    <div className="flex items-center gap-3 py-3 border-t border-line first:border-t-0 px-1">
+    <button onClick={onClick} className="w-full flex items-center gap-3 py-3 border-t border-line first:border-t-0 px-1 text-left hover:bg-muted/40 transition-colors rounded-lg">
       <div className="w-[38px] h-[38px] rounded-[11px] bg-[#e9f3ee] text-primary flex items-center justify-center shrink-0">
         <FileCheck2 className="w-[18px] h-[18px]" />
       </div>
@@ -160,7 +162,7 @@ function DocRow({ invoice }) {
         <p className="font-mono text-[13.5px] font-semibold text-ink">{invoice.amount ? formatKz(invoice.amount) : '—'}</p>
       </div>
       <ChevronRight className="w-4 h-4 text-muted-2 shrink-0" />
-    </div>
+    </button>
   );
 }
 
