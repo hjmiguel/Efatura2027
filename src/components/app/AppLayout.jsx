@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
   LayoutGrid, ArrowLeftRight, PieChart, CreditCard, Sparkles,
-  FileText, Landmark, Bell, LogOut, Receipt,
+  FileText, Landmark, LogOut, Receipt,
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { getFirstName } from '@/lib/format';
 import RightRail from '@/components/app/RightRail';
+import NotificationsBell from '@/components/app/NotificationsBell';
 
 const mainNav = [
   { label: 'Início', icon: LayoutGrid, path: '/app' },
@@ -192,10 +193,7 @@ export default function AppLayout() {
               Bem-vindo de volta
             </div>
           </div>
-          <button aria-label="Notificações" className="relative w-10 h-10 rounded-[11px] border border-line bg-surface flex items-center justify-center text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-[7px] right-2 w-2 h-2 rounded-full bg-destructive border-2 border-surface" />
-          </button>
+          <NotificationsBell />
           <Link
             to="/app/documentos"
             aria-label="Documentos"

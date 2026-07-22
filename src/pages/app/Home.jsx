@@ -138,6 +138,38 @@ export default function Home() {
         </div>
       </div>
 
+      {/* ===== A pagar ===== */}
+      {pendingInvoices.length > 0 && (
+        <Link
+          to="/app/pagamentos"
+          className={`block rounded-talao p-4 shadow-soft border ${
+            urgentCount > 0 ? 'bg-danger-soft border-[#f0c9c2]' : 'bg-gold-soft border-[#f0dcb4]'
+          }`}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-heading text-[15px] font-semibold">A pagar</h3>
+            <span className="eyebrow ml-auto mr-2">Prazo mais próximo</span>
+            <span className="text-[12.5px] font-semibold text-primary">Ver</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <div>
+              <div className="font-mono text-[23px] font-semibold text-destructive">
+                {Math.round(pendingTotal).toLocaleString('pt-AO')} Kz
+              </div>
+              <div className="text-[12.5px] text-muted-foreground mt-0.5">
+                {pendingInvoices.length} {pendingInvoices.length === 1 ? 'fatura' : 'faturas'}
+                {urgentCount > 0 && ' · em atraso'}
+              </div>
+            </div>
+            {urgentCount > 0 && (
+              <span className="pill-late text-[11px] font-bold px-2.5 py-1 rounded-full">
+                {urgentCount} {urgentCount === 1 ? 'urgente' : 'urgentes'}
+              </span>
+            )}
+          </div>
+        </Link>
+      )}
+
       {/* ===== Accounts horizontal scroll ===== */}
       <div className="flex gap-2.5 overflow-x-auto pb-1 pt-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {accounts.map((acct) => (
@@ -169,36 +201,6 @@ export default function Home() {
         <QuickAction to="/app/pagamentos" icon={CreditCard} label="Pagar" />
         <QuickAction to="/app/pagamentos" icon={Building2} label="Conectar" />
       </div>
-
-      {/* ===== A pagar ===== */}
-      {pendingInvoices.length > 0 && (
-        <Link
-          to="/app/pagamentos"
-          className="block bg-gold-soft border border-[#f0dcb4] rounded-talao p-4 shadow-soft"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-heading text-[15px] font-semibold">A pagar</h3>
-            <span className="eyebrow ml-auto mr-2">Prazo mais próximo</span>
-            <span className="text-[12.5px] font-semibold text-primary">Ver</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <div>
-              <div className="font-mono text-[23px] font-semibold text-destructive">
-                {Math.round(pendingTotal).toLocaleString('pt-AO')} Kz
-              </div>
-              <div className="text-[12.5px] text-muted-foreground mt-0.5">
-                {pendingInvoices.length} {pendingInvoices.length === 1 ? 'fatura' : 'faturas'}
-                {urgentCount > 0 && ' · em atraso'}
-              </div>
-            </div>
-            {urgentCount > 0 && (
-              <span className="pill-late text-[11px] font-bold px-2.5 py-1 rounded-full">
-                {urgentCount} {urgentCount === 1 ? 'urgente' : 'urgentes'}
-              </span>
-            )}
-          </div>
-        </Link>
-      )}
 
       {/* ===== Dedutível IRPS ===== */}
       <div className="bg-gold-soft border border-[#e6cfa0] rounded-talao p-4 shadow-soft">
