@@ -1,34 +1,27 @@
 {
-  "name": "Gestão+ — Finanças pessoais de Angola",
+  "name": "Gestão+ — O teu dinheiro, em dia.",
   "short_name": "Gestão+",
-  "description": "Junta as tuas faturas, paga por Multicaixa Express e prepara o teu IRPS. Feito para Angola.",
-  "lang": "pt",
-  "dir": "ltr",
+  "description": "Junta as tuas faturas, paga por Multicaixa Express e sabe sempre quanto te sobra. Feito para Angola.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F4F7F5",
   "theme_color": "#0E5C4A",
+  "background_color": "#F0F4F1",
+  "lang": "pt",
   "categories": ["finance", "productivity", "business"],
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "https://media.base44.com/images/public/6a5a4f377a9fa9976cf19cbb/1c075d3de_generated_image.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "https://media.base44.com/images/public/6a5a4f377a9fa9976cf19cbb/1c075d3de_generated_image.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    },
-    {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
     }
   ]
 }
