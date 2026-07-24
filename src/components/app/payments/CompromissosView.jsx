@@ -19,15 +19,26 @@ export default function CompromissosView({ invoices, patrimonio }) {
     return { ...inv, projected: running };
   });
   const firstShortfall = rows.find((r) => r.projected < 0);
+  const projected = patrimonio - total;
 
   return (
     <div className="space-y-3">
-      <div className="bg-gold-soft border border-[#f0dcb4] rounded-talao p-4 flex items-center justify-between">
-        <div>
-          <span className="eyebrow">Total comprometido</span>
-          <p className="font-mono text-[20px] font-bold text-ink mt-0.5">{formatKz(total)}</p>
+      {/* Semáforo de tesouraria */}
+      <div className={`rounded-talao p-4 border shadow-soft ${projected < 0 ? 'bg-danger-soft border-[#f0c9c2]' : 'bg-green-soft border-[#c3e6d5]'}`}>
+        <div className="grid grid-cols-3 gap-1 text-center">
+          <div>
+            <span className="eyebrow">Tens</span>
+            <p className="font-mono text-[14px] font-bold text-ink mt-1">{formatKz(patrimonio)}</p>
+          </div>
+          <div className="border-x border-ink/10">
+            <span className="eyebrow">Vais pagar</span>
+            <p className="font-mono text-[14px] font-bold text-ink mt-1">{formatKz(total)}</p>
+          </div>
+          <div>
+            <span className="eyebrow">{projected < 0 ? 'Faltam' : 'Sobram'}</span>
+            <p className={`font-mono text-[14px] font-bold mt-1 ${projected < 0 ? 'text-destructive' : 'text-ok'}`}>{formatKz(Math.abs(projected))}</p>
+          </div>
         </div>
-        <CalendarDays className="w-8 h-8 text-[#9a6a16]/30" />
       </div>
 
       {firstShortfall && (

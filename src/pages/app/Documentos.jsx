@@ -196,7 +196,7 @@ function OcrFlow({ onClose, onDone }) {
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: 'Extrai os dados desta fatura angolana. Devolve JSON com: issuer_name, issuer_nif, document_number, amount (numérico em kwanza), issue_date (YYYY-MM-DD), due_date, entity (Multicaixa), reference (Multicaixa), iban, has_nif (boolean). Se um campo não existir, usa null.',
+        prompt: 'Extrai os dados desta fatura angolana. Devolve JSON com: issuer_name, issuer_nif, document_number, amount (numérico em kwanza), issue_date (YYYY-MM-DD), due_date, entity (Multicaixa), reference (Multicaixa), iban, has_nif (boolean), deductible_type (um de: none, saude, educacao, habitacao, pensao_alimentos, previdencia — classifica com base no emitente: farmácias/clínicas=hospitais=saude, escolas=universidades=educacao, bancos seguros=previdencia, etc.). Se um campo não existir, usa null.',
         file_urls: [file_url],
         response_json_schema: {
           type: 'object',
@@ -206,6 +206,7 @@ function OcrFlow({ onClose, onDone }) {
             issue_date: { type: 'string' }, due_date: { type: 'string' },
             entity: { type: 'string' }, reference: { type: 'string' },
             iban: { type: 'string' }, has_nif: { type: 'boolean' },
+            deductible_type: { type: 'string' },
           },
         },
       });
@@ -228,6 +229,7 @@ function OcrFlow({ onClose, onDone }) {
         entity: extracted.entity || '', reference: extracted.reference || '',
         iban: extracted.iban || '',
         has_nif: extracted.has_nif !== false,
+        deductible_type: extracted.deductible_type || 'none',
         status: 'pending', source: 'photo_ocr',
         payment_method: extracted.entity ? 'mcx_reference' : extracted.iban ? 'iban' : 'manual',
       });
@@ -281,30 +283,16 @@ function OcrFlow({ onClose, onDone }) {
               </div>
               <div className="flex gap-2">
                 <button onClick={() => { setStep(1); setFile(null); setPreview(null); }} className="flex-1 py-2.5 border border-line rounded-lg text-sm font-medium">Voltar</button>
-                <button onClick={() => setStep(3)} className="flex-1 py-2.5 bg-primary text-white rounded-lg text-sm font-medium">Continuar</button>
+                <button onClick={() => { setStep(3); extract(); }} className="flex-1 py-2.5 bg-primary text-white rounded-lg text-sm font-medium">Extrair dados</button>
               </div>
             </div>
           )}
 
           {step === 3 && (
             <div className="space-y-4 text-center py-8">
-              {extracting ? (
-                <>
-                  <Loader2 className="w-10 h-10 text-primary animate-spin mx-auto" />
-                  <p className="font-medium text-ink">A extrair dados...</p>
-                  <p className="text-sm text-muted-foreground">A IA está a ler a tua fatura.</p>
-                </>
-              ) : (
-                <>
-                  <ScanLine className="w-10 h-10 text-primary mx-auto" />
-                  <p className="font-medium text-ink">Pronta para extrair</p>
-                  <p className="text-sm text-muted-foreground">Vamos ler os dados da fatura automaticamente.</p>
-                  <button onClick={extract} className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium">
-                    <ScanLine className="w-4 h-4" /> Extrair dados
-                  </button>
-                </>
-              )}
-              {!extracting && <button onClick={() => setStep(2)} className="text-sm text-muted-foreground mt-2">Voltar</button>}
+              <Loader2 className="w-10 h-10 text-primary animate-spin mx-auto" />
+              <p className="font-medium text-ink">A extrair dados...</p>
+              <p className="text-sm text-muted-foreground">A IA está a ler a tua fatura.</p>
             </div>
           )}
 
