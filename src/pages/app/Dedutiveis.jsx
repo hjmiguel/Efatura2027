@@ -102,18 +102,15 @@ export default function Dedutiveis() {
         </button>
       </div>
 
-      {/* Gold hero card */}
-      <div className="rounded-talao p-4 bg-gradient-to-br from-gold-soft to-gold/20 border border-gold/30 shadow-soft relative overflow-hidden">
-        <div className="absolute -right-6 -top-8 w-[100px] h-[100px] rounded-full bg-gold/10" />
-        <div className="relative flex items-center justify-between">
-          <div>
-            <p className="text-[12px] text-ink/70 font-medium">Total acumulado · IRPS {new Date().getFullYear() + 1}</p>
-            <p className="font-mono text-2xl font-bold text-ink mt-1">{formatKz(totalDeductible)}</p>
-            <p className="text-[11px] text-ink/60 mt-2">Apenas faturas pagas com o teu NIF são contabilizadas.</p>
-          </div>
-          <div className="w-12 h-12 rounded-2xl bg-gold/20 flex items-center justify-center shrink-0">
-            <FileText className="w-6 h-6 text-gold" />
-          </div>
+      {/* Gold summary card (discreet) */}
+      <div className="rounded-talao p-3.5 bg-gold-soft/60 border border-gold/20 shadow-soft flex items-center justify-between">
+        <div>
+          <p className="text-[11px] text-ink/60 font-medium">Acumulado · IRPS {new Date().getFullYear() + 1}</p>
+          <p className="font-mono text-xl font-bold text-ink mt-0.5">{formatKz(totalDeductible)}</p>
+          <p className="text-[10.5px] text-ink/50 mt-1">Apenas faturas pagas com o teu NIF.</p>
+        </div>
+        <div className="w-9 h-9 rounded-xl bg-gold/15 flex items-center justify-center shrink-0">
+          <FileText className="w-4.5 h-4.5 text-gold" />
         </div>
       </div>
 
@@ -123,7 +120,7 @@ export default function Dedutiveis() {
           <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
           <div>
             <p className="text-[13px] font-semibold text-destructive">{withoutNif.length} {withoutNif.length === 1 ? 'fatura sem' : 'faturas sem'} NIF</p>
-            <p className="text-[11.5px] text-destructive/80 mt-0.5">Faturas sem o teu NIF não são dedutíveis. Contacta o fornecedor para emitir nova fatura.</p>
+            <p className="text-[11.5px] text-destructive/80 mt-0.5">Faturas sem o teu NIF não contam para o acumulado dedutível.</p>
           </div>
         </div>
       )}
