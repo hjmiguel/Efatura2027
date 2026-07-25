@@ -67,11 +67,11 @@ export default function Entrar() {
         {/* Top bar */}
         <div className="p-6">
           <Link
-            to="/"
+            to="/registo"
             className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-muted-2 hover:text-ink transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            Voltar
+            Criar conta
           </Link>
         </div>
 
