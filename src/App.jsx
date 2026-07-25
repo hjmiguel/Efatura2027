@@ -10,6 +10,7 @@ import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AppLayout from '@/components/app/AppLayout';
 // Add page imports here
+import Landing from './pages/Landing';
 import Registo from './pages/Registo';
 import Entrar from './pages/Entrar';
 import ForgotPassword from './pages/ForgotPassword';
@@ -71,7 +72,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       {/* Add your page Route elements here */}
-      <Route path="/" element={<Navigate to="/entrar" replace />} />
+      <Route path="/" element={<Landing />} />
       <Route path="/registo" element={<Registo />} />
       <Route path="/entrar" element={<Entrar />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
