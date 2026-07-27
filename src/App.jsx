@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import PwaUpdateToast from '@/components/PwaUpdateToast';
+import InstallPromptToast from '@/components/InstallPromptToast';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -138,6 +139,7 @@ function App() {
         </Router>
         <Toaster />
         <PwaUpdateToast />
+        <InstallPromptToast />
       </QueryClientProvider>
     </AuthProvider>
   )
