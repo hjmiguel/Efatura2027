@@ -1,0 +1,5 @@
+export type ValidationResult = { valid: true } | { valid: false; errors: Record<string, string> };
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export function validateCredentials(email: string, password: string): ValidationResult { const errors: Record<string,string> = {}; if(!emailPattern.test(email)) errors.email='Email inválido'; if(password.length<8) errors.password='A palavra-passe deve ter pelo menos 8 caracteres'; return Object.keys(errors).length?{valid:false,errors}:{valid:true}; }
+export function validateAmount(value: unknown): ValidationResult { const amount=Number(value); return Number.isFinite(amount)&&amount>0?{valid:true}:{valid:false,errors:{amount:'O montante deve ser superior a zero'}}; }
+export function validateRequired(data: Record<string, unknown>, fields: string[]): ValidationResult { const errors:Record<string,string>={}; fields.forEach(field=>{if(data[field]===undefined||data[field]===null||data[field]==='') errors[field]='Campo obrigatório';}); return Object.keys(errors).length?{valid:false,errors}:{valid:true}; }

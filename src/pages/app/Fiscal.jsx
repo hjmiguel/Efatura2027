@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import { formatKz, formatDate } from '@/lib/format';
 import AgtSeal from '@/components/app/AgtSeal';
 import DivergenceCard from '@/components/app/DivergenceCard';
@@ -24,17 +24,17 @@ export default function Fiscal() {
   async function loadData() {
     try {
       const [me, inv] = await Promise.all([
-        base44.auth.me(),
-        base44.entities.Invoice.list()
+        appApi.auth.me(),
+        appApi.entities.Invoice.list()
       ]);
       setUser(me);
       setInvoices(inv);
       try {
-        const divRes = await base44.functions.invoke('detectDivergences', {});
+        const divRes = await appApi.functions.invoke('detectDivergences', {});
         setDivergences(divRes.data?.divergences || []);
       } catch { setDivergences([]); }
       try {
-        const cons = await base44.entities.PartnerConsent.list();
+        const cons = await appApi.entities.PartnerConsent.list();
         setConsents(cons);
       } catch { setConsents([]); }
     } catch (err) { console.error('Erro:', err); }

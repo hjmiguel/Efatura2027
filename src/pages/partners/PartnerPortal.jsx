@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import PartnerShell from '@/components/partners/PartnerShell';
 import PartnerDashboard from '@/components/partners/PartnerDashboard';
 import PartnerInvoices from '@/components/partners/PartnerInvoices';
@@ -22,9 +22,9 @@ export default function PartnerPortal() {
   async function load() {
     try {
       const [me, inv, cons] = await Promise.all([
-        base44.auth.me(),
-        base44.entities.Invoice.list('-created_date', 50),
-        base44.entities.PartnerConsent.list(),
+        appApi.auth.me(),
+        appApi.entities.Invoice.list('-created_date', 50),
+        appApi.entities.PartnerConsent.list(),
       ]);
       setUser(me);
       setInvoices(inv.filter((i) => i.source === 'partner'));
@@ -37,7 +37,7 @@ export default function PartnerPortal() {
     if (!name.trim() || !nif.trim()) return;
     try {
       const key = 'gmais_live_' + Math.random().toString(36).substring(2, 18) + Math.random().toString(36).substring(2, 18);
-      await base44.functions.invoke('partnerApi', {
+      await appApi.functions.invoke('partnerApi', {
         action: 'create_key',
         partner_name: name,
         partner_nif: nif,
@@ -51,11 +51,11 @@ export default function PartnerPortal() {
   async function revokeConsent(id) {
     if (!confirm('Revogar este consentimento?')) return;
     try {
-      await base44.entities.PartnerConsent.update(id, {
+      await appApi.entities.PartnerConsent.update(id, {
         consent_status: 'revoked',
         revoked_date: new Date().toISOString(),
       });
-      await base44.entities.AuditLog.create({
+      await appApi.entities.AuditLog.create({
         action: 'api_key_revoke',
         actor_id: user?.id,
         actor_name: user?.full_name || user?.email,

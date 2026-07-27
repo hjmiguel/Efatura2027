@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import { formatKz, formatDateShort, formatDate } from '@/lib/format';
 import TransactionForm from '@/components/app/TransactionForm';
 import { Plus, Search, ArrowDownLeft, ArrowUpRight, Trash2, Pencil } from 'lucide-react';
@@ -29,9 +29,9 @@ export default function Transacoes() {
   async function loadData() {
     try {
       const [txns, accts, cats] = await Promise.all([
-        base44.entities.Transaction.list('-date', 200),
-        base44.entities.Account.list(),
-        base44.entities.Category.list(),
+        appApi.entities.Transaction.list('-date', 200),
+        appApi.entities.Account.list(),
+        appApi.entities.Category.list(),
       ]);
       setTransactions(txns);
       setAccounts(accts);
@@ -65,7 +65,7 @@ export default function Transacoes() {
   async function handleDelete(id) {
     if (!confirm('Eliminar esta transação?')) return;
     try {
-      await base44.entities.Transaction.delete(id);
+      await appApi.entities.Transaction.delete(id);
       setTransactions(transactions.filter((t) => t.id !== id));
     } catch (err) { console.error('Erro ao eliminar:', err); }
   }

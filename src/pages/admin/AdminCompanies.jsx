@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import { Search, Store, X } from 'lucide-react';
 import { formatDate } from '@/lib/format';
 
@@ -14,7 +14,7 @@ export default function AdminCompanies() {
 
   async function load() {
     try {
-      const data = await base44.entities.PartnerConsent.list('-created_date');
+      const data = await appApi.entities.PartnerConsent.list('-created_date');
       setConsents(data);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
@@ -22,8 +22,8 @@ export default function AdminCompanies() {
 
   async function revoke(consent) {
     try {
-      await base44.entities.PartnerConsent.update(consent.id, { consent_status: 'revoked', revoked_date: new Date().toISOString() });
-      await base44.entities.AuditLog.create({
+      await appApi.entities.PartnerConsent.update(consent.id, { consent_status: 'revoked', revoked_date: new Date().toISOString() });
+      await appApi.entities.AuditLog.create({
         action: 'revoke_consent',
         actor_id: 'admin',
         actor_name: 'Admin',

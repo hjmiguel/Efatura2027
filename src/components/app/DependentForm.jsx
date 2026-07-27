@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 
 const relationshipLabels = {
   conjuge: 'Cônjuge', filho: 'Filho(a)', pai: 'Pai', mae: 'Mãe', outro: 'Outro',
@@ -38,9 +38,9 @@ export default function DependentForm({ open, onClose, onSaved, dependent }) {
         birth_date: form.birth_date || undefined,
       };
       if (dependent) {
-        await base44.entities.Dependent.update(dependent.id, data);
+        await appApi.entities.Dependent.update(dependent.id, data);
       } else {
-        await base44.entities.Dependent.create(data);
+        await appApi.entities.Dependent.create(data);
       }
       onSaved();
       onClose();

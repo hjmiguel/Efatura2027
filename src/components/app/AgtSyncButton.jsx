@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { RefreshCw, CheckCircle, AlertTriangle, ShieldCheck, ShieldOff } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 
 export default function AgtSyncButton({ user, onSyncComplete }) {
   const [syncing, setSyncing] = useState(false);
@@ -12,7 +12,7 @@ export default function AgtSyncButton({ user, onSyncComplete }) {
 
   async function handleGrantConsent() {
     try {
-      await base44.auth.updateMe({
+      await appApi.auth.updateMe({
         agt_consent: true,
         agt_consent_date: new Date().toISOString()
       });
@@ -26,7 +26,7 @@ export default function AgtSyncButton({ user, onSyncComplete }) {
   async function handleRevokeConsent() {
     if (!confirm('Revogar o acesso AGT? As faturas existentes mantêm-se, mas o feed para de sincronizar.')) return;
     try {
-      await base44.auth.updateMe({ agt_consent: false });
+      await appApi.auth.updateMe({ agt_consent: false });
       onSyncComplete();
     } catch (err) {
       setError(err.message);
@@ -38,7 +38,7 @@ export default function AgtSyncButton({ user, onSyncComplete }) {
     setError(null);
     setResult(null);
     try {
-      const res = await base44.functions.invoke('agtFeed', {});
+      const res = await appApi.functions.invoke('agtFeed', {});
       setResult(res.data);
       onSyncComplete();
     } catch (err) {

@@ -1,0 +1,18 @@
+export interface BaseModel { id: string; created_date: string; updated_date: string }
+export interface User extends BaseModel { email: string; full_name?: string; phone?: string; nif?: string; role: string; agt_consent?: boolean; agt_consent_date?: string }
+export interface Account extends BaseModel { name: string; bank_name: string; iban?: string; balance: number; type: 'checking'|'savings'|'cash'; color?: string; is_active: boolean }
+export interface Transaction extends BaseModel { description: string; amount: number; date: string; type: 'income'|'expense'|'transfer'; account_id: string; category_id?: string; invoice_id?: string; notes?: string }
+export interface Category extends BaseModel { name: string; type: 'income'|'expense'; icon?: string; color?: string; is_deductible?: boolean; deductible_type?: DeductibleType }
+export type DeductibleType = 'none'|'saude'|'educacao'|'habitacao'|'pensao_alimentos'|'previdencia';
+export interface Invoice extends BaseModel { issuer_name: string; issuer_nif?: string; document_number?: string; amount: number; issue_date?: string; due_date: string; payment_method?: 'mcx_reference'|'iban'|'rupe'|'manual'; entity?: string; reference?: string; iban?: string; status: 'pending'|'paid'|'overdue'; paid_date?: string; category_id?: string; has_nif?: boolean; deductible_type?: DeductibleType; source?: 'manual'|'photo_ocr'|'partner'|'agt'; agt_status?: 'none'|'emitted'|'paid'; user_nif?: string }
+export interface Budget extends BaseModel { category_id: string; category_name?: string; month: string; limit: number; spent?: number }
+export interface Dependent extends BaseModel { name: string; relationship: 'conjuge'|'filho'|'pai'|'mae'|'outro'; nif?: string; birth_date?: string }
+export interface Subscription extends BaseModel { user_id: string; plan: 'monthly'|'yearly'; amount: number; status: 'pending'|'active'|'expired'|'cancelled'; start_date?: string; end_date?: string; proxypay_reference?: string; proxypay_entity?: string }
+export interface PartnerConsent extends BaseModel { partner_name: string; partner_nif: string; api_key_hash: string; api_key_preview?: string; consent_status: 'active'|'revoked'; consent_date?: string; revoked_date?: string; scopes: string[]; user_nif?: string }
+export interface Approval extends BaseModel { entity_type: 'payment'|'invoice'|'transfer'; entity_id?: string; entity_description: string; amount: number; supplier_name?: string; status: 'pending'|'approved'|'rejected'; requested_by_name?: string }
+export interface AuditLog extends BaseModel { action: string; actor_id: string; actor_name: string; actor_role?: string; target_entity?: string; target_id?: string; reason?: string; details?: string; module: string }
+export interface Supplier extends BaseModel { name: string; nif: string; iban?: string; category?: string; payment_terms_days?: number; withholding_rate?: number; applies_withholding?: boolean; contact_name?: string; contact_phone?: string; contact_email?: string; is_active?: boolean }
+export interface CostCenter extends BaseModel { code: string; name: string; budget_monthly?: number; budget_yearly?: number; responsible_name?: string; is_active?: boolean }
+export interface DataRequest extends BaseModel { user_name: string; user_email?: string; request_type: 'export'|'delete'|'rectification'; description?: string; requested_date?: string; deadline_date?: string; status: 'pending'|'completed'; completed_date?: string; handled_by?: string }
+export interface ApiError { message: string; status: number; details?: unknown }
+export interface AuthTokens { access_token: string; token_type: 'Bearer'; expires_in: number }

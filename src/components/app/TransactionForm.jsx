@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 
 export default function TransactionForm({ open, onClose, onSaved, transaction, accounts, categories }) {
   const [saving, setSaving] = useState(false);
@@ -60,9 +60,9 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
       };
 
       if (transaction) {
-        await base44.entities.Transaction.update(transaction.id, data);
+        await appApi.entities.Transaction.update(transaction.id, data);
       } else {
-        await base44.entities.Transaction.create(data);
+        await appApi.entities.Transaction.create(data);
       }
       onSaved();
       onClose();

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import Seo from '@/components/Seo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,7 +28,11 @@ export default function Registo() {
     }
     setLoading(true);
     try {
-      await base44.auth.register({ email, password });
+      const result = await appApi.auth.register({ email, password });
+      if (result?.access_token) {
+        window.location.href = '/app';
+        return;
+      }
       setShowOtp(true);
     } catch (err) {
       setError(err.message || 'O registo falhou.');
@@ -41,9 +45,9 @@ export default function Registo() {
     setError('');
     setLoading(true);
     try {
-      const result = await base44.auth.verifyOtp({ email, otpCode });
+      const result = await appApi.auth.verifyOtp({ email, otpCode });
       if (result?.access_token) {
-        base44.auth.setToken(result.access_token);
+        appApi.auth.setToken(result.access_token);
       }
       window.location.href = '/app';
     } catch (err) {
@@ -56,7 +60,7 @@ export default function Registo() {
   const handleResend = async () => {
     setError('');
     try {
-      await base44.auth.resendOtp(email);
+      await appApi.auth.resendOtp(email);
       toast({
         title: 'Código enviado',
         description: 'Verifica o teu email para o novo código.',
@@ -67,7 +71,7 @@ export default function Registo() {
   };
 
   const handleGoogle = () => {
-    base44.auth.loginWithProvider('google', '/app');
+    appApi.auth.loginWithProvider('google', '/app');
   };
 
   if (showOtp) {

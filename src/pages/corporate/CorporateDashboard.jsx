@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import { TrendingUp, TrendingDown, Wallet, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { formatKz, formatDate } from '@/lib/format';
 
@@ -14,9 +14,9 @@ export default function CorporateDashboard() {
   async function load() {
     try {
       const [accts, txns, approvalList] = await Promise.all([
-        base44.entities.Account.list(),
-        base44.entities.Transaction.list('-date', 50),
-        base44.entities.Approval.list('-created_date', 20),
+        appApi.entities.Account.list(),
+        appApi.entities.Transaction.list('-date', 50),
+        appApi.entities.Approval.list('-created_date', 20),
       ]);
       setAccounts(accts);
       setTransactions(txns);

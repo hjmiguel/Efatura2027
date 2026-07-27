@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import { formatKz, formatKzShort, getFirstName, formatDateShort } from '@/lib/format';
 import { Plus, FileText, CreditCard, Building2, ArrowUpRight, ArrowDownRight, AlertTriangle } from 'lucide-react';
 
@@ -37,10 +37,10 @@ export default function Home() {
   async function loadData() {
     try {
       const [me, accts, txns, allInvoices] = await Promise.all([
-        base44.auth.me(),
-        base44.entities.Account.list(),
-        base44.entities.Transaction.list('-date', 50),
-        base44.entities.Invoice.list(),
+        appApi.auth.me(),
+        appApi.entities.Account.list(),
+        appApi.entities.Transaction.list('-date', 50),
+        appApi.entities.Invoice.list(),
       ]);
 
       setUser(me);

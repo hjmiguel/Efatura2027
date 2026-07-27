@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Download, Trash2, Shield, Loader2, AlertTriangle } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
@@ -37,9 +37,9 @@ export default function ProfilePrivacy() {
     setExporting(true);
     try {
       const [transactions, invoices, accounts] = await Promise.all([
-        base44.entities.Transaction.list('-date', 500),
-        base44.entities.Invoice.list('-issue_date', 500),
-        base44.entities.Account.list(),
+        appApi.entities.Transaction.list('-date', 500),
+        appApi.entities.Invoice.list('-issue_date', 500),
+        appApi.entities.Account.list(),
       ]);
 
       downloadCSV('gestao-transacoes.csv', toCSV(transactions, ['description', 'amount', 'date', 'type', 'account_id', 'category_id', 'notes']));
@@ -58,18 +58,18 @@ export default function ProfilePrivacy() {
     try {
       // Delete user data
       const [transactions, invoices, accounts, dependents] = await Promise.all([
-        base44.entities.Transaction.list('-date', 500),
-        base44.entities.Invoice.list('-issue_date', 500),
-        base44.entities.Account.list(),
-        base44.entities.Dependent.list(),
+        appApi.entities.Transaction.list('-date', 500),
+        appApi.entities.Invoice.list('-issue_date', 500),
+        appApi.entities.Account.list(),
+        appApi.entities.Dependent.list(),
       ]);
 
-      await base44.entities.Transaction.deleteMany({ id: { $in: transactions.map(t => t.id) } });
-      await base44.entities.Invoice.deleteMany({ id: { $in: invoices.map(i => i.id) } });
-      await base44.entities.Account.deleteMany({ id: { $in: accounts.map(a => a.id) } });
-      await base44.entities.Dependent.deleteMany({ id: { $in: dependents.map(d => d.id) } });
+      await appApi.entities.Transaction.deleteMany({ id: { $in: transactions.map(t => t.id) } });
+      await appApi.entities.Invoice.deleteMany({ id: { $in: invoices.map(i => i.id) } });
+      await appApi.entities.Account.deleteMany({ id: { $in: accounts.map(a => a.id) } });
+      await appApi.entities.Dependent.deleteMany({ id: { $in: dependents.map(d => d.id) } });
 
-      await base44.auth.logout('/entrar');
+      await appApi.auth.logout('/entrar');
     } catch (err) {
       console.error('Erro ao eliminar conta:', err);
       setDeleting(false);

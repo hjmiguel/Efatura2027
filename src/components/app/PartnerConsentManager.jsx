@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Building2, Trash2, Plus, Copy, Check, Loader2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import { formatDate } from '@/lib/format';
 
 async function sha256Browser(message) {
@@ -33,7 +33,7 @@ export default function PartnerConsentManager({ consents: propConsents, userNif,
 
   async function loadConsents() {
     try {
-      const data = await base44.entities.PartnerConsent.list('-created_date', 100);
+      const data = await appApi.entities.PartnerConsent.list('-created_date', 100);
       setConsents(data);
     } catch (err) {
       console.error(err);
@@ -50,7 +50,7 @@ export default function PartnerConsentManager({ consents: propConsents, userNif,
     try {
       const apiKey = generateApiKey();
       const hash = await sha256Browser(apiKey);
-      await base44.entities.PartnerConsent.create({
+      await appApi.entities.PartnerConsent.create({
         partner_name: partnerName,
         partner_nif: partnerNif,
         api_key_hash: hash,
@@ -74,7 +74,7 @@ export default function PartnerConsentManager({ consents: propConsents, userNif,
   async function handleRevoke(id) {
     if (!confirm('Revogar consentimento? A empresa perde acesso imediatamente.')) return;
     try {
-      await base44.entities.PartnerConsent.update(id, {
+      await appApi.entities.PartnerConsent.update(id, {
         consent_status: 'revoked',
         revoked_date: new Date().toISOString()
       });

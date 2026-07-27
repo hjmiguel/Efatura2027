@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import {
   Camera, FileUp, Crop, ScanLine, FileCheck2, Loader2, Search,
   Plus, ChevronRight, X, RotateCw, HardDrive,
@@ -27,7 +27,7 @@ export default function Documentos() {
 
   async function load() {
     try {
-      const data = await base44.entities.Invoice.filter({ source: 'photo_ocr' }, '-created_date', 100);
+      const data = await appApi.entities.Invoice.filter({ source: 'photo_ocr' }, '-created_date', 100);
       setInvoices(data);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
@@ -194,8 +194,8 @@ function OcrFlow({ onClose, onDone }) {
   const extract = async () => {
     setExtracting(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      const res = await base44.integrations.Core.InvokeLLM({
+      const { file_url } = await appApi.integrations.Core.UploadFile({ file });
+      const res = await appApi.integrations.Core.InvokeLLM({
         prompt: 'Extrai os dados desta fatura angolana. Devolve JSON com: issuer_name, issuer_nif, document_number, amount (numérico em kwanza), issue_date (YYYY-MM-DD), due_date, entity (Multicaixa), reference (Multicaixa), iban, has_nif (boolean), deductible_type (um de: none, saude, educacao, habitacao, pensao_alimentos, previdencia — classifica com base no emitente: farmácias/clínicas=hospitais=saude, escolas=universidades=educacao, bancos seguros=previdencia, etc.). Se um campo não existir, usa null.',
         file_urls: [file_url],
         response_json_schema: {
@@ -219,7 +219,7 @@ function OcrFlow({ onClose, onDone }) {
   const saveInvoice = async () => {
     setSaving(true);
     try {
-      await base44.entities.Invoice.create({
+      await appApi.entities.Invoice.create({
         issuer_name: extracted.issuer_name || 'Desconhecido',
         issuer_nif: extracted.issuer_nif || '',
         document_number: extracted.document_number || '',

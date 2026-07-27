@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import {
   CheckCircle2, CalendarDays, Crown,
   Smartphone, Landmark, Receipt, ChevronRight, FileText, AlertCircle,
@@ -34,8 +34,8 @@ export default function Pagamentos() {
   async function load() {
     try {
       const [data, accounts] = await Promise.all([
-        base44.entities.Invoice.list(),
-        base44.entities.Account.list(),
+        appApi.entities.Invoice.list(),
+        appApi.entities.Account.list(),
       ]);
       setInvoices(data);
       setPatrimonio(accounts.reduce((s, a) => s + (a.balance || 0), 0));
@@ -46,7 +46,7 @@ export default function Pagamentos() {
   const markPaid = async (invoice) => {
     try {
       const paidDate = new Date().toISOString().slice(0, 10);
-      await base44.entities.Invoice.update(invoice.id, { status: 'paid', paid_date: paidDate });
+      await appApi.entities.Invoice.update(invoice.id, { status: 'paid', paid_date: paidDate });
       setInvoices((prev) => prev.map((i) => (i.id === invoice.id ? { ...i, status: 'paid', paid_date: paidDate } : i)));
     } catch (err) { console.error(err); }
   };

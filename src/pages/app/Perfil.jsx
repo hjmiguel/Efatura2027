@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import { LogOut, User, Shield, Users, Lock, Crown, WifiOff, Download, ChevronRight } from 'lucide-react';
 import ProfileAccount from '@/components/app/profile/ProfileAccount';
 import ProfileSecurity from '@/components/app/profile/ProfileSecurity';
@@ -27,14 +27,14 @@ export default function Perfil() {
 
   async function loadUser() {
     try {
-      const me = await base44.auth.me();
+      const me = await appApi.auth.me();
       setUser(me);
     } catch (err) { console.error('Erro:', err); }
     finally { setLoading(false); }
   }
 
   async function handleLogout() {
-    await base44.auth.logout('/entrar');
+    await appApi.auth.logout('/entrar');
   }
 
   if (loading) {

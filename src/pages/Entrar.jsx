@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import Seo from '@/components/Seo';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import GoogleIcon from '@/components/GoogleIcon';
@@ -16,7 +16,7 @@ export default function Entrar() {
     setError('');
     setLoading(true);
     try {
-      await base44.auth.loginViaEmailPassword(email, password);
+      await appApi.auth.loginViaEmailPassword(email, password);
       window.location.href = '/app';
     } catch (err) {
       setError(err.message || 'Email ou palavra-passe incorretos.');
@@ -26,7 +26,7 @@ export default function Entrar() {
   };
 
   const handleGoogle = () => {
-    base44.auth.loginWithProvider('google', '/app');
+    appApi.auth.loginWithProvider('google', '/app');
   };
 
   return (

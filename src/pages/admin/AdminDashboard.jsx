@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { formatKz, formatDate } from '@/lib/format';
 
@@ -45,12 +45,12 @@ export default function AdminDashboard() {
   async function loadData() {
     try {
       const [u, inv, txn, logs, cons, subs] = await Promise.all([
-        base44.entities.User.list(),
-        base44.entities.Invoice.list(),
-        base44.entities.Transaction.list(),
-        base44.entities.AuditLog.list('-created_date', 20),
-        base44.entities.PartnerConsent.list(),
-        base44.entities.Subscription.list(),
+        appApi.entities.User.list(),
+        appApi.entities.Invoice.list(),
+        appApi.entities.Transaction.list(),
+        appApi.entities.AuditLog.list('-created_date', 20),
+        appApi.entities.PartnerConsent.list(),
+        appApi.entities.Subscription.list(),
       ]);
       setUsers(u);
       setInvoices(inv);

@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Crown, Check, Loader2, Sparkles, Smartphone, Copy, ExternalLink } from 'lucide-react';
 import { formatKz } from '@/lib/format';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 
 const PREMIUM_PRICE = 2500;
 const MCX_DEEP_LINK = 'multicaixaexpress://';
@@ -34,7 +34,7 @@ export default function PremiumModal({ open, onOpenChange }) {
   const subscribe = async () => {
     setProcessing(true);
     try {
-      const res = await base44.functions.invoke('createSubscription', { plan: 'monthly' });
+      const res = await appApi.functions.invoke('createSubscription', { plan: 'monthly' });
       setPayment(res.data);
       setStep('payment');
       startPolling(res.data.subscription_id);
@@ -49,7 +49,7 @@ export default function PremiumModal({ open, onOpenChange }) {
     if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
       try {
-        const sub = await base44.entities.Subscription.get(subscriptionId);
+        const sub = await appApi.entities.Subscription.get(subscriptionId);
         if (sub.status === 'active') {
           clearInterval(pollRef.current);
           pollRef.current = null;

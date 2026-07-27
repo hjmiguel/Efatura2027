@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import { Send, Sparkles, Loader2, Mic } from 'lucide-react';
 import { getFirstName, formatKzShort } from '@/lib/format';
 import ChatMessage from '@/components/app/ChatMessage';
@@ -14,16 +14,16 @@ export default function Assistente() {
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    base44.auth.me().then(u => setUserName(getFirstName(u?.full_name) || 'utilizador')).catch(() => {});
+    appApi.auth.me().then(u => setUserName(getFirstName(u?.full_name) || 'utilizador')).catch(() => {});
     loadHero();
   }, []);
 
   async function loadHero() {
     try {
       const [accts, txns, invs] = await Promise.all([
-        base44.entities.Account.list(),
-        base44.entities.Transaction.list('-date', 50),
-        base44.entities.Invoice.filter({ status: 'pending' }),
+        appApi.entities.Account.list(),
+        appApi.entities.Transaction.list('-date', 50),
+        appApi.entities.Invoice.filter({ status: 'pending' }),
       ]);
       const now = new Date();
       const monthExp = txns
@@ -49,7 +49,7 @@ export default function Assistente() {
     setInput('');
     setLoading(true);
     try {
-      const res = await base44.functions.invoke('assistantChat', {
+      const res = await appApi.functions.invoke('assistantChat', {
         message: msgText,
         history: messages.map(m => ({ role: m.role, content: m.content }))
       });

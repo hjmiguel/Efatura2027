@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import { formatKz, formatDate } from '@/lib/format';
 import DependentForm from '@/components/app/DependentForm';
 import { Plus, Download, AlertTriangle, Pencil, Trash2, Users, FileText } from 'lucide-react';
@@ -27,8 +27,8 @@ export default function Dedutiveis() {
   async function loadData() {
     try {
       const [inv, deps] = await Promise.all([
-        base44.entities.Invoice.list(),
-        base44.entities.Dependent.list(),
+        appApi.entities.Invoice.list(),
+        appApi.entities.Dependent.list(),
       ]);
       setInvoices(inv);
       setDependents(deps);
@@ -76,7 +76,7 @@ export default function Dedutiveis() {
 
   async function handleDeleteDep(id) {
     if (!confirm('Eliminar este dependente?')) return;
-    try { await base44.entities.Dependent.delete(id); setDependents(dependents.filter(d => d.id !== id)); }
+    try { await appApi.entities.Dependent.delete(id); setDependents(dependents.filter(d => d.id !== id)); }
     catch (err) { console.error('Erro:', err); }
   }
 

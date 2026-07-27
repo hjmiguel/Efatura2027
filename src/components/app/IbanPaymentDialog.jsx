@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Copy, Check, Upload, FileCheck2, Loader2, ShieldCheck } from 'lucide-react';
 import { formatKz, formatDate } from '@/lib/format';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 
 export default function IbanPaymentDialog({ invoice, open, onOpenChange, onPaid }) {
   const [step, setStep] = useState(1);
@@ -35,7 +35,7 @@ export default function IbanPaymentDialog({ invoice, open, onOpenChange, onPaid 
     setUploading(true);
     try {
       if (file) {
-        await base44.integrations.Core.UploadFile({ file });
+        await appApi.integrations.Core.UploadFile({ file });
       }
       await new Promise((r) => setTimeout(r, 800));
       setStep(4);

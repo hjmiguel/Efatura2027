@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Users, Loader2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import { formatDate } from '@/lib/format';
 import DependentForm from '@/components/app/DependentForm';
 
@@ -18,7 +18,7 @@ export default function ProfileDependents() {
 
   async function load() {
     try {
-      const data = await base44.entities.Dependent.list();
+      const data = await appApi.entities.Dependent.list();
       setDependents(data);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
@@ -27,7 +27,7 @@ export default function ProfileDependents() {
   async function handleDelete(id) {
     if (!confirm('Remover este dependente?')) return;
     try {
-      await base44.entities.Dependent.delete(id);
+      await appApi.entities.Dependent.delete(id);
       load();
     } catch (err) { console.error(err); }
   }

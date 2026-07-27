@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import { formatKz } from '@/lib/format';
 import AccountForm from '@/components/app/AccountForm';
 import { Plus, Pencil, Trash2, Wallet } from 'lucide-react';
@@ -16,7 +16,7 @@ export default function Contas() {
 
   async function loadAccounts() {
     try {
-      const accts = await base44.entities.Account.list();
+      const accts = await appApi.entities.Account.list();
       setAccounts(accts);
     } catch (err) { console.error('Erro:', err); }
     finally { setLoading(false); }
@@ -27,7 +27,7 @@ export default function Contas() {
 
   async function handleDelete(id) {
     if (!confirm('Eliminar esta conta? As transações associadas não serão removidas.')) return;
-    try { await base44.entities.Account.delete(id); setAccounts(accounts.filter(a => a.id !== id)); }
+    try { await appApi.entities.Account.delete(id); setAccounts(accounts.filter(a => a.id !== id)); }
     catch (err) { console.error('Erro:', err); }
   }
 

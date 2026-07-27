@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 
 const COLORS = ['#12715C', '#E8A23D', '#3a64a8', '#1C8A6A', '#DC2626', '#7C3AED'];
 const typeLabels = { checking: 'Conta à ordem', savings: 'Poupança', cash: 'Numerário' };
@@ -45,9 +45,9 @@ export default function AccountForm({ open, onClose, onSaved, account }) {
         is_active: form.is_active,
       };
       if (account) {
-        await base44.entities.Account.update(account.id, data);
+        await appApi.entities.Account.update(account.id, data);
       } else {
-        await base44.entities.Account.create(data);
+        await appApi.entities.Account.create(data);
       }
       onSaved();
       onClose();

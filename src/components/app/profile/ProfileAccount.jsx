@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User, Mail, Phone, Hash, Save, Loader2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 
 export default function ProfileAccount({ user, onUserChange }) {
   const [full_name, setFullName] = useState(user?.full_name || '');
@@ -12,7 +12,7 @@ export default function ProfileAccount({ user, onUserChange }) {
   async function handleSave() {
     setSaving(true);
     try {
-      await base44.auth.updateMe({ full_name, phone, nif });
+      await appApi.auth.updateMe({ full_name, phone, nif });
       onUserChange({ ...user, full_name, phone, nif });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);

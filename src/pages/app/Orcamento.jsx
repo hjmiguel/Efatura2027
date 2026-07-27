@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { appApi } from '@/api/appClient';
 import {
   PieChart, Plus, AlertTriangle, Lightbulb, Loader2, Pencil, X, Target, BarChart3, Download, FileText, TrendingUp,
   ShoppingCart, Car, Heart, GraduationCap, Home, CreditCard, Wallet, UtensilsCrossed, Bus, Pill, BookOpen, House,
@@ -53,9 +53,9 @@ export default function Orcamento() {
   async function load() {
     try {
       const [budgetsData, cats, txns] = await Promise.all([
-        base44.entities.Budget.filter({ month }),
-        base44.entities.Category.list(),
-        base44.entities.Transaction.list('-date', 200),
+        appApi.entities.Budget.filter({ month }),
+        appApi.entities.Category.list(),
+        appApi.entities.Transaction.list('-date', 200),
       ]);
       setCategories(cats.filter((c) => c.type === 'expense'));
       setTransactions(txns);
@@ -96,9 +96,9 @@ export default function Orcamento() {
     try {
       const existing = budgets.find((b) => b.category_id === categoryId);
       if (existing) {
-        await base44.entities.Budget.update(existing.id, { limit });
+        await appApi.entities.Budget.update(existing.id, { limit });
       } else {
-        await base44.entities.Budget.create({
+        await appApi.entities.Budget.create({
           category_id: categoryId, category_name: categoryName, month, limit, spent: 0,
         });
       }
@@ -110,7 +110,7 @@ export default function Orcamento() {
 
   const removeBudget = async (budgetId) => {
     try {
-      await base44.entities.Budget.delete(budgetId);
+      await appApi.entities.Budget.delete(budgetId);
       setBudgets((prev) => prev.filter((b) => b.id !== budgetId));
     } catch (err) { console.error(err); }
   };
@@ -122,7 +122,7 @@ export default function Orcamento() {
         .map((b) => `${b.category_name}: gastou ${formatKz(b.spent)} de ${formatKz(b.limit)} (${Math.round((b.spent / b.limit) * 100)}%)`)
         .join('; ');
       const prompt = `És um assistente financeiro para um utilizador angolano. Analisa este orçamento mensal e dá UM insight curto (máx 2 frases) em português de Angola, direto e útil. Não inventes valores nem prometas poupança fiscal. Dados: ${budgetSummary}. Total gasto: ${formatKz(totalSpent)} de ${formatKz(totalLimit)}.`;
-      const res = await base44.integrations.Core.InvokeLLM({ prompt });
+      const res = await appApi.integrations.Core.InvokeLLM({ prompt });
       setInsight(typeof res === 'string' ? res : res?.response || '');
     } catch (err) { console.error(err); }
     finally { setLoadingInsight(false); }
