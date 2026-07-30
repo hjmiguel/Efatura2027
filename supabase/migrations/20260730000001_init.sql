@@ -1,32 +1,26 @@
--- ============================================================================
--- Gestão+ — Esquema PostgreSQL inicial (migração JSON → Supabase)
--- Aplicar no SQL Editor do Supabase após criar o projeto.
--- Convenções: UUID PK, timestamptz, numeric(18,2) para kwanza, owner_id p/ isolamento.
--- ============================================================================
+# ============================================================================
+# Gestão+ — Esquema PostgreSQL inicial (migração JSON → Supabase)
+# Aplicar via: supabase db push  (após supabase link --project-ref xxxdsmyqrfritvhppnos)
+# Convenções: UUID PK, timestamptz, numeric(18,2) para kwanza, owner_id p/ isolamento.
+# ============================================================================
 
--- Extensão para gen_random_uuid()
 create extension if not exists "pgcrypto";
 
--- ---------------------------------------------------------------------------
 -- users (gestão própria de sessão pelo backend REST + JWT)
--- ---------------------------------------------------------------------------
 create table if not exists users (
-  id              uuid primary key default gen_random_uuid(),
-  email           text not null unique,
-  full_name       text default '',
-  phone           text,
-  nif             text,
-  role            text not null default 'user' check (role in ('admin','user','operator','support','auditor','partner','corporate_admin','corporate_finance','corporate_approver','corporate_read')),
-  password_hash   text not null,
-  agt_consent     boolean default false,
+  id               uuid primary key default gen_random_uuid(),
+  email            text not null unique,
+  full_name        text default '',
+  phone            text,
+  nif              text,
+  role             text not null default 'user' check (role in ('admin','user','operator','support','auditor','partner','corporate_admin','corporate_finance','corporate_approver','corporate_read')),
+  password_hash    text not null,
+  agt_consent      boolean default false,
   agt_consent_date timestamptz,
-  created_date    timestamptz not null default now(),
-  updated_date    timestamptz not null default now()
+  created_date     timestamptz not null default now(),
+  updated_date     timestamptz not null default now()
 );
 
--- ---------------------------------------------------------------------------
--- lookup: categorias
--- ---------------------------------------------------------------------------
 create table if not exists categories (
   id              uuid primary key default gen_random_uuid(),
   owner_id        uuid references users(id) on delete cascade,
@@ -41,9 +35,6 @@ create table if not exists categories (
 );
 create index if not exists idx_categories_owner on categories(owner_id);
 
--- ---------------------------------------------------------------------------
--- contas
--- ---------------------------------------------------------------------------
 create table if not exists accounts (
   id           uuid primary key default gen_random_uuid(),
   owner_id     uuid references users(id) on delete cascade,
@@ -59,9 +50,6 @@ create table if not exists accounts (
 );
 create index if not exists idx_accounts_owner on accounts(owner_id);
 
--- ---------------------------------------------------------------------------
--- faturas
--- ---------------------------------------------------------------------------
 create table if not exists invoices (
   id              uuid primary key default gen_random_uuid(),
   owner_id        uuid references users(id) on delete cascade,
@@ -90,47 +78,38 @@ create index if not exists idx_invoices_owner on invoices(owner_id);
 create index if not exists idx_invoices_status on invoices(status);
 create index if not exists idx_invoices_due on invoices(due_date);
 
--- ---------------------------------------------------------------------------
--- transações
--- ---------------------------------------------------------------------------
 create table if not exists transactions (
-  id          uuid primary key default gen_random_uuid(),
-  owner_id    uuid references users(id) on delete cascade,
-  description text not null,
-  amount      numeric(18,2) not null,
-  date        date not null,
-  type        text not null check (type in ('income','expense','transfer')),
-  account_id  uuid references accounts(id) on delete cascade,
-  category_id uuid references categories(id) on delete set null,
-  invoice_id  uuid references invoices(id) on delete set null,
-  notes       text,
-  created_date timestamptz not null default now(),
-  updated_date timestamptz not null default now()
+  id           uuid primary key default gen_random_uuid(),
+  owner_id      uuid references users(id) on delete cascade,
+  description   text not null,
+  amount        numeric(18,2) not null,
+  date          date not null,
+  type          text not null check (type in ('income','expense','transfer')),
+  account_id    uuid references accounts(id) on delete cascade,
+  category_id   uuid references categories(id) on delete set null,
+  invoice_id    uuid references invoices(id) on delete set null,
+  notes         text,
+  created_date  timestamptz not null default now(),
+  updated_date  timestamptz not null default now()
 );
 create index if not exists idx_transactions_owner on transactions(owner_id);
 create index if not exists idx_transactions_account on transactions(account_id);
 create index if not exists idx_transactions_date on transactions(date);
 
--- ---------------------------------------------------------------------------
--- orçamentos
--- ---------------------------------------------------------------------------
 create table if not exists budgets (
   id            uuid primary key default gen_random_uuid(),
   owner_id      uuid references users(id) on delete cascade,
   category_id   uuid references categories(id) on delete cascade,
   category_name text,
-  month         text not null,           -- YYYY-MM
+  month         text not null,
   limit         numeric(18,2) not null,
   spent         numeric(18,2) default 0,
-  created_date   timestamptz not null default now(),
-  updated_date   timestamptz not null default now(),
+  created_date  timestamptz not null default now(),
+  updated_date  timestamptz not null default now(),
   unique (owner_id, category_id, month)
 );
 create index if not exists idx_budgets_owner on budgets(owner_id);
 
--- ---------------------------------------------------------------------------
--- dependentes (IRPS)
--- ---------------------------------------------------------------------------
 create table if not exists dependents (
   id          uuid primary key default gen_random_uuid(),
   owner_id    uuid references users(id) on delete cascade,
@@ -143,9 +122,6 @@ create table if not exists dependents (
 );
 create index if not exists idx_dependents_owner on dependents(owner_id);
 
--- ---------------------------------------------------------------------------
--- subscrições (planos)
--- ---------------------------------------------------------------------------
 create table if not exists subscriptions (
   id                  uuid primary key default gen_random_uuid(),
   user_id             uuid references users(id) on delete cascade,
@@ -162,9 +138,6 @@ create table if not exists subscriptions (
 );
 create index if not exists idx_subscriptions_user on subscriptions(user_id);
 
--- ---------------------------------------------------------------------------
--- consentimentos de parceiros
--- ---------------------------------------------------------------------------
 create table if not exists partner_consents (
   id              uuid primary key default gen_random_uuid(),
   owner_id        uuid references users(id) on delete cascade,
@@ -182,9 +155,6 @@ create table if not exists partner_consents (
 );
 create index if not exists idx_partner_consents_owner on partner_consents(owner_id);
 
--- ---------------------------------------------------------------------------
--- aprovações (corporate)
--- ---------------------------------------------------------------------------
 create table if not exists approvals (
   id                 uuid primary key default gen_random_uuid(),
   owner_id           uuid references users(id) on delete cascade,
@@ -208,9 +178,6 @@ create table if not exists approvals (
 create index if not exists idx_approvals_owner on approvals(owner_id);
 create index if not exists idx_approvals_status on approvals(status);
 
--- ---------------------------------------------------------------------------
--- audit logs
--- ---------------------------------------------------------------------------
 create table if not exists audit_logs (
   id            uuid primary key default gen_random_uuid(),
   action        text not null,
@@ -229,48 +196,39 @@ create table if not exists audit_logs (
 create index if not exists idx_audit_logs_actor on audit_logs(actor_id);
 create index if not exists idx_audit_logs_module on audit_logs(module);
 
--- ---------------------------------------------------------------------------
--- fornecedores (corporate)
--- ---------------------------------------------------------------------------
 create table if not exists suppliers (
-  id                 uuid primary key default gen_random_uuid(),
-  owner_id           uuid references users(id) on delete cascade,
-  name               text not null,
-  nif                text not null,
-  iban               text,
-  category           text,
-  payment_terms_days integer default 30,
-  withholding_rate   numeric(5,2) default 6.5,
+  id                  uuid primary key default gen_random_uuid(),
+  owner_id            uuid references users(id) on delete cascade,
+  name                text not null,
+  nif                 text not null,
+  iban                text,
+  category            text,
+  payment_terms_days  integer default 30,
+  withholding_rate    numeric(5,2) default 6.5,
   applies_withholding boolean default true,
-  contact_name       text,
-  contact_phone      text,
-  contact_email      text,
-  is_active          boolean default true,
-  created_date       timestamptz not null default now(),
-  updated_date       timestamptz not null default now()
+  contact_name        text,
+  contact_phone       text,
+  contact_email       text,
+  is_active           boolean default true,
+  created_date        timestamptz not null default now(),
+  updated_date        timestamptz not null default now()
 );
 create index if not exists idx_suppliers_owner on suppliers(owner_id);
 
--- ---------------------------------------------------------------------------
--- centros de custo (corporate)
--- ---------------------------------------------------------------------------
 create table if not exists cost_centers (
-  id              uuid primary key default gen_random_uuid(),
-  owner_id        uuid references users(id) on delete cascade,
-  code            text not null,
-  name            text not null,
-  budget_monthly  numeric(18,2),
-  budget_yearly   numeric(18,2),
+  id               uuid primary key default gen_random_uuid(),
+  owner_id         uuid references users(id) on delete cascade,
+  code             text not null,
+  name             text not null,
+  budget_monthly   numeric(18,2),
+  budget_yearly    numeric(18,2),
   responsible_name text,
-  is_active       boolean default true,
-  created_date    timestamptz not null default now(),
-  updated_date    timestamptz not null default now()
+  is_active        boolean default true,
+  created_date     timestamptz not null default now(),
+  updated_date     timestamptz not null default now()
 );
 create index if not exists idx_cost_centers_owner on cost_centers(owner_id);
 
--- ---------------------------------------------------------------------------
--- pedidos de dados (Lei 22/11)
--- ---------------------------------------------------------------------------
 create table if not exists data_requests (
   id             uuid primary key default gen_random_uuid(),
   owner_id       uuid references users(id) on delete cascade,
@@ -288,18 +246,12 @@ create table if not exists data_requests (
 );
 create index if not exists idx_data_requests_owner on data_requests(owner_id);
 
--- ---------------------------------------------------------------------------
--- resets de palavra-passe
--- ---------------------------------------------------------------------------
 create table if not exists password_resets (
-  token    text primary key,
-  user_id  uuid references users(id) on delete cascade,
-  expires  timestamptz not null
+  token   text primary key,
+  user_id uuid references users(id) on delete cascade,
+  expires timestamptz not null
 );
 
--- ---------------------------------------------------------------------------
--- trigger: atualizar updated_date automaticamente
--- ---------------------------------------------------------------------------
 create or replace function set_updated_date()
 returns trigger language plpgsql as $$
 begin
