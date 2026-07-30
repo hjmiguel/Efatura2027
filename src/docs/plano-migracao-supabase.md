@@ -1,6 +1,6 @@
 # Plano de Migração — Persistência JSON → Supabase (PostgreSQL)
 
-**Estado:** Esquema SQL pronto · Aguarda criação do projeto Supabase
+**Estado:** Fase 0 concluída (projeto `gesplus` criado + ligado) · Fase 1 concluída (`db.mjs` + `server.mjs` em Postgres) · Aguarda `supabase db push` para testar
 **Última atualização:** 2026-07-30
 
 ---
