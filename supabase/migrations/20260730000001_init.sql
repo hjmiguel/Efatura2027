@@ -102,7 +102,7 @@ create table if not exists budgets (
   category_id   uuid references categories(id) on delete cascade,
   category_name text,
   month         text not null,
-  limit         numeric(18,2) not null,
+  "limit"       numeric(18,2) not null,
   spent         numeric(18,2) default 0,
   created_date  timestamptz not null default now(),
   updated_date  timestamptz not null default now(),

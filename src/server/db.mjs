@@ -46,6 +46,7 @@ export async function initSchema() {
 }
 
 const colsOf = table => columnsCache.get(table) || [];
+const q = col => `"${col}"`;
 
 function filterKeys(table, data) {
   const allowed = colsOf(table);
@@ -73,10 +74,10 @@ function buildWhere(table, filter, ownerId, isAdmin, startIndex = 1) {
     if (!cols.includes(k)) continue;
     if (v && typeof v === 'object' && !Array.isArray(v) && v !== null && Array.isArray(v.$in)) {
       const placeholders = v.$in.map(() => `$${i++}`).join(',');
-      conds.push(`${k} IN (${placeholders})`);
+      conds.push(`${q(k)} IN (${placeholders})`);
       params.push(...v.$in);
     } else {
-      conds.push(`${k} = $${i++}`);
+      conds.push(`${q(k)} = $${i++}`);
       params.push(v);
     }
   }
@@ -92,7 +93,7 @@ export async function listResource(resource, { ownerId, isAdmin, filter, sort, l
   if (sort) {
     const desc = sort.startsWith('-');
     const key = sort.replace(/^-/, '');
-    if (colsOf(table).includes(key)) sql += ` ORDER BY ${key} ${desc ? 'DESC' : 'ASC'}`;
+    if (colsOf(table).includes(key)) sql += ` ORDER BY ${q(key)} ${desc ? 'DESC' : 'ASC'}`;
   }
   if (limit > 0) {
     sql += ` LIMIT $${params.length + 1}`;
@@ -113,9 +114,9 @@ export async function createResource(resource, ownerId, data) {
   const vals = [];
   const ph = [];
   let i = 1;
-  if (hasOwner(table)) { cols.push('owner_id'); vals.push(ownerId); ph.push(`$${i++}`); }
+  if (hasOwner(table)) { cols.push(q('owner_id')); vals.push(ownerId); ph.push(`$${i++}`); }
   for (const [k, v] of Object.entries(filtered)) {
-    cols.push(k); vals.push(v); ph.push(`$${i++}`);
+    cols.push(q(k)); vals.push(v); ph.push(`$${i++}`);
   }
   const { rows } = await pool.query(
     `INSERT INTO ${table} (${cols.join(',')}) VALUES (${ph.join(',')}) RETURNING *`,
@@ -134,7 +135,7 @@ export async function updateResource(resource, id, data, ctx) {
   const setParams = [];
   let i = 1;
   for (const [k, v] of setEntries) {
-    setClauses.push(`${k} = $${i++}`);
+    setClauses.push(`${q(k)} = $${i++}`);
     setParams.push(v);
   }
   const { where, params: whereParams } = buildWhere(table, {}, ctx.ownerId, ctx.isAdmin, i);
