@@ -1,8 +1,8 @@
-# ============================================================================
-# Gestão+ — Esquema PostgreSQL inicial (migração JSON → Supabase)
-# Aplicar via: supabase db push  (após supabase link --project-ref xxxdsmyqrfritvhppnos)
-# Convenções: UUID PK, timestamptz, numeric(18,2) para kwanza, owner_id p/ isolamento.
-# ============================================================================
+-- ============================================================================
+-- Gestão+ — Esquema PostgreSQL inicial (migração JSON → Supabase)
+-- Aplicar colando este ficheiro completo no SQL Editor do Supabase e clicando Run.
+-- Convenções: UUID PK, timestamptz, numeric(18,2) para kwanza, owner_id p/ isolamento.
+-- ============================================================================
 
 create extension if not exists "pgcrypto";
 
