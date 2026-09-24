@@ -2,7 +2,7 @@
 // Substitui a persistência JSON (loadDb/saveDb) do server.mjs.
 // A API REST do server.mjs mantém-se idêntica — só a origem dos dados muda.
 
-import pg from 'node:pg';
+import pg from 'pg';
 import { randomBytes } from 'node:crypto';
 
 const { Pool, types } = pg;
