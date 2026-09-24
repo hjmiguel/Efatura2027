@@ -19,6 +19,7 @@ function json(res,status,data) { res.writeHead(status, {'Content-Type':'applicat
 async function body(req) { const chunks=[]; for await (const chunk of req) chunks.push(chunk); return chunks.length?JSON.parse(Buffer.concat(chunks).toString()):{}; }
 function publicUser(user) { const { password_hash, ...safe }=user; return safe; }
 async function proxy(path,payload) { const base=process.env.EXTERNAL_SERVICES_URL; if(!base) throw Object.assign(new Error('Serviço externo não configurado'),{status:503}); const response=await fetch(`${base}${path}`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${process.env.EXTERNAL_SERVICES_KEY||''}`},body:JSON.stringify(payload)}); const data=await response.json(); if(!response.ok) throw Object.assign(new Error(data.message||'Serviço externo indisponível'),{status:response.status}); return data; }
+async function callOcrFunction(payload) { const url=process.env.OCR_FUNCTION_URL||'https://gestao-mais-angola.base44.app/functions/ocrExtractInvoice'; const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const data=await response.json(); if(!response.ok) throw Object.assign(new Error(data.error||data.message||'Falha na extração OCR'),{status:response.status}); return data; }
 
 const server=http.createServer(async(req,res)=>{ try {
   if(req.method==='OPTIONS') return json(res,204);
@@ -41,7 +42,7 @@ const server=http.createServer(async(req,res)=>{ try {
   const userResource=path.match(/^\/resources\/users\/([^/]+)$/); if(userResource&&req.method==='PATCH'){ if(user.role!=='admin')return json(res,403,{message:'Acesso reservado a administradores'}); const target=await db.patchUser(userResource[1],await body(req)); if(!target)return json(res,404,{message:'Utilizador não encontrado'}); return json(res,200,publicUser(target)); }
 
   if(path==='/files'&&req.method==='POST'){ const data=await body(req); const ext=(data.name||'file').split('.').pop().replace(/[^a-z0-9]/gi,''); const name=`${randomUUID()}.${ext}`; await mkdir(UPLOAD_DIR,{recursive:true}); await writeFile(resolve(UPLOAD_DIR,name),Buffer.from(String(data.data).split(',').pop(),'base64')); return json(res,201,{file_url:`${process.env.PUBLIC_API_URL||`http://localhost:${PORT}`}/uploads/${name}`}); }
-  if(path.startsWith('/ocr/')&&req.method==='POST') return json(res,200,await proxy('/ocr/invoices',await body(req)));
+  if(path.startsWith('/ocr/')&&req.method==='POST') return json(res,200,await callOcrFunction(await body(req)));
   if(path==='/ai/complete'&&req.method==='POST') return json(res,200,await proxy('/ai/complete',await body(req)));
   if(path.startsWith('/actions/')&&req.method==='POST') return json(res,200,await proxy(path,await body(req)));
 

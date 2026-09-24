@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { appApi } from '@/api/appClient';
+import { ocrService } from '@/services/integrationServices';
 import {
   Camera, FileUp, Crop, ScanLine, FileCheck2, Loader2, Search,
   Plus, ChevronRight, X, RotateCw, HardDrive,
@@ -194,22 +195,13 @@ function OcrFlow({ onClose, onDone }) {
   const extract = async () => {
     setExtracting(true);
     try {
-      const { file_url } = await appApi.integrations.Core.UploadFile({ file });
-      const res = await appApi.integrations.Core.InvokeLLM({
-        prompt: 'Extrai os dados desta fatura angolana. Devolve JSON com: issuer_name, issuer_nif, document_number, amount (numérico em kwanza), issue_date (YYYY-MM-DD), due_date, entity (Multicaixa), reference (Multicaixa), iban, has_nif (boolean), deductible_type (um de: none, saude, educacao, habitacao, pensao_alimentos, previdencia — classifica com base no emitente: farmácias/clínicas=hospitais=saude, escolas=universidades=educacao, bancos seguros=previdencia, etc.). Se um campo não existir, usa null.',
-        file_urls: [file_url],
-        response_json_schema: {
-          type: 'object',
-          properties: {
-            issuer_name: { type: 'string' }, issuer_nif: { type: 'string' },
-            document_number: { type: 'string' }, amount: { type: 'number' },
-            issue_date: { type: 'string' }, due_date: { type: 'string' },
-            entity: { type: 'string' }, reference: { type: 'string' },
-            iban: { type: 'string' }, has_nif: { type: 'boolean' },
-            deductible_type: { type: 'string' },
-          },
-        },
+      const imageBase64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
+      const res = await ocrService.extractInvoiceFromImage(imageBase64, file.type, file.name);
       setExtracted(res);
       setStep(4);
     } catch (err) { console.error(err); }
