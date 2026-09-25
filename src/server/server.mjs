@@ -57,4 +57,8 @@ const server=http.createServer(async(req,res)=>{ try {
   return json(res,404,{message:'Rota não encontrada'});
 }catch(error){ console.error(error); return json(res,error.status||500,{message:error.message||'Erro interno'}); }});
 
-db.initSchema().then(()=>server.listen(PORT,()=>console.log(`Gestão+ API (Postgres) em http://localhost:${PORT}/api`))).catch(err=>{ console.error('Falha ao inicializar schema:',err); process.exit(1); });
+if (!process.env.DATABASE_URL) console.error('AVISO: DATABASE_URL não está definida neste processo — os pedidos que dependem da base de dados vão falhar.');
+db.initSchema()
+  .then(()=>console.log('Schema da base de dados carregado com sucesso.'))
+  .catch(err=>console.error('Falha ao inicializar schema (a API arranca mesmo assim; pedidos à base de dados vão devolver erro):', err.message));
+server.listen(PORT,()=>console.log(`Gestão+ API em http://localhost:${PORT}/api`));
