@@ -109,6 +109,8 @@ export default function Pagamentos() {
             key={t.id}
             onClick={() => setTab(t.id)}
             className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors border ${
+              t.id === 'compromissos' ? 'hidden md:flex md:items-center md:justify-center' : ''
+            } ${
               tab === t.id ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-muted-foreground hover:text-ink'
             }`}
           >
