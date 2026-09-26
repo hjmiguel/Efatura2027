@@ -5,7 +5,7 @@ import Seo from '@/components/Seo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Mail, Lock, Loader2, UserPlus } from 'lucide-react';
+import { Mail, Lock, Loader2, UserPlus, Phone, IdCard } from 'lucide-react';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { toast } from '@/components/ui/use-toast';
 import GoogleIcon from '@/components/GoogleIcon';
@@ -14,6 +14,8 @@ export default function Registo() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [nif, setNif] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
@@ -26,10 +28,16 @@ export default function Registo() {
       setError('As palavras-passe não coincidem.');
       return;
     }
+    if (!phone.trim() || !nif.trim()) {
+      setError('O número de telefone e o NIF são obrigatórios.');
+      return;
+    }
     setLoading(true);
     try {
       const result = await appApi.auth.register({ email, password });
       if (result?.access_token) {
+        appApi.auth.setToken(result.access_token);
+        await appApi.auth.updateMe({ phone, nif });
         window.location.href = '/app';
         return;
       }
@@ -49,6 +57,7 @@ export default function Registo() {
       if (result?.access_token) {
         appApi.auth.setToken(result.access_token);
       }
+      await appApi.auth.updateMe({ phone, nif });
       window.location.href = '/app';
     } catch (err) {
       setError(err.message || 'Código de verificação inválido.');
@@ -219,6 +228,37 @@ export default function Registo() {
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="pl-10 h-12"
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Número de telefone</Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-2" />
+                <Input
+                  id="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  placeholder="9XX XXX XXX"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="pl-10 h-12"
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="nif">NIF</Label>
+              <div className="relative">
+                <IdCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-2" />
+                <Input
+                  id="nif"
+                  type="text"
+                  placeholder="O teu número de identificação fiscal"
+                  value={nif}
+                  onChange={(e) => setNif(e.target.value)}
                   className="pl-10 h-12"
                   required
                 />

@@ -16,6 +16,7 @@ import Entrar from './pages/Entrar';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Onboarding from './pages/Onboarding';
+import CompletarPerfil from './pages/CompletarPerfil';
 import Termos from './pages/Termos';
 import Privacidade from './pages/Privacidade';
 import Home from './pages/app/Home';
@@ -81,6 +82,7 @@ const AuthenticatedApp = () => {
       <Route path="/termos" element={<Termos />} />
       <Route path="/privacidade" element={<Privacidade />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
+        <Route path="/completar-perfil" element={<CompletarPerfil />} />
         <Route element={<AppLayout />}>
           <Route path="/app" element={<Home />} />
           <Route path="/app/adicionar" element={<Adicionar />} />
