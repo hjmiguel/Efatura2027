@@ -12,7 +12,9 @@ export default function Assistente() {
   const [userName, setUserName] = useState('');
   const [heroData, setHeroData] = useState({ patrimonio: 0, monthExpense: 0, invoiceCount: 0 });
   const [voiceOn, setVoiceOn] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
   const scrollRef = useRef(null);
+  const recognitionRef = useRef(null);
 
   const speak = (text) => {
     if (!voiceOn || !text || !('speechSynthesis' in window)) return;
@@ -25,6 +27,28 @@ export default function Assistente() {
   const toggleVoice = () => {
     if (voiceOn) window.speechSynthesis?.cancel();
     setVoiceOn((v) => !v);
+  };
+
+  const toggleRecording = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'pt-PT';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      if (transcript) handleSend(transcript, true);
+    };
+    recognition.onerror = () => setIsRecording(false);
+    recognition.onend = () => setIsRecording(false);
+    recognitionRef.current = recognition;
+    setIsRecording(true);
+    recognition.start();
   };
 
   useEffect(() => {
@@ -55,7 +79,7 @@ export default function Assistente() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, loading]);
 
-  const handleSend = async (text) => {
+  const handleSend = async (text, isVoice = false) => {
     const msgText = (text || input).trim();
     if (!msgText || loading) return;
     const userMsg = { role: 'user', content: msgText, timestamp: new Date().toISOString() };
@@ -74,7 +98,7 @@ export default function Assistente() {
         content: replyText,
         timestamp: data.timestamp || new Date().toISOString()
       }]);
-      speak(replyText);
+      if (isVoice) speak(replyText);
     } catch (err) {
       const errText = 'Não consegui processar o teu pedido. Verifica a ligação e tenta novamente.';
       setMessages(prev => [...prev, {
@@ -82,7 +106,7 @@ export default function Assistente() {
         content: errText,
         timestamp: new Date().toISOString()
       }]);
-      speak(errText);
+      if (isVoice) speak(errText);
     } finally { setLoading(false); }
   };
 
@@ -184,7 +208,13 @@ export default function Assistente() {
             className="flex-1 resize-none px-4 py-2.5 rounded-xl bg-surface border border-line text-sm text-ink placeholder:text-muted-2 focus:outline-none focus:border-primary/40 max-h-32"
             disabled={loading}
           />
-          <button className="w-10 h-10 rounded-xl border border-line text-muted-2 flex items-center justify-center shrink-0 hover:text-primary hover:border-primary/30 transition-colors">
+          <button
+            onClick={toggleRecording}
+            title={isRecording ? 'A gravar... toca para parar' : 'Perguntar por voz'}
+            className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 transition-colors ${
+              isRecording ? 'bg-destructive text-white border-destructive animate-pulse' : 'border-line text-muted-2 hover:text-primary hover:border-primary/30'
+            }`}
+          >
             <Mic className="w-4 h-4" />
           </button>
           <button
