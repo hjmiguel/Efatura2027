@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { appApi } from '@/api/appClient';
-import { ocrService } from '@/services/integrationServices';
 import {
   Camera, FileUp, Crop, ScanLine, FileCheck2, Loader2, Search,
   Plus, ChevronRight, X, RotateCw, HardDrive,
@@ -201,8 +200,10 @@ function OcrFlow({ onClose, onDone }) {
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
-      const res = await ocrService.extractInvoiceFromImage(imageBase64, file.type, file.name);
-      setExtracted(res);
+      const res = await appApi.functions.invoke('ocrExtractInvoice', {
+        image_base64: imageBase64, mime_type: file.type, file_name: file.name,
+      });
+      setExtracted(res.data || res);
       setStep(4);
     } catch (err) { console.error(err); }
     finally { setExtracting(false); }

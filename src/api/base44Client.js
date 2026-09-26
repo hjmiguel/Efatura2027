@@ -1,3 +1,6 @@
-// Compatibility export during the UI migration. This client is backed only by
-// the external REST API configured through VITE_API_URL.
-export { appApi as base44 } from '@/api/appClient';
+import { createClient } from '@base44/sdk';
+
+// Cliente nativo Base44 — entidades, autenticação e integrações reais da plataforma.
+export const base44 = createClient({
+  appId: import.meta.env.VITE_BASE44_APP_ID,
+});

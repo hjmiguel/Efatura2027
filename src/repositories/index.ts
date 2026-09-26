@@ -1,5 +1,0 @@
-import { RestRepository } from './RestRepository';
-import type { Account, Approval, AuditLog, Budget, Category, Dependent, Invoice, PartnerConsent, Subscription, Transaction, User } from '@/types/models';
-export const repositories = {
-  Account: new RestRepository<Account>('accounts'), Transaction: new RestRepository<Transaction>('transactions'), Category: new RestRepository<Category>('categories'), Invoice: new RestRepository<Invoice>('invoices'), Budget: new RestRepository<Budget>('budgets'), Dependent: new RestRepository<Dependent>('dependents'), Subscription: new RestRepository<Subscription>('subscriptions'), PartnerConsent: new RestRepository<PartnerConsent>('partner-consents'), Approval: new RestRepository<Approval>('approvals'), AuditLog: new RestRepository<AuditLog>('audit-logs'), User: new RestRepository<User>('users'),
-};
