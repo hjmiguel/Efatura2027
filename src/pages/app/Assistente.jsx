@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { appApi } from '@/api/appClient';
-import { Send, Sparkles, Loader2, Mic } from 'lucide-react';
+import { Send, Sparkles, Loader2, Mic, Volume2, VolumeX } from 'lucide-react';
 import { getFirstName, formatKzShort } from '@/lib/format';
 import ChatMessage from '@/components/app/ChatMessage';
 import ChatSuggestions from '@/components/app/ChatSuggestions';
@@ -11,7 +11,21 @@ export default function Assistente() {
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState('');
   const [heroData, setHeroData] = useState({ patrimonio: 0, monthExpense: 0, invoiceCount: 0 });
+  const [voiceOn, setVoiceOn] = useState(true);
   const scrollRef = useRef(null);
+
+  const speak = (text) => {
+    if (!voiceOn || !text || !('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'pt-PT';
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const toggleVoice = () => {
+    if (voiceOn) window.speechSynthesis?.cancel();
+    setVoiceOn((v) => !v);
+  };
 
   useEffect(() => {
     appApi.auth.me().then(u => setUserName(getFirstName(u?.full_name) || 'utilizador')).catch(() => {});
@@ -54,17 +68,21 @@ export default function Assistente() {
         history: messages.map(m => ({ role: m.role, content: m.content }))
       });
       const data = res.data || res;
+      const replyText = data.response || data.error || 'Ocorreu um erro. Tenta novamente.';
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: data.response || data.error || 'Ocorreu um erro. Tenta novamente.',
+        content: replyText,
         timestamp: data.timestamp || new Date().toISOString()
       }]);
+      speak(replyText);
     } catch (err) {
+      const errText = 'Não consegui processar o teu pedido. Verifica a ligação e tenta novamente.';
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'Não consegui processar o teu pedido. Verifica a ligação e tenta novamente.',
+        content: errText,
         timestamp: new Date().toISOString()
       }]);
+      speak(errText);
     } finally { setLoading(false); }
   };
 
@@ -77,9 +95,20 @@ export default function Assistente() {
   return (
     <div className="flex flex-col h-[calc(100dvh-180px)] md:h-[calc(100dvh-72px)]">
       {/* Header */}
-      <div className="pb-3">
-        <span className="eyebrow">§ 05 · Perguntas</span>
-        <h1 className="font-heading text-xl font-bold text-ink mt-0.5">Assistente</h1>
+      <div className="pb-3 flex items-center justify-between">
+        <div>
+          <span className="eyebrow">§ 05 · Perguntas</span>
+          <h1 className="font-heading text-xl font-bold text-ink mt-0.5">Assistente</h1>
+        </div>
+        <button
+          onClick={toggleVoice}
+          title={voiceOn ? 'Desativar resposta falada' : 'Ativar resposta falada'}
+          className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 transition-colors ${
+            voiceOn ? 'bg-primary text-white border-primary' : 'border-line text-muted-2 hover:text-primary hover:border-primary/30'
+          }`}
+        >
+          {voiceOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+        </button>
       </div>
 
       {/* AI Hero (visible when no messages) */}
