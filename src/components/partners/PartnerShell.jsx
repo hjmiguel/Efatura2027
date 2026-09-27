@@ -11,7 +11,7 @@ const nav = [
   { id: 'sandbox', label: 'Sandbox', icon: FlaskConical },
 ];
 
-export default function PartnerShell({ active, onChange, partnerName, verified }) {
+export default function PartnerShell({ active, onChange, partnerName, verified, children }) {
   const location = useLocation();
   return (
     <>
@@ -72,6 +72,11 @@ export default function PartnerShell({ active, onChange, partnerName, verified }
             <div className="text-[10px] text-muted-2 mt-0.5">Ambiente · Produção</div>
           </div>
         </aside>
+
+        {/* Content */}
+        <main className="flex-1 min-w-0 px-4 md:px-8 py-6 pb-24 md:pb-8 max-w-5xl">
+          {children}
+        </main>
 
         {/* Mobile tab bar */}
         <div className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur border-t border-line">

@@ -98,8 +98,7 @@ export default function PartnerPortal() {
         onChange={setTab}
         partnerName={user?.full_name}
         verified={consents.length > 0}
-      />
-      <main className="flex-1 px-4 md:px-8 py-6 pb-24 md:pb-8 max-w-5xl">
+      >
         {tab === 'painel' && <PartnerDashboard invoices={invoices} consents={consents} />}
         {tab === 'faturas' && <PartnerInvoices invoices={invoices} />}
         {tab === 'importar' && <PartnerImport onDone={() => setTab('faturas')} />}
@@ -115,7 +114,7 @@ export default function PartnerPortal() {
           />
         )}
         {tab === 'sandbox' && <PartnerSandbox />}
-      </main>
+      </PartnerShell>
     </div>
   );
 }
