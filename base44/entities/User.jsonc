@@ -36,6 +36,10 @@
       "type": "string",
       "format": "date-time",
       "description": "Data do consentimento AGT"
+    },
+    "partner_nif": {
+      "type": "string",
+      "description": "NIF da empresa parceira que este utilizador representa (s\u00f3 relevante quando app_role='partner'). Usado para isolar dados entre parceiros."
     }
   },
   "required": [

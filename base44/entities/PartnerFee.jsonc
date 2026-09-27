@@ -1,0 +1,78 @@
+{
+  "name": "PartnerFee",
+  "type": "object",
+  "properties": {
+    "partner_api_key_id": {
+      "type": "string",
+      "description": "ID da chave de API do parceiro que gerou este honor\u00e1rio"
+    },
+    "partner_name": {
+      "type": "string",
+      "description": "Nome do parceiro (denormalizado para exibi\u00e7\u00e3o)"
+    },
+    "invoice_id": {
+      "type": "string",
+      "description": "ID da fatura paga que gerou este honor\u00e1rio"
+    },
+    "fee_amount": {
+      "type": "number",
+      "description": "Valor do honor\u00e1rio em kwanza"
+    },
+    "fee_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data em que a fatura foi paga"
+    },
+    "billing_period": {
+      "type": "string",
+      "description": "Per\u00edodo de fatura\u00e7\u00e3o ao parceiro, formato YYYY-MM"
+    },
+    "billed_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "billed"
+      ],
+      "default": "pending"
+    },
+    "owner_user_id": {
+      "type": "string",
+      "description": "ID do utilizador parceiro propriet\u00e1rio \u2014 usado para isolar dados entre parceiros"
+    }
+  },
+  "required": [
+    "partner_api_key_id",
+    "invoice_id",
+    "fee_amount",
+    "fee_date"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.owner_user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

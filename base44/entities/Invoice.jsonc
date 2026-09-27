@@ -101,11 +101,20 @@
         "paid"
       ],
       "default": "none",
-      "description": "Estado de verifica\u00e7\u00e3o pela AGT. Emitted = registada sob o NIF. Paid = AGT confirmou liquida\u00e7\u00e3o"
+      "description": "Estado de verifica\u00e7\u00e3o pela AGT \u2014 s\u00f3 muda com uma confirma\u00e7\u00e3o real da AGT, nunca com a emiss\u00e3o do parceiro nem com o pagamento MCX."
     },
     "user_nif": {
       "type": "string",
       "description": "NIF do contribuinte dono da fatura"
+    },
+    "partner_emitted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se esta fatura foi emitida por um parceiro via API (independente de agt_status)"
+    },
+    "partner_owner_id": {
+      "type": "string",
+      "description": "ID do utilizador parceiro propriet\u00e1rio da chave de API que emitiu esta fatura \u2014 usado para isolar dados entre parceiros"
     }
   },
   "required": [
@@ -113,5 +122,46 @@
     "amount",
     "due_date",
     "status"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.partner_owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

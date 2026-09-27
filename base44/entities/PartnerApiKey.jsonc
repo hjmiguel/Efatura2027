@@ -1,0 +1,104 @@
+{
+  "name": "PartnerApiKey",
+  "type": "object",
+  "properties": {
+    "partner_name": {
+      "type": "string",
+      "description": "Nome da empresa parceira"
+    },
+    "partner_nif": {
+      "type": "string",
+      "description": "NIF da empresa parceira"
+    },
+    "api_key_hash": {
+      "type": "string",
+      "description": "Hash SHA-256 da chave de API"
+    },
+    "api_key_preview": {
+      "type": "string",
+      "description": "Primeiros caracteres da chave para identifica\u00e7\u00e3o visual"
+    },
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "emit",
+          "status",
+          "list"
+        ]
+      },
+      "description": "Permiss\u00f5es concedidas a esta chave"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "revoked"
+      ],
+      "default": "active"
+    },
+    "revoked_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "owner_user_id": {
+      "type": "string",
+      "description": "ID do utilizador (app_role='partner') propriet\u00e1rio desta chave"
+    },
+    "fee_per_invoice": {
+      "type": "number",
+      "default": 0,
+      "description": "Honor\u00e1rio fixo em kwanza por fatura paga atrav\u00e9s da Gest\u00e3o+"
+    }
+  },
+  "required": [
+    "partner_name",
+    "partner_nif",
+    "api_key_hash",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.owner_user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.owner_user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.owner_user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
