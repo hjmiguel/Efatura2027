@@ -25,6 +25,7 @@ const tabs = [
 export default function Pagamentos() {
   const [loading, setLoading] = useState(true);
   const [invoices, setInvoices] = useState([]);
+  const [accounts, setAccounts] = useState([]);
   const [patrimonio, setPatrimonio] = useState(0);
   const [tab, setTab] = useState('pendente');
   const [payDialog, setPayDialog] = useState(null);
@@ -45,6 +46,7 @@ export default function Pagamentos() {
         consents,
         hasActiveSubscription: subs.some((s) => s.user_id === me.id),
       }));
+      setAccounts(accounts);
       setPatrimonio(accounts.reduce((s, a) => s + (a.balance || 0), 0));
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
@@ -55,6 +57,20 @@ export default function Pagamentos() {
       const paidDate = new Date().toISOString().slice(0, 10);
       await appApi.entities.Invoice.update(invoice.id, { status: 'paid', paid_date: paidDate });
       setInvoices((prev) => prev.map((i) => (i.id === invoice.id ? { ...i, status: 'paid', paid_date: paidDate } : i)));
+
+      const account = accounts[0];
+      if (account) {
+        await appApi.entities.Transaction.create({
+          description: invoice.issuer_name,
+          amount: -Math.abs(invoice.amount || 0),
+          date: paidDate,
+          type: 'expense',
+          account_id: account.id,
+          category_id: invoice.category_id || undefined,
+          invoice_id: invoice.id,
+          notes: invoice.document_number ? `Fatura ${invoice.document_number}` : undefined,
+        });
+      }
     } catch (err) { console.error(err); }
   };
 
