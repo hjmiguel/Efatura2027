@@ -76,7 +76,14 @@ export default function Transacoes() {
   async function handleDelete(id) {
     if (!confirm('Eliminar esta transação?')) return;
     try {
+      const txn = transactions.find((t) => t.id === id);
       await appApi.entities.Transaction.delete(id);
+      if (txn && txn.type !== 'transfer') {
+        const account = accounts.find((a) => a.id === txn.account_id);
+        if (account) {
+          await appApi.entities.Account.update(account.id, { balance: (account.balance || 0) - txn.amount });
+        }
+      }
       setTransactions(transactions.filter((t) => t.id !== id));
     } catch (err) { console.error('Erro ao eliminar:', err); }
   }

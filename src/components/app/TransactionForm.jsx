@@ -92,6 +92,32 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
       } else {
         await appApi.entities.Transaction.create(data);
       }
+
+      // Refletir o movimento no saldo da conta
+      const oldEffect = transaction && transaction.type !== 'transfer' ? transaction.amount : 0;
+      const newEffect = form.type !== 'transfer' ? signedAmount : 0;
+
+      if (transaction && transaction.account_id === form.account_id) {
+        const account = accounts.find((a) => a.id === form.account_id);
+        const delta = newEffect - oldEffect;
+        if (account && delta !== 0) {
+          await appApi.entities.Account.update(account.id, { balance: (account.balance || 0) + delta });
+        }
+      } else {
+        if (transaction && oldEffect !== 0) {
+          const oldAccount = accounts.find((a) => a.id === transaction.account_id);
+          if (oldAccount) {
+            await appApi.entities.Account.update(oldAccount.id, { balance: (oldAccount.balance || 0) - oldEffect });
+          }
+        }
+        if (newEffect !== 0) {
+          const newAccount = accounts.find((a) => a.id === form.account_id);
+          if (newAccount) {
+            await appApi.entities.Account.update(newAccount.id, { balance: (newAccount.balance || 0) + newEffect });
+          }
+        }
+      }
+
       onSaved();
       onClose();
     } catch (err) {
