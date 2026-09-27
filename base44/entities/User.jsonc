@@ -40,6 +40,10 @@
     "partner_nif": {
       "type": "string",
       "description": "NIF da empresa parceira que este utilizador representa (s\u00f3 relevante quando app_role='partner'). Usado para isolar dados entre parceiros."
+    },
+    "company_id": {
+      "type": "string",
+      "description": "ID da empresa corporativa deste utilizador (s\u00f3 relevante quando app_role='corporate'). Usado para isolar dados entre empresas no m\u00f3dulo Empresas."
     }
   },
   "required": [
