@@ -14,12 +14,28 @@ const navItems = [
 export default function CorporateLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [checking, setChecking] = React.useState(true);
+
+  React.useEffect(() => {
+    base44.auth.me().then((u) => {
+      if (u.app_role !== 'corporate') { navigate('/app'); return; }
+      setChecking(false);
+    }).catch(() => navigate('/empresas/entrar'));
+  }, []);
 
   const handleLogout = async () => {
     await base44.auth.logout('/entrar');
   };
 
   const isActive = (path) => path === '/empresas' ? location.pathname === '/empresas' : location.pathname.startsWith(path);
+
+  if (checking) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-background">
+        <div className="w-8 h-8 border-4 border-line border-t-primary rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

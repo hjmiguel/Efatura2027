@@ -31,6 +31,7 @@ import Fiscal from './pages/app/Fiscal';
 import Assistente from './pages/app/Assistente';
 import Perfil from './pages/app/Perfil';
 import AdminLayout from './pages/admin/AdminLayout';
+import AdminEntrar from './pages/admin/AdminEntrar';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminCompanies from './pages/admin/AdminCompanies';
 import AdminAccess from './pages/admin/AdminAccess';
@@ -39,7 +40,9 @@ import AdminPlans from './pages/admin/AdminPlans';
 import AdminCompliance from './pages/admin/AdminCompliance';
 import AdminTestes from './pages/admin/AdminTestes';
 import PartnerPortal from './pages/partners/PartnerPortal';
+import ParceirosEntrar from './pages/partners/ParceirosEntrar';
 import CorporateLayout from './pages/corporate/CorporateLayout';
+import EmpresasEntrar from './pages/corporate/EmpresasEntrar';
 import CorporateDashboard from './pages/corporate/CorporateDashboard';
 import CorporatePayables from './pages/corporate/CorporatePayables';
 import CorporateSuppliers from './pages/corporate/CorporateSuppliers';
@@ -98,7 +101,8 @@ const AuthenticatedApp = () => {
         </Route>
       </Route>
       {/* Admin backoffice — §01–§06 */}
-      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
+      <Route path="/admin/entrar" element={<AdminEntrar />} />
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/admin/entrar" replace />} />}>
         <Route element={<AdminLayout />}>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/empresas" element={<AdminCompanies />} />
@@ -110,11 +114,13 @@ const AuthenticatedApp = () => {
         </Route>
       </Route>
       {/* Partner portal */}
-      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
+      <Route path="/parceiros/entrar" element={<ParceirosEntrar />} />
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/parceiros/entrar" replace />} />}>
         <Route path="/parceiros" element={<PartnerPortal />} />
       </Route>
       {/* Corporate module */}
-      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/entrar" replace />} />}>
+      <Route path="/empresas/entrar" element={<EmpresasEntrar />} />
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/empresas/entrar" replace />} />}>
         <Route element={<CorporateLayout />}>
           <Route path="/empresas" element={<CorporateDashboard />} />
           <Route path="/empresas/pagamentos" element={<CorporatePayables />} />

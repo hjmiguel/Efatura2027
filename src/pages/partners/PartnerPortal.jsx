@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { appApi } from '@/api/appClient';
 import PartnerShell from '@/components/partners/PartnerShell';
 import PartnerDashboard from '@/components/partners/PartnerDashboard';
@@ -9,6 +10,7 @@ import PartnerSandbox from '@/components/partners/PartnerSandbox';
 import PartnerImport from '@/components/partners/PartnerImport';
 
 export default function PartnerPortal() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState('painel');
   const [loading, setLoading] = useState(true);
   const [invoices, setInvoices] = useState([]);
@@ -21,15 +23,20 @@ export default function PartnerPortal() {
 
   async function load() {
     try {
-      const [me, inv, cons] = await Promise.all([
-        appApi.auth.me(),
+      const me = await appApi.auth.me();
+      if (me?.app_role !== 'partner') { navigate('/app'); return; }
+      const [inv, cons] = await Promise.all([
         appApi.entities.Invoice.list('-created_date', 50),
         appApi.entities.PartnerConsent.list(),
       ]);
       setUser(me);
       setInvoices(inv.filter((i) => i.source === 'partner'));
       setConsents(cons);
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+      navigate('/parceiros/entrar');
+      return;
+    }
     finally { setLoading(false); }
   }
 

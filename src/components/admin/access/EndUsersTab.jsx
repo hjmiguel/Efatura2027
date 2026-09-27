@@ -3,7 +3,15 @@ import { base44 } from '@/api/base44Client';
 import { UserPlus, X, Loader2, CheckCircle2, Shield, Search } from 'lucide-react';
 import { formatDate } from '@/lib/format';
 
+const APP_ROLES = [
+  { id: 'user', label: 'Utilizador' },
+  { id: 'partner', label: 'Parceiro' },
+  { id: 'corporate', label: 'Corporativo' },
+  { id: 'admin', label: 'Admin' },
+];
+
 export default function EndUsersTab({ users }) {
+  const [localUsers, setLocalUsers] = useState(users);
   const [selectedUser, setSelectedUser] = useState(null);
   const [reason, setReason] = useState('');
   const [showDetail, setShowDetail] = useState(false);
@@ -38,6 +46,23 @@ export default function EndUsersTab({ users }) {
     setShowDetail(true);
   }
 
+  async function changeAppRole(user, newRole) {
+    try {
+      await base44.entities.User.update(user.id, { app_role: newRole });
+      await base44.entities.AuditLog.create({
+        action: 'update_user',
+        actor_id: user.id,
+        actor_name: user.full_name || user.email,
+        actor_role: 'admin',
+        target_entity: 'User',
+        target_id: user.id,
+        details: `Papel de módulo alterado para: ${newRole}`,
+        module: 'admin',
+      });
+      setLocalUsers((prev) => prev.map((u) => u.id === user.id ? { ...u, app_role: newRole } : u));
+    } catch (err) { console.error(err); }
+  }
+
   async function confirmViewDetail() {
     if (!reason.trim() || !selectedUser) return;
     try {
@@ -56,7 +81,7 @@ export default function EndUsersTab({ users }) {
     } catch (err) { console.error(err); }
   }
 
-  const filtered = users.filter((u) =>
+  const filtered = localUsers.filter((u) =>
     !search ||
     (u.full_name || '').toLowerCase().includes(search.toLowerCase()) ||
     (u.email || '').toLowerCase().includes(search.toLowerCase()) ||
@@ -66,7 +91,7 @@ export default function EndUsersTab({ users }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-heading font-semibold text-[15px] text-ink">Utilizadores finais ({users.length})</h2>
+        <h2 className="font-heading font-semibold text-[15px] text-ink">Utilizadores finais ({localUsers.length})</h2>
         <button onClick={() => setShowInvite(true)} className="inline-flex items-center gap-1.5 px-3 py-2 bg-primary text-white rounded-xl text-[13px] font-medium hover:bg-primary-2 transition-colors">
           <UserPlus className="w-4 h-4" /> Convidar
         </button>
@@ -88,6 +113,7 @@ export default function EndUsersTab({ users }) {
                   <th className="px-5 py-2.5 font-medium text-[11px]">Utilizador</th>
                   <th className="px-5 py-2.5 font-medium text-[11px]">NIF</th>
                   <th className="px-5 py-2.5 font-medium text-[11px]">Registo</th>
+                  <th className="px-5 py-2.5 font-medium text-[11px]">Papel de módulo</th>
                   <th className="px-5 py-2.5 font-medium text-[11px]"></th>
                 </tr>
               </thead>
@@ -100,6 +126,17 @@ export default function EndUsersTab({ users }) {
                     </td>
                     <td className="px-5 py-3 font-mono text-[12px] text-muted-foreground">{u.nif || '—'}</td>
                     <td className="px-5 py-3 text-muted-foreground text-[12px]">{formatDate(u.created_date)}</td>
+                    <td className="px-5 py-3">
+                      <select
+                        value={u.app_role || 'user'}
+                        onChange={(e) => changeAppRole(u, e.target.value)}
+                        className="text-[12px] border border-line rounded-lg px-2 py-1.5 bg-surface focus:outline-none focus:border-primary/40"
+                      >
+                        {APP_ROLES.map((r) => (
+                          <option key={r.id} value={r.id}>{r.label}</option>
+                        ))}
+                      </select>
+                    </td>
                     <td className="px-5 py-3"><button onClick={() => viewDetail(u)} className="text-[12px] font-semibold text-primary hover:underline">Ver detalhe</button></td>
                   </tr>
                 ))}

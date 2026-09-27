@@ -35,11 +35,11 @@ export default function AdminLayout() {
 
   React.useEffect(() => {
     base44.auth.me().then((u) => {
-      if (u.role !== 'admin') { navigate('/app'); return; }
+      if (u.app_role !== 'admin') { navigate('/app'); return; }
       setUser(u);
       setChecking(false);
       loadBadges();
-    }).catch(() => navigate('/entrar'));
+    }).catch(() => navigate('/admin/entrar'));
   }, []);
 
   async function loadBadges() {

@@ -8,6 +8,17 @@
         "user"
       ]
     },
+    "app_role": {
+      "type": "string",
+      "description": "Papel de acesso aos m\u00f3dulos da aplica\u00e7\u00e3o",
+      "enum": [
+        "admin",
+        "partner",
+        "corporate",
+        "user"
+      ],
+      "default": "user"
+    },
     "nif": {
       "type": "string",
       "description": "NIF do contribuinte. Necess\u00e1rio para as faturas contarem para a dedu\u00e7\u00e3o do IRPS"
