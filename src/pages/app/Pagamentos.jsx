@@ -70,6 +70,11 @@ export default function Pagamentos() {
           invoice_id: invoice.id,
           notes: invoice.document_number ? `Fatura ${invoice.document_number}` : undefined,
         });
+
+        const newBalance = (account.balance || 0) - Math.abs(invoice.amount || 0);
+        await appApi.entities.Account.update(account.id, { balance: newBalance });
+        setAccounts((prev) => prev.map((a) => (a.id === account.id ? { ...a, balance: newBalance } : a)));
+        setPatrimonio((prev) => prev - Math.abs(invoice.amount || 0));
       }
     } catch (err) { console.error(err); }
   };
