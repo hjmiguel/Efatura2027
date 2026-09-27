@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { appApi } from '@/api/appClient';
 import { formatKz, formatDateShort, formatDate } from '@/lib/format';
 import TransactionForm from '@/components/app/TransactionForm';
-import { Plus, Search, ArrowDownLeft, ArrowUpRight, Trash2, Pencil } from 'lucide-react';
+import { Plus, Search, Trash2, Pencil } from 'lucide-react';
+import CategoryIcon from '@/components/app/CategoryIcon';
 
 const typeTabs = [
   { id: 'all', label: 'Todas' },
@@ -176,13 +177,14 @@ export default function Transacoes() {
             ) : (
               filtered.map((txn) => {
                 const isIncome = txn.amount > 0;
+                const category = categories.find((c) => c.id === txn.category_id);
                 return (
                   <tr key={txn.id} className="hover:bg-muted/30 transition-colors">
                     <td className="px-5 py-3 text-sm text-muted-foreground font-mono">{formatDateShort(txn.date)}</td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-2">
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${isIncome ? 'bg-green-soft' : 'bg-muted'}`}>
-                          {isIncome ? <ArrowDownLeft className="w-3.5 h-3.5 text-ok" /> : <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground" />}
+                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${isIncome ? 'bg-green-soft text-ok' : 'bg-muted text-muted-foreground'}`}>
+                          <CategoryIcon category={category} isIncome={isIncome} className="w-3.5 h-3.5" />
                         </div>
                         <span className="text-sm font-medium text-ink">{txn.description}</span>
                       </div>
@@ -214,10 +216,11 @@ export default function Transacoes() {
           <div className="ed-list">
             {filtered.map((txn) => {
               const isIncome = txn.amount > 0;
+              const category = categories.find((c) => c.id === txn.category_id);
               return (
                 <div key={txn.id} className="it">
-                  <div className={`w-[34px] h-[34px] rounded-[10px] flex items-center justify-center shrink-0 ${isIncome ? 'bg-green-soft' : 'bg-muted'}`}>
-                    {isIncome ? <ArrowDownLeft className="w-4 h-4 text-ok" /> : <ArrowUpRight className="w-4 h-4 text-muted-foreground" />}
+                  <div className={`w-[34px] h-[34px] rounded-[10px] flex items-center justify-center shrink-0 ${isIncome ? 'bg-green-soft text-ok' : 'bg-muted text-muted-foreground'}`}>
+                    <CategoryIcon category={category} isIncome={isIncome} className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="nm truncate">{txn.description}</div>

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { appApi } from '@/api/appClient';
 import { formatKz, formatKzShort, getFirstName, formatDateShort } from '@/lib/format';
-import { Plus, FileText, CreditCard, Building2, ArrowUpRight, ArrowDownRight, AlertTriangle } from 'lucide-react';
+import { Plus, FileText, CreditCard, Building2, AlertTriangle } from 'lucide-react';
 import { filterVisibleInvoices } from '@/lib/business/partnerVisibility';
+import CategoryIcon from '@/components/app/CategoryIcon';
 
 const dedLabels = {
   saude: { label: 'Saúde', emoji: '🏥' },
@@ -26,6 +27,7 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [accounts, setAccounts] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [pendingInvoices, setPendingInvoices] = useState([]);
   const [deductibleTotal, setDeductibleTotal] = useState(0);
   const [deductibleBreakdown, setDeductibleBreakdown] = useState([]);
@@ -37,18 +39,20 @@ export default function Home() {
 
   async function loadData() {
     try {
-      const [me, accts, txns, rawInvoices, consents, subs] = await Promise.all([
+      const [me, accts, txns, rawInvoices, consents, subs, cats] = await Promise.all([
         appApi.auth.me(),
         appApi.entities.Account.list(),
         appApi.entities.Transaction.list('-date', 50),
         appApi.entities.Invoice.list(),
         appApi.entities.PartnerConsent.list(),
         appApi.entities.Subscription.filter({ status: 'active' }),
+        appApi.entities.Category.list(),
       ]);
 
       setUser(me);
       setAccounts(accts);
       setTransactions(txns.slice(0, 5));
+      setCategories(cats);
 
       const allInvoices = filterVisibleInvoices(rawInvoices, {
         consents,
@@ -266,6 +270,7 @@ export default function Home() {
           ) : (
             transactions.map((t) => {
               const isIncome = t.amount > 0;
+              const category = categories.find((c) => c.id === t.category_id);
               return (
                 <div
                   key={t.id}
@@ -276,7 +281,7 @@ export default function Home() {
                       isIncome ? 'bg-green-soft text-ok' : 'bg-danger-soft text-destructive'
                     }`}
                   >
-                    {isIncome ? <ArrowUpRight className="w-5 h-5" /> : <ArrowDownRight className="w-5 h-5" />}
+                    <CategoryIcon category={category} isIncome={isIncome} className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-sm text-ink truncate">{t.description}</div>

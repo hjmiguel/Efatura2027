@@ -1,8 +1,8 @@
 import React from 'react';
 import { formatKz, formatDateShort } from '@/lib/format';
-import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
+import CategoryIcon from '@/components/app/CategoryIcon';
 
-export default function RecentTransactions({ transactions }) {
+export default function RecentTransactions({ transactions, categories = [] }) {
   return (
     <div className="bg-surface rounded-talao border border-line shadow-soft">
       <div className="flex items-center justify-between px-5 py-4 border-b border-line">
@@ -14,14 +14,11 @@ export default function RecentTransactions({ transactions }) {
         ) : (
           transactions.slice(0, 6).map((txn) => {
             const isIncome = txn.amount > 0;
+            const category = categories.find((c) => c.id === txn.category_id);
             return (
               <div key={txn.id} className="flex items-center gap-3 px-5 py-3.5">
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isIncome ? 'bg-green-soft' : 'bg-muted'}`}>
-                  {isIncome ? (
-                    <ArrowDownLeft className="w-4 h-4 text-ok" />
-                  ) : (
-                    <ArrowUpRight className="w-4 h-4 text-muted-foreground" />
-                  )}
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isIncome ? 'bg-green-soft text-ok' : 'bg-muted text-muted-foreground'}`}>
+                  <CategoryIcon category={category} isIncome={isIncome} className="w-4 h-4" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-ink truncate">{txn.description}</p>
