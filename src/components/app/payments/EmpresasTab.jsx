@@ -1,25 +1,76 @@
-import React, { useState } from 'react';
-import { Shield, Zap, Smartphone, Bell, Plus, Building2, Droplet, Tv } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Shield, Zap, Smartphone, Bell, Plus, Building2, Droplet, Tv, Loader2 } from 'lucide-react';
+import { appApi } from '@/api/appClient';
 import ConnectCompanyModal from './ConnectCompanyModal';
 import AuthConfirmModal from './AuthConfirmModal';
 
-const availableCompanies = [
-  { name: 'AGT', nif: '540000000', icon: Building2 },
-  { name: 'ENDE', nif: '540000001', icon: Zap },
-  { name: 'EPAL', nif: '540000002', icon: Droplet },
-  { name: 'Africell', nif: '540000003', icon: Smartphone },
-  { name: 'ZAP', nif: '540000004', icon: Tv },
-  { name: 'DStv', nif: '540000005', icon: Tv },
-];
-
-const connectedCompanies = [
-  { name: 'ENDE — Energia', icon: Zap, hasNotification: true },
-  { name: 'Unitel — Telecom', icon: Smartphone, hasNotification: false },
-];
+const ICONS = { Building2, Zap, Droplet, Smartphone, Tv };
 
 export default function EmpresasTab() {
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [companies, setCompanies] = useState([]);
+  const [consents, setConsents] = useState([]);
   const [connectOpen, setConnectOpen] = useState(false);
   const [authModal, setAuthModal] = useState(null);
+
+  useEffect(() => { load(); }, []);
+
+  async function load() {
+    try {
+      const [me, allCompanies, allConsents] = await Promise.all([
+        appApi.auth.me(),
+        appApi.entities.UtilityCompany.filter({ is_active: true }),
+        appApi.entities.PartnerConsent.list('-created_date', 200),
+      ]);
+      setUser(me);
+      setCompanies(allCompanies);
+      setConsents(allConsents.filter((c) => c.user_nif === me.nif));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const withIcon = (c) => ({ ...c, icon: ICONS[c.icon] || Building2 });
+  const availableCompanies = companies.map(withIcon);
+  const activeConsents = consents.filter((c) => c.consent_status === 'active');
+
+  async function handleAuthorize(company) {
+    if (!user?.nif) { setAuthModal(null); return; }
+    try {
+      await appApi.entities.PartnerConsent.create({
+        partner_name: company.name,
+        partner_nif: company.nif,
+        user_nif: user.nif,
+        consent_status: 'active',
+        consent_date: new Date().toISOString(),
+      });
+      setAuthModal(null);
+      load();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function handleRevoke(consentId) {
+    try {
+      await appApi.entities.PartnerConsent.update(consentId, {
+        consent_status: 'revoked',
+        revoked_date: new Date().toISOString(),
+      });
+      load();
+    } catch (err) { console.error(err); }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="w-6 h-6 text-muted-2 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -32,17 +83,14 @@ export default function EmpresasTab() {
             </div>
             <div>
               <p className="font-heading font-bold text-[14px]">AGT — Faturação eletrónica</p>
-              <p className="text-[11.5px] text-white/70">Ligada · verifica as tuus faturas</p>
+              <p className="text-[11.5px] text-white/70">
+                {user?.agt_consent ? 'Ligada · verifica as tuas faturas' : 'Não ligada'}
+              </p>
             </div>
           </div>
-          <span className="px-2.5 py-1 bg-white text-[#16604E] rounded-full text-[11px] font-bold shrink-0">Ligada</span>
-        </div>
-
-        {/* Pills */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          <span className="px-2.5 py-1 bg-white/10 rounded-full text-[11px] font-medium">14 verificadas este mês</span>
-          <span className="px-2.5 py-1 bg-white/10 rounded-full text-[11px] font-medium">Sem duplicados</span>
-          <span className="px-2.5 py-1 bg-white/10 rounded-full text-[11px] font-medium">Sem foto</span>
+          <span className="px-2.5 py-1 bg-white text-[#16604E] rounded-full text-[11px] font-bold shrink-0">
+            {user?.agt_consent ? 'Ligada' : 'Desligada'}
+          </span>
         </div>
 
         {/* Consent text */}
@@ -68,28 +116,36 @@ export default function EmpresasTab() {
       </p>
 
       {/* Connected company cards */}
-      {connectedCompanies.map((c) => (
-        <div
-          key={c.name}
-          className="bg-surface border border-line rounded-talao p-3.5 shadow-soft flex items-center gap-3"
-        >
-          <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
-            <c.icon className="w-5 h-5 text-ink" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-[13.5px] text-ink">{c.name}</p>
-            <p className="text-[11.5px] text-muted-foreground mt-0.5">Conectada via NIF</p>
-          </div>
-          {c.hasNotification && (
-            <button className="p-1.5 rounded-lg text-gold hover:bg-gold-soft transition-colors">
-              <Bell className="w-4 h-4" />
-            </button>
-          )}
-          <button className="text-[12px] font-medium text-muted-foreground hover:text-destructive transition-colors">
-            Revogar
-          </button>
-        </div>
-      ))}
+      {activeConsents.length === 0 ? (
+        <p className="text-center text-[12.5px] text-muted-foreground py-4">
+          Ainda não autorizaste nenhuma empresa a enviar-te faturas.
+        </p>
+      ) : (
+        activeConsents.map((c) => {
+          const catalog = companies.find((co) => co.nif === c.partner_nif);
+          const Icon = ICONS[catalog?.icon] || Building2;
+          return (
+            <div
+              key={c.id}
+              className="bg-surface border border-line rounded-talao p-3.5 shadow-soft flex items-center gap-3"
+            >
+              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
+                <Icon className="w-5 h-5 text-ink" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-[13.5px] text-ink">{c.partner_name}</p>
+                <p className="text-[11.5px] text-muted-foreground mt-0.5">Conectada via NIF</p>
+              </div>
+              <button
+                onClick={() => handleRevoke(c.id)}
+                className="text-[12px] font-medium text-muted-foreground hover:text-destructive transition-colors"
+              >
+                Revogar
+              </button>
+            </div>
+          );
+        })
+      )}
 
       {/* Connect new company */}
       <button
@@ -109,7 +165,7 @@ export default function EmpresasTab() {
         }}
         companies={availableCompanies}
       />
-      <AuthConfirmModal data={authModal} onClose={() => setAuthModal(null)} onAuthorize={() => setAuthModal(null)} />
+      <AuthConfirmModal data={authModal} onClose={() => setAuthModal(null)} onAuthorize={() => handleAuthorize(authModal)} />
     </div>
   );
 }

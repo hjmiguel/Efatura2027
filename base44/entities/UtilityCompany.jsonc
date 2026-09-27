@@ -1,0 +1,53 @@
+{
+  "name": "UtilityCompany",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome da empresa/entidade que pode ser autorizada a enviar faturas"
+    },
+    "nif": {
+      "type": "string",
+      "description": "NIF da empresa"
+    },
+    "icon": {
+      "type": "string",
+      "enum": [
+        "Building2",
+        "Zap",
+        "Droplet",
+        "Smartphone",
+        "Tv"
+      ],
+      "default": "Building2",
+      "description": "Nome do \u00edcone lucide-react a mostrar"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se aparece na lista de empresas para conectar"
+    }
+  },
+  "required": [
+    "name",
+    "nif"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
