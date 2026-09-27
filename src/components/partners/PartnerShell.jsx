@@ -74,7 +74,7 @@ export default function PartnerShell({ active, onChange, partnerName, verified, 
         </aside>
 
         {/* Content */}
-        <main className="flex-1 min-w-0 px-4 md:px-8 py-6 pb-24 md:pb-8 max-w-5xl">
+        <main className="flex-1 min-w-0 px-4 md:px-8 py-6 pb-24 md:pb-8">
           {children}
         </main>
 
