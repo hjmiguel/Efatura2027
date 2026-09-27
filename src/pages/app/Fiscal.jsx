@@ -8,6 +8,7 @@ import FiscalSummary from '@/components/app/FiscalSummary';
 import AgtSyncButton from '@/components/app/AgtSyncButton';
 import PartnerConsentManager from '@/components/app/PartnerConsentManager';
 import { AlertTriangle, FileText, Landmark } from 'lucide-react';
+import { filterVisibleInvoices } from '@/lib/business/partnerVisibility';
 
 const sourceLabels = { manual: 'Manual', photo_ocr: 'Foto/OCR', partner: 'Parceiro', agt: 'AGT' };
 
@@ -23,20 +24,22 @@ export default function Fiscal() {
 
   async function loadData() {
     try {
-      const [me, inv] = await Promise.all([
+      const [me, inv, cons, subs] = await Promise.all([
         appApi.auth.me(),
-        appApi.entities.Invoice.list()
+        appApi.entities.Invoice.list(),
+        appApi.entities.PartnerConsent.list().catch(() => []),
+        appApi.entities.Subscription.filter({ status: 'active' }).catch(() => []),
       ]);
       setUser(me);
-      setInvoices(inv);
+      setConsents(cons);
+      setInvoices(filterVisibleInvoices(inv, {
+        consents: cons,
+        hasActiveSubscription: subs.some((s) => s.user_id === me.id),
+      }));
       try {
         const divRes = await appApi.functions.invoke('detectDivergences', {});
         setDivergences(divRes.data?.divergences || []);
       } catch { setDivergences([]); }
-      try {
-        const cons = await appApi.entities.PartnerConsent.list();
-        setConsents(cons);
-      } catch { setConsents([]); }
     } catch (err) { console.error('Erro:', err); }
     finally { setLoading(false); }
   }

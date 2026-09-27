@@ -226,7 +226,7 @@ export default function Home() {
           {Math.round(deductibleTotal).toLocaleString('pt-AO')} Kz
         </div>
         <div className="text-[12.5px] text-[#8a6420] mt-0.5 leading-relaxed">
-          Guardaste em despesas dedutíveis este ano. Conta para a declaração de 2028.
+          Guardaste em despesas dedutíveis este ano. Conta para a declaração de {new Date().getFullYear() + 1}.
         </div>
         {deductibleBreakdown.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2.5">

@@ -172,6 +172,7 @@ export default function Orcamento() {
   });
   const reportRows = Object.entries(byCategory).sort((a, b) => b[1] - a[1]);
   const maxReportAmount = reportRows.length > 0 ? reportRows[0][1] : 1;
+  const actualMonthExpense = monthExpenses.reduce((s, t) => s + Math.abs(t.amount), 0);
 
   return (
     <div className="space-y-4">
@@ -391,7 +392,7 @@ export default function Orcamento() {
               <span className="text-[13px] font-semibold text-ink">Comparativo</span>
             </div>
             <p className="text-[12.5px] text-muted-foreground leading-relaxed">
-              Total gasto este mês: <b className="font-mono text-ink">{formatKz(totalSpent)}</b>.
+              Total gasto este mês: <b className="font-mono text-ink">{formatKz(actualMonthExpense)}</b>.
               {' '}{totalLimit > 0 && (totalPct > 100
                 ? `Ultrapassaste o orçamento em ${formatKz(totalSpent - totalLimit)}.`
                 : `Estás a ${100 - totalPct}% do teu limite total de ${formatKz(totalLimit)}.`

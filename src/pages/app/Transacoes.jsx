@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { appApi } from '@/api/appClient';
 import { formatKz, formatDateShort, formatDate } from '@/lib/format';
 import TransactionForm from '@/components/app/TransactionForm';
@@ -24,8 +24,18 @@ export default function Transacoes() {
   const [typeFilter, setTypeFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [accountFilter, setAccountFilter] = useState('all');
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => { loadData(); }, []);
+
+  useEffect(() => {
+    if (searchParams.get('adicionar') === '1') {
+      setEditing(null);
+      setFormOpen(true);
+      searchParams.delete('adicionar');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, []);
 
   async function loadData() {
     try {

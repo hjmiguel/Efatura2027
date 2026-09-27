@@ -4,6 +4,7 @@ import { Send, Sparkles, Loader2, Mic, Volume2, VolumeX } from 'lucide-react';
 import { getFirstName, formatKzShort } from '@/lib/format';
 import ChatMessage from '@/components/app/ChatMessage';
 import ChatSuggestions from '@/components/app/ChatSuggestions';
+import { filterVisibleInvoices } from '@/lib/business/partnerVisibility';
 
 export default function Assistente() {
   const [messages, setMessages] = useState([]);
@@ -58,11 +59,19 @@ export default function Assistente() {
 
   async function loadHero() {
     try {
-      const [accts, txns, invs] = await Promise.all([
+      const [me, accts, txns, rawInvoices, consents, subs] = await Promise.all([
+        appApi.auth.me(),
         appApi.entities.Account.list(),
         appApi.entities.Transaction.list('-date', 50),
-        appApi.entities.Invoice.filter({ status: 'pending' }),
+        appApi.entities.Invoice.list(),
+        appApi.entities.PartnerConsent.list(),
+        appApi.entities.Subscription.filter({ status: 'active' }),
       ]);
+      const visibleInvoices = filterVisibleInvoices(rawInvoices, {
+        consents,
+        hasActiveSubscription: subs.some((s) => s.user_id === me.id),
+      });
+      const pendingInvoices = visibleInvoices.filter((i) => i.status === 'pending' || i.status === 'overdue');
       const now = new Date();
       const monthExp = txns
         .filter((t) => { const d = new Date(t.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear() && t.amount < 0; })
@@ -70,7 +79,7 @@ export default function Assistente() {
       setHeroData({
         patrimonio: accts.reduce((s, a) => s + (a.balance || 0), 0),
         monthExpense: monthExp,
-        invoiceCount: invs.length,
+        invoiceCount: pendingInvoices.length,
       });
     } catch (err) { console.error(err); }
   }

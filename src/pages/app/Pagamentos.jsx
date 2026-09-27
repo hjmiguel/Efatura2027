@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { appApi } from '@/api/appClient';
+import ManualInvoiceForm from '@/components/app/ManualInvoiceForm';
 import {
   CheckCircle2, CalendarDays, Crown,
   Smartphone, Landmark, Receipt, ChevronRight, FileText, AlertCircle,
@@ -30,8 +32,16 @@ export default function Pagamentos() {
   const [tab, setTab] = useState('pendente');
   const [payDialog, setPayDialog] = useState(null);
   const [premiumOpen, setPremiumOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [manualFormOpen, setManualFormOpen] = useState(searchParams.get('adicionar') === '1');
 
   useEffect(() => { load(); }, []);
+
+  const closeManualForm = () => {
+    setManualFormOpen(false);
+    searchParams.delete('adicionar');
+    setSearchParams(searchParams, { replace: true });
+  };
 
   async function load() {
     try {
@@ -189,6 +199,8 @@ export default function Pagamentos() {
       )}
 
       <PremiumModal open={premiumOpen} onOpenChange={setPremiumOpen} />
+
+      <ManualInvoiceForm open={manualFormOpen} onClose={closeManualForm} onSaved={load} />
     </div>
   );
 }

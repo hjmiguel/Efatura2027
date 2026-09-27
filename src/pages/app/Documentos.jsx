@@ -133,6 +133,12 @@ export default function Documentos() {
       )}
 
       {ocrOpen && <OcrFlow onClose={() => setOcrOpen(false)} onDone={() => { setOcrOpen(false); load(); }} />}
+
+      <InvoiceDetailDialog
+        invoice={selectedInvoice}
+        open={!!selectedInvoice}
+        onOpenChange={(v) => !v && setSelectedInvoice(null)}
+      />
     </div>
   );
 }

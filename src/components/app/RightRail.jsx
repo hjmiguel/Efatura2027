@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { formatKz } from '@/lib/format';
+import { filterVisibleInvoices } from '@/lib/business/partnerVisibility';
 
 const dedLabels = {
   saude: 'Saúde',
@@ -16,8 +17,18 @@ export default function RightRail() {
   const [invoices, setInvoices] = useState([]);
 
   useEffect(() => {
-    base44.entities.Invoice.list()
-      .then(setInvoices)
+    Promise.all([
+      base44.auth.me(),
+      base44.entities.Invoice.list(),
+      base44.entities.PartnerConsent.list(),
+      base44.entities.Subscription.filter({ status: 'active' }),
+    ])
+      .then(([me, data, consents, subs]) => {
+        setInvoices(filterVisibleInvoices(data, {
+          consents,
+          hasActiveSubscription: subs.some((s) => s.user_id === me.id),
+        }));
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -107,7 +118,7 @@ export default function RightRail() {
             {formatKz(deductibleTotal)}
           </div>
           <div className="text-[12px] text-[#7A5210] mt-2 leading-relaxed">
-            Saúde, educação e habitação acumuladas este ano. Conta para a declaração de 2028.
+            Saúde, educação e habitação acumuladas este ano. Conta para a declaração de {new Date().getFullYear() + 1}.
           </div>
           {breakdown.length > 0 && (
             <>
