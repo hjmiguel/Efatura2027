@@ -4,9 +4,30 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { appApi } from '@/api/appClient';
+import { Sparkles, Loader2 } from 'lucide-react';
+
+async function classifyCategory(description, type, categories) {
+  const relevant = categories.filter((c) => c.type === type);
+  if (relevant.length === 0 || !description) return '';
+  try {
+    const res = await appApi.integrations.Core.InvokeLLM({
+      prompt: `Classifica esta transação financeira angolana numa das categorias dadas. Descrição: "${description}". Categorias disponíveis: ${relevant.map((c) => c.name).join(', ')}. Devolve apenas o nome exato da categoria mais adequada.`,
+      response_json_schema: {
+        type: 'object',
+        properties: { category_name: { type: 'string', enum: relevant.map((c) => c.name) } },
+        required: ['category_name'],
+      },
+    });
+    return relevant.find((c) => c.name === res.category_name)?.id || '';
+  } catch (err) {
+    console.error('Erro ao classificar categoria:', err);
+    return '';
+  }
+}
 
 export default function TransactionForm({ open, onClose, onSaved, transaction, accounts, categories }) {
   const [saving, setSaving] = useState(false);
+  const [classifying, setClassifying] = useState(false);
   const [form, setForm] = useState({
     description: '',
     amount: '',
@@ -49,13 +70,20 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
       const amount = parseFloat(form.amount) || 0;
       const signedAmount = form.type === 'income' ? amount : -amount;
 
+      let categoryId = form.category_id;
+      if (!categoryId && form.type !== 'transfer') {
+        setClassifying(true);
+        categoryId = await classifyCategory(form.description, form.type, categories);
+        setClassifying(false);
+      }
+
       const data = {
         description: form.description,
         amount: signedAmount,
         date: form.date,
         type: form.type,
         account_id: form.account_id,
-        category_id: form.category_id || undefined,
+        category_id: categoryId || undefined,
         notes: form.notes || undefined,
       };
 
@@ -168,17 +196,22 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
               onChange={(e) => setForm({ ...form, category_id: e.target.value })}
               className="mt-1.5 w-full h-10 rounded-lg border border-input bg-surface px-3 text-sm"
             >
-              <option value="">Sem categoria</option>
+              <option value="">Classificar automaticamente com IA</option>
               {filteredCategories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
+            {form.type !== 'transfer' && (
+              <p className="text-xs text-muted-2 mt-1.5 flex items-center gap-1">
+                <Sparkles className="w-3 h-3" /> Deixa em branco para a IA escolher a categoria pela descrição.
+              </p>
+            )}
           </div>
 
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
             <Button type="submit" disabled={saving}>
-              {saving ? 'A guardar...' : 'Guardar'}
+              {classifying ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> A classificar...</> : saving ? 'A guardar...' : 'Guardar'}
             </Button>
           </DialogFooter>
         </form>
