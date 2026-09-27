@@ -1,13 +1,32 @@
 import React, { useState, useCallback } from 'react';
-import { FileSpreadsheet, Check, AlertTriangle, X, ArrowLeft, Download } from 'lucide-react';
+import { appApi } from '@/api/appClient';
+import { FileSpreadsheet, Check, AlertTriangle, X, ArrowLeft, Download, Loader2 } from 'lucide-react';
 
 const STEPS = ['upload', 'mapping', 'validation', 'done'];
+
+function parseCsv(text) {
+  const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+  if (lines.length === 0) return [];
+  const delimiter = lines[0].includes(';') ? ';' : ',';
+  const headers = lines[0].split(delimiter).map((h) => h.trim().toLowerCase());
+  return lines.slice(1).map((line) => {
+    const cells = line.split(delimiter).map((c) => c.trim());
+    const row = {};
+    headers.forEach((h, idx) => { row[h] = cells[idx] || ''; });
+    return row;
+  });
+}
 
 export default function PartnerImport({ onDone }) {
   const [step, setStep] = useState('upload');
   const [file, setFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [rows, setRows] = useState([]);
+  const [parseError, setParseError] = useState('');
+  const [validating, setValidating] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [results, setResults] = useState([]);
+  const [createdCount, setCreatedCount] = useState(0);
   const [mapping, setMapping] = useState({
     nif: 'nif',
     descricao: 'descricao',
@@ -26,21 +45,68 @@ export default function PartnerImport({ onDone }) {
   }, []);
 
   const handleFile = (f) => {
+    setParseError('');
+    if (!f.name.toLowerCase().endsWith('.csv')) {
+      setParseError('Para este teste, utiliza um ficheiro .csv (descarrega o modelo abaixo).');
+      return;
+    }
     setFile(f);
-    // Simulate parsing rows
-    const mockRows = [
-      { nif: '5000846236', descricao: 'Electricidade junho', valor: '18450', vencimento: '2026-06-28', pagamento: 'referencia', entidade: '00115', referencia: '940118207', status: 'ready' },
-      { nif: '5417002219', descricao: 'Telecomunicações', valor: '24900', vencimento: '2026-06-26', pagamento: 'referencia', entidade: '00115', referencia: '112883920', status: 'ready' },
-      { nif: '5219884410', descricao: 'Água junho', valor: '31000', vencimento: '2026-06-30', pagamento: 'referencia', entidade: '00115', referencia: '772091453', status: 'warning' },
-      { nif: '5008771230', descricao: 'Serviço mensal', valor: '9800', vencimento: '2026-06-19', pagamento: 'referencia', entidade: '00115', referencia: '553210987', status: 'error' },
-    ];
-    setRows(mockRows);
-    setStep('mapping');
+    const reader = new FileReader();
+    reader.onload = () => {
+      const parsed = parseCsv(String(reader.result));
+      if (parsed.length === 0) {
+        setParseError('O ficheiro não tem linhas de dados.');
+        return;
+      }
+      setRows(parsed);
+      setStep('mapping');
+    };
+    reader.onerror = () => setParseError('Não foi possível ler o ficheiro.');
+    reader.readAsText(f);
   };
 
-  const ready = rows.filter((r) => r.status === 'ready').length;
-  const warnings = rows.filter((r) => r.status === 'warning').length;
-  const errors = rows.filter((r) => r.status === 'error').length;
+  const downloadTemplate = () => {
+    const csv = 'nif,descricao,valor,vencimento,pagamento,entidade,referencia\n5000846236,Electricidade junho,18450,2026-06-28,referencia,00115,940118207\n';
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'modelo-faturas.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const runValidation = async () => {
+    setValidating(true);
+    try {
+      const res = await appApi.functions.invoke('partnerApi', { action: 'import_batch', rows, dry_run: true });
+      setResults(res.data.results || []);
+      setStep('validation');
+    } catch (err) {
+      setParseError(err?.response?.data?.error || 'Não foi possível validar as linhas.');
+    } finally {
+      setValidating(false);
+    }
+  };
+
+  const runImport = async () => {
+    setImporting(true);
+    try {
+      const res = await appApi.functions.invoke('partnerApi', { action: 'import_batch', rows, dry_run: false });
+      const finalResults = res.data.results || [];
+      setResults(finalResults);
+      setCreatedCount(finalResults.filter((r) => r.invoice_id).length);
+      setStep('done');
+    } catch (err) {
+      setParseError(err?.response?.data?.error || 'Não foi possível importar as faturas.');
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const ready = results.filter((r) => r.status === 'ready').length;
+  const warnings = results.filter((r) => r.status === 'warning').length;
+  const errors = results.filter((r) => r.status === 'error').length;
 
   const statusLabel = {
     ready: { label: 'Pronta', cls: 'pill-paid' },
@@ -48,14 +114,17 @@ export default function PartnerImport({ onDone }) {
     error: { label: 'Erro', cls: 'pill-late' },
   };
 
+  function reset() {
+    setStep('upload'); setFile(null); setRows([]); setResults([]); setCreatedCount(0); setParseError('');
+  }
+
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
           <span className="eyebrow">§ 03 · Importar</span>
-          <h1 className="font-heading text-xl font-bold text-ink mt-1">Importar faturas de Excel ou CSV</h1>
+          <h1 className="font-heading text-xl font-bold text-ink mt-1">Importar faturas de CSV</h1>
         </div>
-        <span className="mark">JUL · 2026</span>
       </div>
 
       {/* Step indicator */}
@@ -74,10 +143,16 @@ export default function PartnerImport({ onDone }) {
         ))}
       </div>
 
+      {parseError && (
+        <div className="flex items-center gap-2 bg-danger-soft text-destructive px-4 py-3 rounded-lg text-[13px]">
+          <AlertTriangle className="w-4 h-4 shrink-0" /> {parseError}
+        </div>
+      )}
+
       {/* Upload step */}
       {step === 'upload' && (
         <div className="space-y-4">
-          <button className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-line rounded-lg text-[12px] font-medium text-ink hover:bg-muted transition-colors">
+          <button onClick={downloadTemplate} className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-line rounded-lg text-[12px] font-medium text-ink hover:bg-muted transition-colors">
             <Download className="w-3.5 h-3.5" /> Descarregar modelo
           </button>
           <div
@@ -91,11 +166,11 @@ export default function PartnerImport({ onDone }) {
           >
             <FileSpreadsheet className="w-10 h-10 text-[#1C8A6A] mx-auto mb-3" />
             <p className="text-[14px] font-medium text-ink">Arrasta o ficheiro ou clica para escolher</p>
-            <p className="text-[12px] text-muted-2 mt-1">.xlsx, .xls ou .csv · até 5.000 linhas por ficheiro</p>
+            <p className="text-[12px] text-muted-2 mt-1">.csv · até 5.000 linhas por ficheiro</p>
             <input
               id="partner-file-input"
               type="file"
-              accept=".xlsx,.xls,.csv"
+              accept=".csv"
               className="hidden"
               onChange={(e) => e.target.files[0] && handleFile(e.target.files[0])}
             />
@@ -113,7 +188,7 @@ export default function PartnerImport({ onDone }) {
             <FileSpreadsheet className="w-4 h-4 text-[#1C8A6A]" />
             <span className="font-medium">{file?.name}</span>
             <span className="text-muted-2">· {rows.length} linhas lidas</span>
-            <button onClick={() => { setFile(null); setStep('upload'); }} className="ml-auto text-muted-2 hover:text-ink">
+            <button onClick={reset} className="ml-auto text-muted-2 hover:text-ink">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -130,13 +205,13 @@ export default function PartnerImport({ onDone }) {
               </thead>
               <tbody>
                 {[
-                  { sys: 'NIF', key: 'nif', example: '5000846236' },
-                  { sys: 'Descrição', key: 'descricao', example: 'Electricidade junho' },
-                  { sys: 'Valor (Kz)', key: 'valor', example: '18450' },
-                  { sys: 'Vencimento', key: 'vencimento', example: '2026-06-28' },
-                  { sys: 'Tipo de pagamento', key: 'pagamento', example: 'referencia' },
-                  { sys: 'Entidade / IBAN', key: 'entidade', example: '00115' },
-                  { sys: 'Referência', key: 'referencia', example: '940118207' },
+                  { sys: 'NIF', key: 'nif' },
+                  { sys: 'Descrição', key: 'descricao' },
+                  { sys: 'Valor (Kz)', key: 'valor' },
+                  { sys: 'Vencimento', key: 'vencimento' },
+                  { sys: 'Tipo de pagamento', key: 'pagamento' },
+                  { sys: 'Entidade / IBAN', key: 'entidade' },
+                  { sys: 'Referência', key: 'referencia' },
                 ].map((row) => (
                   <tr key={row.key} className="border-b border-line/50 last:border-0">
                     <td className="px-5 py-3 text-ink font-medium text-[13px]">{row.sys}</td>
@@ -150,7 +225,7 @@ export default function PartnerImport({ onDone }) {
                         <option value="">— ignorar —</option>
                       </select>
                     </td>
-                    <td className="px-5 py-3 font-mono text-[12px] text-muted-foreground">{row.example}</td>
+                    <td className="px-5 py-3 font-mono text-[12px] text-muted-foreground">{rows[0]?.[row.key] || '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -158,11 +233,11 @@ export default function PartnerImport({ onDone }) {
           </div>
 
           <div className="flex gap-2">
-            <button onClick={() => { setFile(null); setStep('upload'); }} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-line text-muted-foreground text-sm hover:bg-muted">
+            <button onClick={reset} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-line text-muted-foreground text-sm hover:bg-muted">
               <ArrowLeft className="w-4 h-4" /> Voltar
             </button>
-            <button onClick={() => setStep('validation')} className="flex-1 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-2">
-              Validar linhas
+            <button onClick={runValidation} disabled={validating} className="flex-1 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-2 disabled:opacity-50 inline-flex items-center justify-center gap-2">
+              {validating && <Loader2 className="w-4 h-4 animate-spin" />} Validar linhas
             </button>
           </div>
         </div>
@@ -199,8 +274,8 @@ export default function PartnerImport({ onDone }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((r, idx) => {
-                    const st = statusLabel[r.status];
+                  {results.map((r, idx) => {
+                    const st = statusLabel[r.status] || statusLabel.error;
                     return (
                       <tr key={idx} className="border-b border-line/50 last:border-0">
                         <td className="px-5 py-3 font-mono text-[12px] text-muted-foreground">{idx + 2}</td>
@@ -209,7 +284,7 @@ export default function PartnerImport({ onDone }) {
                         <td className="px-5 py-3 text-[12px] text-muted-foreground">{r.vencimento}</td>
                         <td className="px-5 py-3">
                           <span className={`${st.cls} text-[10.5px] font-bold px-2.5 py-0.5 rounded-full`}>
-                            {r.status === 'ready' ? 'Pronta' : r.status === 'warning' ? 'Aviso: valor acima do habitual' : 'Erro: NIF não autorizou'}
+                            {r.status === 'ready' ? 'Pronta' : r.status === 'warning' ? 'Aviso: valor elevado' : `Erro: ${r.reason || '—'}`}
                           </span>
                         </td>
                       </tr>
@@ -221,18 +296,15 @@ export default function PartnerImport({ onDone }) {
           </div>
 
           <p className="text-[11px] text-muted-2 leading-relaxed">
-            As linhas com erro são ignoradas. Podes corrigir o ficheiro e voltar a importar só essas. As linhas com aviso são enviadas e ficam assinaladas.
+            As linhas com erro são ignoradas. As linhas com aviso são enviadas e ficam assinaladas.
           </p>
 
           <div className="flex gap-2">
             <button onClick={() => setStep('mapping')} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-line text-muted-foreground text-sm hover:bg-muted">
               <ArrowLeft className="w-4 h-4" /> Voltar
             </button>
-            <button className="px-4 py-2 rounded-lg border border-line text-muted-foreground text-sm hover:bg-muted">
-              Exportar erros
-            </button>
-            <button onClick={() => setStep('done')} className="flex-1 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-2">
-              Enviar {ready} faturas
+            <button onClick={runImport} disabled={importing || ready + warnings === 0} className="flex-1 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-2 disabled:opacity-50 inline-flex items-center justify-center gap-2">
+              {importing && <Loader2 className="w-4 h-4 animate-spin" />} Enviar {ready + warnings} faturas
             </button>
           </div>
         </div>
@@ -246,13 +318,13 @@ export default function PartnerImport({ onDone }) {
           </div>
           <h2 className="font-heading font-bold text-lg text-ink">Importação concluída</h2>
           <p className="text-[13px] text-muted-foreground mt-2">
-            {ready} faturas enviadas. {errors} linhas ignoradas por erro.
+            {createdCount} faturas criadas. {results.filter((r) => r.status === 'error').length} linhas ignoradas por erro.
           </p>
           <p className="text-[12px] text-muted-2 mt-1">
-            Os utilizadores vão recebê-las na app e ser avisados antes do prazo.
+            Já estão visíveis nos Documentos e Pagamentos dos utilizadores donos desses NIFs.
           </p>
           <div className="flex gap-2 mt-6 max-w-xs mx-auto">
-            <button onClick={() => { setStep('upload'); setFile(null); setRows([]); }} className="flex-1 px-4 py-2 rounded-lg border border-line text-muted-foreground text-sm hover:bg-muted">
+            <button onClick={reset} className="flex-1 px-4 py-2 rounded-lg border border-line text-muted-foreground text-sm hover:bg-muted">
               Importar outro
             </button>
             <button onClick={onDone} className="flex-1 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-2">

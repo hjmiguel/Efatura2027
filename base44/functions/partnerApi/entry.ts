@@ -124,6 +124,72 @@ export default async function (req) {
       return Response.json({ success: true, invoice_id, status: payment_confirmed ? 'paid' : invoice.status });
     }
 
+    // ---- import_batch: called by the logged-in partner from the portal import wizard ----
+    if (action === 'import_batch') {
+      const user = await base44.auth.me();
+      if (!user) return Response.json({ error: 'Não autenticado', code: 'UNAUTHENTICATED' }, { status: 401 });
+
+      const { rows, dry_run } = body;
+      if (!Array.isArray(rows)) {
+        return Response.json({ error: 'rows deve ser uma lista', code: 'MISSING_FIELDS' }, { status: 400 });
+      }
+
+      const ownKeys = await base44.asServiceRole.entities.PartnerApiKey.filter({ owner_user_id: user.id, status: 'active' });
+      const partnerKey = ownKeys && ownKeys[0];
+      if (!partnerKey) {
+        return Response.json({ error: 'Precisas de uma chave de API ativa para importar faturas', code: 'NO_ACTIVE_KEY' }, { status: 403 });
+      }
+
+      const results = [];
+      for (const row of rows) {
+        const nif = (row.nif || '').toString().trim();
+        const valor = parseFloat(row.valor);
+        const vencimento = (row.vencimento || '').toString().trim();
+
+        if (!nif || !vencimento || isNaN(valor) || valor <= 0) {
+          results.push({ ...row, status: 'error', reason: 'Campos obrigatórios em falta (NIF, valor ou vencimento)' });
+          continue;
+        }
+
+        const consents = await base44.asServiceRole.entities.PartnerConsent.filter({
+          partner_nif: partnerKey.partner_nif,
+          user_nif: nif,
+          consent_status: 'active',
+        });
+        if (!consents || consents.length === 0) {
+          results.push({ ...row, status: 'error', reason: 'NIF não autorizou a tua empresa' });
+          continue;
+        }
+
+        const rowStatus = valor > 100000 ? 'warning' : 'ready';
+
+        if (!dry_run) {
+          const invoice = await base44.asServiceRole.entities.Invoice.create({
+            issuer_name: partnerKey.partner_name,
+            issuer_nif: partnerKey.partner_nif,
+            amount: valor,
+            due_date: vencimento,
+            issue_date: new Date().toISOString().split('T')[0],
+            entity: row.entidade || '',
+            reference: row.referencia || '',
+            payment_method: row.pagamento === 'referencia' ? 'mcx_reference' : (row.pagamento || 'manual'),
+            status: 'pending',
+            source: 'partner',
+            has_nif: true,
+            user_nif: nif,
+            agt_status: 'none',
+            partner_emitted: true,
+            partner_owner_id: user.id,
+          });
+          results.push({ ...row, status: rowStatus, invoice_id: invoice.id });
+        } else {
+          results.push({ ...row, status: rowStatus });
+        }
+      }
+
+      return Response.json({ success: true, results });
+    }
+
     // ---- Remaining actions require a Bearer API key ----
     const authHeader = req.headers.get('Authorization') || '';
     const apiKey = authHeader.replace('Bearer ', '');
