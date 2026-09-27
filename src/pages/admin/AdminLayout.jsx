@@ -77,7 +77,7 @@ export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-background">
       <a href="#main-content" className="skip-link">Saltar para o conteúdo</a>
-      <header className="sticky top-0 z-30 bg-surface border-b border-line">
+      <header className="sticky top-0 z-30 bg-surface border-b border-line" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="px-4 md:px-8 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gold flex items-center justify-center relative overflow-hidden">

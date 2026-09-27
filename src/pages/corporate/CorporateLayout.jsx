@@ -77,7 +77,7 @@ export default function CorporateLayout() {
         </div>
       </aside>
 
-      <header className="md:hidden sticky top-0 z-30 bg-surface/95 backdrop-blur-md border-b border-line">
+      <header className="md:hidden sticky top-0 z-30 bg-surface/95 backdrop-blur-md border-b border-line" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="flex items-center justify-between px-4 h-14">
           <div className="flex items-center gap-2">
             <Building2 className="w-5 h-5 text-ink" />
