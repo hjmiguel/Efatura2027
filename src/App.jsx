@@ -49,8 +49,16 @@ import CorporateSuppliers from './pages/corporate/CorporateSuppliers';
 import CorporateCostCenters from './pages/corporate/CorporateCostCenters';
 import CorporateFiscal from './pages/corporate/CorporateFiscal';
 
+// Routes that must render even for a logged-out visitor — the global auth
+// gate below must never bounce these away before the router gets a chance.
+const PUBLIC_PATHS = [
+  '/', '/registo', '/entrar', '/forgot-password', '/reset-password', '/onboarding',
+  '/termos', '/privacidade', '/admin/entrar', '/parceiros/entrar', '/empresas/entrar',
+];
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const isPublicPath = PUBLIC_PATHS.includes(window.location.pathname);
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -61,8 +69,9 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
-  if (authError) {
+  // Handle authentication errors — skip on public pages, they must render
+  // for logged-out visitors (e.g. the module entrance pages).
+  if (authError && !isPublicPath) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
