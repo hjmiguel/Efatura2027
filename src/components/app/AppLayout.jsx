@@ -184,7 +184,7 @@ export default function AppLayout() {
       </aside>
 
       {/* ===== Mobile app bar ===== */}
-      <header className="md:hidden sticky top-0 z-30 bg-surface border-b border-line">
+      <header className="md:hidden sticky top-0 z-30 bg-surface border-b border-line" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="flex items-center gap-2.5 px-[18px] py-3">
           <Link to="/app/perfil" className="shrink-0">
             <div className="w-[42px] h-[42px] rounded-full bg-primary text-white flex items-center justify-center font-heading font-bold text-base">
