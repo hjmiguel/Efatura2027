@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { appApi } from '@/api/appClient';
 import { formatKz, formatKzShort, getFirstName, formatDateShort } from '@/lib/format';
 import { Plus, FileText, CreditCard, Building2, ArrowUpRight, ArrowDownRight, AlertTriangle } from 'lucide-react';
+import { filterVisibleInvoices } from '@/lib/business/partnerVisibility';
 
 const dedLabels = {
   saude: { label: 'Saúde', emoji: '🏥' },
@@ -36,16 +37,23 @@ export default function Home() {
 
   async function loadData() {
     try {
-      const [me, accts, txns, allInvoices] = await Promise.all([
+      const [me, accts, txns, rawInvoices, consents, subs] = await Promise.all([
         appApi.auth.me(),
         appApi.entities.Account.list(),
         appApi.entities.Transaction.list('-date', 50),
         appApi.entities.Invoice.list(),
+        appApi.entities.PartnerConsent.list(),
+        appApi.entities.Subscription.filter({ status: 'active' }),
       ]);
 
       setUser(me);
       setAccounts(accts);
       setTransactions(txns.slice(0, 5));
+
+      const allInvoices = filterVisibleInvoices(rawInvoices, {
+        consents,
+        hasActiveSubscription: subs.some((s) => s.user_id === me.id),
+      });
 
       const pending = allInvoices
         .filter((i) => i.status === 'pending' || i.status === 'overdue')

@@ -13,6 +13,7 @@ import RupePaymentDialog from '@/components/app/RupePaymentDialog';
 import PremiumModal from '@/components/app/PremiumModal';
 import EmpresasTab from '@/components/app/payments/EmpresasTab';
 import CompromissosView from '@/components/app/payments/CompromissosView';
+import { filterVisibleInvoices } from '@/lib/business/partnerVisibility';
 
 const tabs = [
   { id: 'pendente', label: 'Pendente' },
@@ -33,11 +34,17 @@ export default function Pagamentos() {
 
   async function load() {
     try {
-      const [data, accounts] = await Promise.all([
+      const [me, data, accounts, consents, subs] = await Promise.all([
+        appApi.auth.me(),
         appApi.entities.Invoice.list(),
         appApi.entities.Account.list(),
+        appApi.entities.PartnerConsent.list(),
+        appApi.entities.Subscription.filter({ status: 'active' }),
       ]);
-      setInvoices(data);
+      setInvoices(filterVisibleInvoices(data, {
+        consents,
+        hasActiveSubscription: subs.some((s) => s.user_id === me.id),
+      }));
       setPatrimonio(accounts.reduce((s, a) => s + (a.balance || 0), 0));
     } catch (err) { console.error(err); }
     finally { setLoading(false); }

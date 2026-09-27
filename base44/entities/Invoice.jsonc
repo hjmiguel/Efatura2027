@@ -133,6 +133,9 @@
           "data.partner_owner_id": "{{user.id}}"
         },
         {
+          "data.user_nif": "{{user.data.nif}}"
+        },
+        {
           "user_condition": {
             "role": "admin"
           }
@@ -143,6 +146,9 @@
       "$or": [
         {
           "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.user_nif": "{{user.data.nif}}"
         },
         {
           "user_condition": {

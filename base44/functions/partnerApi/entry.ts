@@ -151,16 +151,8 @@ export default async function (req) {
           continue;
         }
 
-        const consents = await base44.asServiceRole.entities.PartnerConsent.filter({
-          partner_nif: partnerKey.partner_nif,
-          user_nif: nif,
-          consent_status: 'active',
-        });
-        if (!consents || consents.length === 0) {
-          results.push({ ...row, status: 'error', reason: 'NIF não autorizou a tua empresa' });
-          continue;
-        }
-
+        // Import succeeds independently of consent — consent (plus subscription) only gates whether
+        // the invoice is later shown to the end user, never whether the partner can send it.
         const rowStatus = valor > 100000 ? 'warning' : 'ready';
 
         if (!dry_run) {
