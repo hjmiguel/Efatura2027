@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Briefcase, LayoutDashboard, Receipt, Users, Key, FlaskConical, ArrowLeft, Upload } from 'lucide-react';
+import { Briefcase, LayoutDashboard, Receipt, Users, Key, FlaskConical, ArrowLeft, Upload, Banknote } from 'lucide-react';
 
 const nav = [
   { id: 'painel', label: 'Painel', icon: LayoutDashboard },
@@ -8,6 +8,7 @@ const nav = [
   { id: 'importar', label: 'Importar', icon: Upload },
   { id: 'nifs', label: 'NIFs ligados', icon: Users },
   { id: 'api', label: 'API e chaves', icon: Key },
+  { id: 'honorarios', label: 'Honorários', icon: Banknote },
   { id: 'sandbox', label: 'Sandbox', icon: FlaskConical },
 ];
 
@@ -80,14 +81,14 @@ export default function PartnerShell({ active, onChange, partnerName, verified, 
 
         {/* Mobile tab bar */}
         <div className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur border-t border-line">
-          <div className="flex items-center justify-around px-1 py-1.5">
+          <div className="flex items-center justify-around px-1 py-1.5 overflow-x-auto scrollbar-hide">
             {nav.map((item) => {
               const activeTab = active === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => onChange(item.id)}
-                  className={`flex flex-col items-center gap-0.5 px-2 py-1 w-[58px] ${activeTab ? 'text-primary' : 'text-muted-2'}`}
+                  className={`flex flex-col items-center gap-0.5 px-2 py-1 w-[58px] shrink-0 ${activeTab ? 'text-primary' : 'text-muted-2'}`}
                 >
                   <item.icon className="w-5 h-5" strokeWidth={2} />
                   <span className="text-[9.5px] font-semibold leading-tight text-center">{item.label}</span>

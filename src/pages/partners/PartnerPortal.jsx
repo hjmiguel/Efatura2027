@@ -6,6 +6,7 @@ import PartnerDashboard from '@/components/partners/PartnerDashboard';
 import PartnerInvoices from '@/components/partners/PartnerInvoices';
 import PartnerNifs from '@/components/partners/PartnerNifs';
 import PartnerApiKeys from '@/components/partners/PartnerApiKeys';
+import PartnerFees from '@/components/partners/PartnerFees';
 import PartnerSandbox from '@/components/partners/PartnerSandbox';
 import PartnerImport from '@/components/partners/PartnerImport';
 
@@ -15,6 +16,8 @@ export default function PartnerPortal() {
   const [loading, setLoading] = useState(true);
   const [invoices, setInvoices] = useState([]);
   const [consents, setConsents] = useState([]);
+  const [apiKeys, setApiKeys] = useState([]);
+  const [fees, setFees] = useState([]);
   const [user, setUser] = useState(null);
   const [generatedKey, setGeneratedKey] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -25,13 +28,18 @@ export default function PartnerPortal() {
     try {
       const me = await appApi.auth.me();
       if (me?.app_role !== 'partner') { navigate('/app'); return; }
-      const [inv, cons] = await Promise.all([
-        appApi.entities.Invoice.list('-created_date', 50),
+      // RLS already scopes each of these to this partner (owner_user_id / partner_nif) — no manual filtering needed.
+      const [inv, cons, keys, feeRecords] = await Promise.all([
+        appApi.entities.Invoice.list('-created_date', 200),
         appApi.entities.PartnerConsent.list(),
+        appApi.entities.PartnerApiKey.list(),
+        appApi.entities.PartnerFee.list('-fee_date', 200),
       ]);
       setUser(me);
       setInvoices(inv.filter((i) => i.source === 'partner'));
       setConsents(cons);
+      setApiKeys(keys);
+      setFees(feeRecords);
     } catch (err) {
       console.error(err);
       navigate('/parceiros/entrar');
@@ -40,26 +48,29 @@ export default function PartnerPortal() {
     finally { setLoading(false); }
   }
 
-  async function generateApiKey(name, nif) {
+  async function generateApiKey(name, nif, feePerInvoice) {
     if (!name.trim() || !nif.trim()) return;
     try {
-      const key = 'gmais_live_' + Math.random().toString(36).substring(2, 18) + Math.random().toString(36).substring(2, 18);
+      const bytes = new Uint8Array(24);
+      crypto.getRandomValues(bytes);
+      const key = 'gmais_live_' + Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
       await appApi.functions.invoke('partnerApi', {
         action: 'create_key',
         partner_name: name,
         partner_nif: nif,
         raw_key: key,
+        fee_per_invoice: feePerInvoice || 0,
       });
       setGeneratedKey(key);
       load();
     } catch (err) { console.error(err); }
   }
 
-  async function revokeConsent(id) {
-    if (!confirm('Revogar este consentimento?')) return;
+  async function revokeApiKey(id) {
+    if (!confirm('Revogar esta chave de API?')) return;
     try {
-      await appApi.entities.PartnerConsent.update(id, {
-        consent_status: 'revoked',
+      await appApi.entities.PartnerApiKey.update(id, {
+        status: 'revoked',
         revoked_date: new Date().toISOString(),
       });
       await appApi.entities.AuditLog.create({
@@ -67,7 +78,7 @@ export default function PartnerPortal() {
         actor_id: user?.id,
         actor_name: user?.full_name || user?.email,
         actor_role: 'partner',
-        target_entity: 'PartnerConsent',
+        target_entity: 'PartnerApiKey',
         target_id: id,
         module: 'partner',
       });
@@ -97,7 +108,7 @@ export default function PartnerPortal() {
         active={tab}
         onChange={setTab}
         partnerName={user?.full_name}
-        verified={consents.length > 0}
+        verified={apiKeys.some((k) => k.status === 'active')}
       >
         {tab === 'painel' && <PartnerDashboard invoices={invoices} consents={consents} />}
         {tab === 'faturas' && <PartnerInvoices invoices={invoices} />}
@@ -105,14 +116,15 @@ export default function PartnerPortal() {
         {tab === 'nifs' && <PartnerNifs consents={consents} />}
         {tab === 'api' && (
           <PartnerApiKeys
-            consents={consents}
+            apiKeys={apiKeys}
             onGenerate={generateApiKey}
-            onRevoke={revokeConsent}
+            onRevoke={revokeApiKey}
             generatedKey={generatedKey}
             copied={copied}
             onCopy={copyKey}
           />
         )}
+        {tab === 'honorarios' && <PartnerFees fees={fees} />}
         {tab === 'sandbox' && <PartnerSandbox />}
       </PartnerShell>
     </div>
