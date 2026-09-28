@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { appApi } from '@/api/appClient';
+import CameraCapture from '@/components/app/CameraCapture';
 import {
   Camera, FileUp, Crop, ScanLine, FileCheck2, Loader2, Search,
   Plus, ChevronRight, X, RotateCw, HardDrive,
@@ -23,7 +25,16 @@ export default function Documentos() {
   const [tab, setTab] = useState('todos');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    if (searchParams.get('ocr') === '1') {
+      setOcrOpen(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   async function load() {
     try {
@@ -180,8 +191,6 @@ function OcrFlow({ onClose, onDone }) {
   const [extracting, setExtracting] = useState(false);
   const [extracted, setExtracted] = useState(null);
   const [saving, setSaving] = useState(false);
-  const fileRef = useRef(null);
-
   const steps = [
     { n: 1, label: 'Capturar', icon: Camera },
     { n: 2, label: 'Cortar', icon: Crop },
@@ -189,9 +198,7 @@ function OcrFlow({ onClose, onDone }) {
     { n: 4, label: 'Revisar', icon: FileCheck2 },
   ];
 
-  const handleFile = (e) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
+  const handleCapture = (f) => {
     setFile(f);
     setPreview(URL.createObjectURL(f));
     setStep(2);
@@ -259,16 +266,7 @@ function OcrFlow({ onClose, onDone }) {
             ))}
           </div>
 
-          {step === 1 && (
-            <div className="space-y-3">
-              <button onClick={() => fileRef.current?.click()} className="w-full flex flex-col items-center justify-center gap-3 border-2 border-dashed border-line rounded-2xl py-12 hover:border-primary/40 hover:bg-muted/30 transition-colors">
-                <Camera className="w-10 h-10 text-muted-2" />
-                <span className="font-medium text-ink">Tirar foto da fatura</span>
-                <span className="text-xs text-muted-2">ou escolher ficheiro da galeria</span>
-              </button>
-              <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={handleFile} className="hidden" />
-            </div>
-          )}
+          {step === 1 && <CameraCapture onCapture={handleCapture} />}
 
           {step === 2 && preview && (
             <div className="space-y-4">
