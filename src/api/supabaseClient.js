@@ -1,11 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { buildEntities } from './supabaseEntities';
 import { buildAuth } from './supabaseAuth';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabaseConfig';
 
 // Cliente com a mesma interface do SDK Base44 usada pela app (entities, auth, functions, integrations).
-export const supabase = import.meta.env.VITE_SUPABASE_URL
-  ? createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)
-  : null;
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const entities = supabase && buildEntities(supabase);
 const auth = supabase && buildAuth(supabase);
