@@ -1,5 +1,7 @@
 # Plano de Migração — Persistência JSON → Supabase (PostgreSQL)
 
+> **Substituído por `plano-migracao-independente.md`** (Supabase Cloud + frontend estático). Este documento mantém-se apenas como histórico.
+
 **Estado:** Fase 0 concluída (projeto `gesplus` criado + ligado) · Fase 1 concluída (`db.mjs` + `server.mjs` em Postgres) · Aguarda `supabase db push` para testar
 **Última atualização:** 2026-07-30
 
