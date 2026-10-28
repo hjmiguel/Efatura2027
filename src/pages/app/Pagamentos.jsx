@@ -13,6 +13,7 @@ import McxPaymentDialog from '@/components/app/McxPaymentDialog';
 import IbanPaymentDialog from '@/components/app/IbanPaymentDialog';
 import RupePaymentDialog from '@/components/app/RupePaymentDialog';
 import PremiumModal from '@/components/app/PremiumModal';
+import PaymentReceipt from '@/components/app/PaymentReceipt';
 import EmpresasTab from '@/components/app/payments/EmpresasTab';
 import CompromissosView from '@/components/app/payments/CompromissosView';
 import { filterVisibleInvoices } from '@/lib/business/partnerVisibility';
@@ -32,6 +33,7 @@ export default function Pagamentos() {
   const [tab, setTab] = useState('pendente');
   const [payDialog, setPayDialog] = useState(null);
   const [premiumOpen, setPremiumOpen] = useState(false);
+  const [receipt, setReceipt] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [manualFormOpen, setManualFormOpen] = useState(searchParams.get('adicionar') === '1');
 
@@ -86,6 +88,8 @@ export default function Pagamentos() {
         setAccounts((prev) => prev.map((a) => (a.id === account.id ? { ...a, balance: newBalance } : a)));
         setPatrimonio((prev) => prev - Math.abs(invoice.amount || 0));
       }
+      setPayDialog(null);
+      setReceipt({ invoice, paidDate });
     } catch (err) { console.error(err); }
   };
 
@@ -199,6 +203,8 @@ export default function Pagamentos() {
       )}
 
       <PremiumModal open={premiumOpen} onOpenChange={setPremiumOpen} />
+
+      {receipt && <PaymentReceipt invoice={receipt.invoice} paidDate={receipt.paidDate} onClose={() => setReceipt(null)} />}
 
       <ManualInvoiceForm open={manualFormOpen} onClose={closeManualForm} onSaved={load} />
     </div>
