@@ -17,6 +17,7 @@ import PaymentReceipt from '@/components/app/PaymentReceipt';
 import EmpresasTab from '@/components/app/payments/EmpresasTab';
 import CompromissosView from '@/components/app/payments/CompromissosView';
 import { filterVisibleInvoices } from '@/lib/business/partnerVisibility';
+import StatusConfirmDialog from '@/components/app/payments/StatusConfirmDialog';
 
 const tabs = [
   { id: 'pendente', label: 'Pendente' },
@@ -34,6 +35,7 @@ export default function Pagamentos() {
   const [payDialog, setPayDialog] = useState(null);
   const [premiumOpen, setPremiumOpen] = useState(false);
   const [receipt, setReceipt] = useState(null);
+  const [statusAction, setStatusAction] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [manualFormOpen, setManualFormOpen] = useState(searchParams.get('adicionar') === '1');
 
@@ -64,13 +66,38 @@ export default function Pagamentos() {
     finally { setLoading(false); }
   }
 
-  const markPaid = async (invoice) => {
+  const revertToPending = async (invoice) => {
     try {
+      const txs = await appApi.entities.Transaction.filter({ invoice_id: invoice.id });
+      for (const tx of txs) {
+        const acc = accounts.find((a) => a.id === tx.account_id);
+        if (acc) {
+          const newBalance = (acc.balance || 0) - (tx.amount || 0);
+          await appApi.entities.Account.update(acc.id, { balance: newBalance });
+        }
+        await appApi.entities.Transaction.delete(tx.id);
+      }
+      await appApi.entities.Invoice.update(invoice.id, { status: 'pending', paid_date: '' });
+      await load();
+    } catch (err) { console.error(err); }
+  };
+
+  const confirmStatusAction = async () => {
+    const { kind, invoice } = statusAction;
+    setStatusAction(null);
+    if (kind === 'paid') await markPaid(invoice, true);
+    else await revertToPending(invoice);
+  };
+
+  const markPaid = async (invoice, manual = false) => {
+    try {
+      if (invoice.status === 'paid') return;
       const paidDate = new Date().toISOString().slice(0, 10);
       await appApi.entities.Invoice.update(invoice.id, { status: 'paid', paid_date: paidDate });
       setInvoices((prev) => prev.map((i) => (i.id === invoice.id ? { ...i, status: 'paid', paid_date: paidDate } : i)));
 
-      const account = accounts[0];
+      const existing = await appApi.entities.Transaction.filter({ invoice_id: invoice.id });
+      const account = existing.length === 0 ? accounts[0] : null;
       if (account) {
         await appApi.entities.Transaction.create({
           description: invoice.issuer_name,
@@ -89,7 +116,7 @@ export default function Pagamentos() {
         setPatrimonio((prev) => prev - Math.abs(invoice.amount || 0));
       }
       setPayDialog(null);
-      setReceipt({ invoice, paidDate });
+      if (!manual) setReceipt({ invoice, paidDate });
     } catch (err) { console.error(err); }
   };
 
@@ -168,7 +195,7 @@ export default function Pagamentos() {
             <EmptyState icon={CheckCircle2} title="Nada por pagar" text="Não tens faturas pendentes. Bom trabalho!" />
           ) : (
             pending.map((inv) => (
-              <BillCard key={inv.id} invoice={inv} onPay={(type) => setPayDialog({ type, invoice: inv })} />
+              <BillCard key={inv.id} invoice={inv} onPay={(type) => setPayDialog({ type, invoice: inv })} onMarkPaid={() => setStatusAction({ kind: 'paid', invoice: inv })} />
             ))
           )}
         </div>
@@ -180,7 +207,7 @@ export default function Pagamentos() {
           {paid.length === 0 ? (
             <EmptyState icon={Receipt} title="Sem faturas pagas" text="As faturas que pagares aparecem aqui com o selo AGT." />
           ) : (
-            paid.map((inv) => <PaidRow key={inv.id} invoice={inv} />)
+            paid.map((inv) => <PaidRow key={inv.id} invoice={inv} onRevert={() => setStatusAction({ kind: 'pending', invoice: inv })} />)
           )}
         </div>
       )}
@@ -202,6 +229,8 @@ export default function Pagamentos() {
         <RupePaymentDialog invoice={payDialog.invoice} open={!!payDialog} onOpenChange={(v) => !v && setPayDialog(null)} onPaid={markPaid} />
       )}
 
+      <StatusConfirmDialog action={statusAction} onCancel={() => setStatusAction(null)} onConfirm={confirmStatusAction} />
+
       <PremiumModal open={premiumOpen} onOpenChange={setPremiumOpen} />
 
       {receipt && <PaymentReceipt invoice={receipt.invoice} paidDate={receipt.paidDate} onClose={() => setReceipt(null)} />}
@@ -211,7 +240,7 @@ export default function Pagamentos() {
   );
 }
 
-function BillCard({ invoice, onPay }) {
+function BillCard({ invoice, onPay, onMarkPaid }) {
   const overdue = invoice.due_date && daysUntil(invoice.due_date) < 0;
   const days = invoice.due_date ? daysUntil(invoice.due_date) : null;
 
@@ -268,6 +297,9 @@ function BillCard({ invoice, onPay }) {
             {!hasMcx && !hasIban && !hasRupe && (
               <span className="text-[12px] text-muted-2">Sem dados de pagamento</span>
             )}
+            <button onClick={onMarkPaid} className="ml-auto inline-flex items-center gap-1 px-2.5 py-1.5 border border-ok/40 text-ok rounded-lg text-[12px] font-medium hover:bg-green-soft transition-colors">
+              <CheckCircle2 className="w-3 h-3" /> Marcar como paga
+            </button>
           </div>
         </div>
       </div>
@@ -275,7 +307,7 @@ function BillCard({ invoice, onPay }) {
   );
 }
 
-function PaidRow({ invoice }) {
+function PaidRow({ invoice, onRevert }) {
   return (
     <div className="bg-surface border border-line rounded-talao p-4 shadow-soft flex items-center gap-3">
       <div className="w-[42px] h-[42px] rounded-[12px] bg-green-soft flex items-center justify-center shrink-0">
@@ -290,6 +322,9 @@ function PaidRow({ invoice }) {
       <div className="flex items-center gap-2.5 shrink-0">
         {invoice.agt_status && invoice.agt_status !== 'none' && <AgtSeal status={invoice.agt_status} size={18} />}
         <p className="font-mono font-semibold text-[15px] text-ink">{formatKz(invoice.amount)}</p>
+        <button onClick={onRevert} className="px-2.5 py-1.5 border border-line text-muted-foreground rounded-lg text-[12px] font-medium hover:text-ink transition-colors">
+          Reverter
+        </button>
       </div>
     </div>
   );
