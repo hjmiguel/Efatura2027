@@ -68,7 +68,8 @@ export async function processSubscriptionPayment(reference: string, paymentId?: 
   const end = new Date();
   end.setDate(end.getDate() + (sub.data.plan === 'yearly' ? 365 : 30));
 
-  const { error: upErr } = await admin
+  // Atualização condicional (só se ainda estiver pendente): evita dupla ativação em pedidos simultâneos.
+  const { data: updated, error: upErr } = await admin
     .from('records')
     .update({
       data: {
@@ -79,8 +80,11 @@ export async function processSubscriptionPayment(reference: string, paymentId?: 
         proxypay_payment_id: String(paymentId ?? ''),
       },
     })
-    .eq('id', sub.id);
+    .eq('id', sub.id)
+    .eq('data->>status', 'pending')
+    .select('id');
   if (upErr) throw upErr;
+  if (!updated || updated.length === 0) return { skipped: true, reason: 'already_processed' };
 
   let ackId = String(paymentId ?? '');
   if (!ackId) {
