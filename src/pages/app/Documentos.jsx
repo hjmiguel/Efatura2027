@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { formatKz, formatDate } from '@/lib/format';
 import Seo from '@/components/Seo';
+import compressImage from '@/lib/compressImage';
 import InvoiceDetailDialog from '@/components/app/InvoiceDetailDialog';
 
 const docTabs = [
@@ -208,14 +209,9 @@ function OcrFlow({ onClose, onDone }) {
   const extract = async () => {
     setExtracting(true);
     try {
-      const imageBase64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result));
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+      const { dataUrl, mimeType } = await compressImage(file);
       const res = await appApi.functions.invoke('ocrExtractInvoice', {
-        image_base64: imageBase64, mime_type: file.type, file_name: file.name,
+        image_base64: dataUrl, mime_type: mimeType, file_name: file.name,
       });
       setExtracted(res.data || res);
       setStep(4);
