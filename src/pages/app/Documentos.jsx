@@ -271,13 +271,23 @@ function OcrFlow({ onClose, onDone }) {
           {step === 2 && preview && (
             <div className="space-y-4">
               <div className="bg-ink/5 rounded-2xl overflow-hidden flex items-center justify-center" style={{ minHeight: 200 }}>
-                <img src={preview} alt="Pré-visualização" className="max-h-72 object-contain" style={{ transform: `rotate(${rotation}deg)` }} />
+                {file?.type === 'application/pdf' ? (
+                  <div className="flex flex-col items-center gap-2 py-10 px-4 text-center">
+                    <FileCheck2 className="w-10 h-10 text-primary" />
+                    <span className="text-sm font-medium text-ink break-all">{file.name}</span>
+                    <span className="text-xs text-muted-2">Documento PDF</span>
+                  </div>
+                ) : (
+                  <img src={preview} alt="Pré-visualização" className="max-h-72 object-contain" style={{ transform: `rotate(${rotation}deg)` }} />
+                )}
               </div>
-              <div className="flex items-center justify-center gap-2">
-                <button onClick={() => setRotation((r) => (r + 90) % 360)} className="inline-flex items-center gap-1.5 px-3 py-2 border border-line rounded-lg text-sm font-medium text-ink">
-                  <RotateCw className="w-4 h-4" /> Rodar
-                </button>
-              </div>
+              {file?.type !== 'application/pdf' && (
+                <div className="flex items-center justify-center gap-2">
+                  <button onClick={() => setRotation((r) => (r + 90) % 360)} className="inline-flex items-center gap-1.5 px-3 py-2 border border-line rounded-lg text-sm font-medium text-ink">
+                    <RotateCw className="w-4 h-4" /> Rodar
+                  </button>
+                </div>
+              )}
               <div className="flex gap-2">
                 <button onClick={() => { setStep(1); setFile(null); setPreview(null); }} className="flex-1 py-2.5 border border-line rounded-lg text-sm font-medium">Voltar</button>
                 <button onClick={() => { setStep(3); extract(); }} className="flex-1 py-2.5 bg-primary text-white rounded-lg text-sm font-medium">Extrair dados</button>

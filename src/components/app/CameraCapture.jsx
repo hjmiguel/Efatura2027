@@ -90,7 +90,7 @@ export default function CameraCapture({ onCapture }) {
         >
           <Camera className="w-10 h-10 text-muted-2" />
           <span className="font-medium text-ink">Tirar foto da fatura</span>
-          <span className="text-xs text-muted-2">Abre a câmara do telemóvel ou a galeria</span>
+          <span className="text-xs text-muted-2">Abre a câmara, a galeria ou escolhe um PDF</span>
         </button>
       )}
 
@@ -100,11 +100,11 @@ export default function CameraCapture({ onCapture }) {
           onClick={() => fileRef.current?.click()}
           className={`w-full inline-flex items-center justify-center gap-2 py-2.5 border border-line rounded-xl text-sm font-medium text-ink ${status === 'fallback' ? 'hidden' : ''}`}
         >
-          <ImageIcon className="w-4 h-4" /> Escolher da galeria
+          <ImageIcon className="w-4 h-4" /> Escolher da galeria ou PDF
         </button>
       )}
 
-      <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
+      <input ref={fileRef} type="file" accept="image/*,application/pdf" onChange={handleFile} className="hidden" />
     </div>
   );
 }
