@@ -12,7 +12,11 @@ const auth = supabase && buildAuth(supabase);
 const functions = {
   invoke: async (name, payload) => {
     const { data, error } = await supabase.functions.invoke(name, { body: payload || {} });
-    if (error) throw error;
+    if (error) {
+      let msg = error.message;
+      try { msg = (await error.context.json()).error || msg; } catch { /* sem corpo */ }
+      throw new Error(msg);
+    }
     return { data };
   },
 };

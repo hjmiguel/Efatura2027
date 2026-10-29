@@ -26,7 +26,12 @@ export const AuthProvider = ({ children }) => {
     try {
       // Now check if the user is authenticated
       setIsLoadingAuth(true);
+      const fromOAuth = window.location.hash.includes('access_token') || window.location.search.includes('code=');
       const currentUser = await base44.auth.me();
+      if (fromOAuth && ['/', '/entrar'].includes(window.location.pathname)) {
+        window.location.replace('/app');
+        return;
+      }
       setUser(currentUser);
       setIsAuthenticated(true);
       setIsLoadingAuth(false);

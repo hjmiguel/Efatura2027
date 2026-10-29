@@ -190,6 +190,7 @@ function OcrFlow({ onClose, onDone }) {
   const [rotation, setRotation] = useState(0);
   const [extracting, setExtracting] = useState(false);
   const [extracted, setExtracted] = useState(null);
+  const [extractError, setExtractError] = useState('');
   const [saving, setSaving] = useState(false);
   const steps = [
     { n: 1, label: 'Capturar', icon: Camera },
@@ -218,7 +219,11 @@ function OcrFlow({ onClose, onDone }) {
       });
       setExtracted(res.data || res);
       setStep(4);
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error(err);
+      setExtractError(err.message || 'Não foi possível ler o documento.');
+      setStep(2);
+    }
     finally { setExtracting(false); }
   };
 
@@ -281,6 +286,9 @@ function OcrFlow({ onClose, onDone }) {
                   <img src={preview} alt="Pré-visualização" className="max-h-72 object-contain" style={{ transform: `rotate(${rotation}deg)` }} />
                 )}
               </div>
+              {extractError && (
+                <div className="p-3 rounded-lg bg-danger-soft text-destructive text-sm break-words">{extractError}</div>
+              )}
               {file?.type !== 'application/pdf' && (
                 <div className="flex items-center justify-center gap-2">
                   <button onClick={() => setRotation((r) => (r + 90) % 360)} className="inline-flex items-center gap-1.5 px-3 py-2 border border-line rounded-lg text-sm font-medium text-ink">
@@ -290,7 +298,7 @@ function OcrFlow({ onClose, onDone }) {
               )}
               <div className="flex gap-2">
                 <button onClick={() => { setStep(1); setFile(null); setPreview(null); }} className="flex-1 py-2.5 border border-line rounded-lg text-sm font-medium">Voltar</button>
-                <button onClick={() => { setStep(3); extract(); }} className="flex-1 py-2.5 bg-primary text-white rounded-lg text-sm font-medium">Extrair dados</button>
+                <button onClick={() => { setExtractError(''); setStep(3); extract(); }} className="flex-1 py-2.5 bg-primary text-white rounded-lg text-sm font-medium">Extrair dados</button>
               </div>
             </div>
           )}
