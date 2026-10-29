@@ -2,8 +2,13 @@ import { json } from '../_shared/common.ts';
 import { getPayments, processSubscriptionPayment } from '../_shared/proxypay.ts';
 
 // Fallback ao webhook: agendar de 5 em 5 minutos (ver instruções de pg_cron).
-Deno.serve(async () => {
+Deno.serve(async (req) => {
   try {
+    // Só aceita a chave de serviço (usada pelo pg_cron).
+    const token = (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '');
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (!serviceKey || token !== serviceKey) return json({ error: 'Não autorizado' }, 401);
+
     const list = await getPayments();
     let activated = 0;
     let skipped = 0;
