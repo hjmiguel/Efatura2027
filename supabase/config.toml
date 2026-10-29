@@ -37,3 +37,5 @@ site_url = "http://127.0.0.1:3000"
 enable_signup = true
 double_confirm_changes = true
 enable_confirmations = true
+[functions.proxypayWebhook]
+verify_jwt = false
