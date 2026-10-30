@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { toast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,20 +7,33 @@ import { Label } from '@/components/ui/label';
 import { appApi } from '@/api/appClient';
 import { Sparkles, Loader2 } from 'lucide-react';
 
-async function classifyCategory(description, type, categories) {
+const CLASSIFY_TIMEOUT_MS = 8000;
+
+// Rejeita se o sinal for abortado ou ao fim do timeout.
+function withAbort(promise, signal) {
+  return new Promise((resolve, reject) => {
+    const onAbort = () => reject(new Error('aborted'));
+    if (signal.aborted) return onAbort();
+    signal.addEventListener('abort', onAbort, { once: true });
+    promise.then(resolve, reject).finally(() => signal.removeEventListener('abort', onAbort));
+  });
+}
+
+async function classifyCategory(description, type, categories, signal) {
   const relevant = categories.filter((c) => c.type === type);
   if (relevant.length === 0 || !description) return '';
   try {
-    const res = await appApi.integrations.Core.InvokeLLM({
+    const res = await withAbort(appApi.integrations.Core.InvokeLLM({
       prompt: `Classifica esta transação financeira angolana numa das categorias dadas. Descrição: "${description}". Categorias disponíveis: ${relevant.map((c) => c.name).join(', ')}. Devolve apenas o nome exato da categoria mais adequada.`,
       response_json_schema: {
         type: 'object',
         properties: { category_name: { type: 'string', enum: relevant.map((c) => c.name) } },
         required: ['category_name'],
       },
-    });
-    return relevant.find((c) => c.name === res.category_name)?.id || '';
+    }), signal);
+    return relevant.find((c) => c.name === res?.category_name)?.id || '';
   } catch (err) {
+    if (signal.aborted) throw err;
     console.error('Erro ao classificar categoria:', err);
     return '';
   }
@@ -28,6 +42,9 @@ async function classifyCategory(description, type, categories) {
 export default function TransactionForm({ open, onClose, onSaved, transaction, accounts, categories }) {
   const [saving, setSaving] = useState(false);
   const [classifying, setClassifying] = useState(false);
+  const [amountError, setAmountError] = useState('');
+  const cancelledRef = useRef(false);
+  const abortRef = useRef(null);
   const [form, setForm] = useState({
     description: '',
     amount: '',
@@ -40,6 +57,7 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
 
   useEffect(() => {
     if (!open) return;
+    setAmountError('');
     if (transaction) {
       setForm({
         description: transaction.description || '',
@@ -63,19 +81,53 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
     }
   }, [transaction, open, accounts]);
 
+  const handleClose = () => {
+    cancelledRef.current = true;
+    abortRef.current?.abort();
+    onClose();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (saving) return;
+    const parsed = parseFloat(form.amount);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      setAmountError('Indica um montante maior que zero');
+      return;
+    }
+    setAmountError('');
+    cancelledRef.current = false;
     setSaving(true);
+    const controller = new AbortController();
+    abortRef.current = controller;
     try {
-      const amount = parseFloat(form.amount) || 0;
-      const signedAmount = form.type === 'income' ? amount : -amount;
+      const amount = Math.abs(parsed);
+      const signedAmount = form.type === 'expense' ? -amount : amount;
 
       let categoryId = form.category_id;
       if (!categoryId && form.type !== 'transfer') {
         setClassifying(true);
-        categoryId = await classifyCategory(form.description, form.type, categories);
-        setClassifying(false);
+        const timer = setTimeout(() => controller.abort(), CLASSIFY_TIMEOUT_MS);
+        let timedOut = false;
+        try {
+          categoryId = await classifyCategory(form.description, form.type, categories, controller.signal);
+        } catch (err) {
+          if (cancelledRef.current) return;
+          timedOut = true;
+          categoryId = '';
+        } finally {
+          clearTimeout(timer);
+          setClassifying(false);
+        }
+        if (cancelledRef.current) return;
+        if (timedOut || !categoryId) {
+          const fallbackName = form.type === 'income' ? 'Outras receitas' : 'Outras despesas';
+          const fallback = categories.find((c) => c.type === form.type && c.name === fallbackName);
+          categoryId = fallback?.id || '';
+          toast({ description: `Não foi possível classificar. Guardado em ${fallbackName}. Podes mudar a categoria.` });
+        }
       }
+      if (cancelledRef.current) return;
 
       const data = {
         description: form.description,
@@ -122,6 +174,9 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
       onClose();
     } catch (err) {
       console.error('Erro ao guardar transação:', err);
+      if (String(err?.message || err).includes('transaction_amount_sign')) {
+        setAmountError('Montante inválido para o tipo escolhido');
+      }
     } finally {
       setSaving(false);
     }
@@ -138,7 +193,7 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
   );
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+    <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{transaction ? 'Editar transação' : 'Nova transação'}</DialogTitle>
@@ -178,12 +233,15 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
                 id="amount"
                 type="number"
                 step="0.01"
+                min="0.01"
                 value={form.amount}
-                onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                onKeyDown={(e) => { if (e.key === '-' || e.key === '+' || e.key === 'e' || e.key === 'E') e.preventDefault(); }}
+                onChange={(e) => setForm({ ...form, amount: e.target.value.replace(/-/g, '') })}
                 placeholder="0"
                 required
                 className="mt-1.5 font-mono"
               />
+              {amountError && <p className="text-xs text-destructive mt-1.5">{amountError}</p>}
             </div>
             <div>
               <Label htmlFor="date">Data</Label>
@@ -235,7 +293,7 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>Cancelar</Button>
+            <Button type="button" variant="ghost" onClick={handleClose}>Cancelar</Button>
             <Button type="submit" disabled={saving}>
               {classifying ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> A classificar...</> : saving ? 'A guardar...' : 'Guardar'}
             </Button>
