@@ -4,6 +4,7 @@ import { formatKz, formatDate } from '@/lib/format';
 import DependentForm from '@/components/app/DependentForm';
 import { Plus, Download, AlertTriangle, Pencil, Trash2, Users, FileText } from 'lucide-react';
 import AgtSeal from '@/components/app/AgtSeal';
+import ConfirmDeleteDialog from '@/components/app/ConfirmDeleteDialog';
 
 const deductibleLabels = {
   saude: { label: 'Saúde', color: '#DC2626' },
@@ -19,6 +20,7 @@ export default function Dedutiveis() {
   const [loading, setLoading] = useState(true);
   const [invoices, setInvoices] = useState([]);
   const [dependents, setDependents] = useState([]);
+  const [depToDelete, setDepToDelete] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editingDep, setEditingDep] = useState(null);
 
@@ -74,9 +76,10 @@ export default function Dedutiveis() {
   function handleAddDep() { setEditingDep(null); setFormOpen(true); }
   function handleEditDep(dep) { setEditingDep(dep); setFormOpen(true); }
 
-  async function handleDeleteDep(id) {
-    if (!confirm('Eliminar este dependente?')) return;
-    try { await appApi.entities.Dependent.delete(id); setDependents(dependents.filter(d => d.id !== id)); }
+  async function confirmDeleteDep() {
+    const dep = depToDelete;
+    setDepToDelete(null);
+    try { await appApi.entities.Dependent.delete(dep.id); setDependents(dependents.filter(d => d.id !== dep.id)); }
     catch (err) { console.error('Erro:', err); }
   }
 
@@ -203,13 +206,21 @@ export default function Dedutiveis() {
                 </div>
                 <div className="flex items-center gap-1">
                   <button onClick={() => handleEditDep(dep)} className="p-1.5 rounded text-muted-2 hover:text-ink"><Pencil className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => handleDeleteDep(dep.id)} className="p-1.5 rounded text-muted-2 hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => setDepToDelete(dep)} className="p-1.5 rounded text-muted-2 hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      <ConfirmDeleteDialog
+        open={!!depToDelete}
+        title="Apagar dependente?"
+        description={depToDelete ? `Vais apagar "${depToDelete.name}". Esta ação não pode ser desfeita.` : ''}
+        onCancel={() => setDepToDelete(null)}
+        onConfirm={confirmDeleteDep}
+      />
 
       <DependentForm open={formOpen} onClose={() => setFormOpen(false)} onSaved={loadData} dependent={editingDep} />
     </div>

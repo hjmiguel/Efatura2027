@@ -17,6 +17,7 @@ function CategoryIcon({ name, className = 'w-[18px] h-[18px]' }) {
 }
 import { formatKz } from '@/lib/format';
 import Seo from '@/components/Seo';
+import ConfirmDeleteDialog from '@/components/app/ConfirmDeleteDialog';
 import GoalRing from '@/components/app/ui/GoalRing';
 
 const mockGoals = [
@@ -38,6 +39,7 @@ const tabs = [
 export default function Orcamento() {
   const [loading, setLoading] = useState(true);
   const [budgets, setBudgets] = useState([]);
+  const [budgetToDelete, setBudgetToDelete] = useState(null);
   const [categories, setCategories] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [insight, setInsight] = useState('');
@@ -108,7 +110,9 @@ export default function Orcamento() {
     } catch (err) { console.error(err); }
   };
 
-  const removeBudget = async (budgetId) => {
+  const removeBudget = async () => {
+    const budgetId = budgetToDelete?.id;
+    setBudgetToDelete(null);
     try {
       await appApi.entities.Budget.delete(budgetId);
       setBudgets((prev) => prev.filter((b) => b.id !== budgetId));
@@ -267,7 +271,7 @@ export default function Orcamento() {
                       <button onClick={() => { setEditing(b.category_id); setNewLimit(String(b.limit)); }} className="p-1 text-muted-2 hover:text-primary">
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
-                      <button onClick={() => removeBudget(b.id)} className="p-1 text-muted-2 hover:text-destructive">
+                      <button onClick={() => setBudgetToDelete(b)} className="p-1 text-muted-2 hover:text-destructive">
                         <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -411,6 +415,14 @@ export default function Orcamento() {
           </div>
         </div>
       )}
+
+      <ConfirmDeleteDialog
+        open={!!budgetToDelete}
+        title="Apagar orçamento?"
+        description={budgetToDelete ? `Vais apagar o orçamento "${budgetToDelete.category_name}" de ${formatKz(budgetToDelete.limit)}. Esta ação não pode ser desfeita.` : ''}
+        onCancel={() => setBudgetToDelete(null)}
+        onConfirm={removeBudget}
+      />
     </div>
   );
 }

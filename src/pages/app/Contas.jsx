@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { appApi } from '@/api/appClient';
 import { formatKz } from '@/lib/format';
 import AccountForm from '@/components/app/AccountForm';
+import ConfirmDeleteDialog from '@/components/app/ConfirmDeleteDialog';
 import { Plus, Pencil, Trash2, Wallet } from 'lucide-react';
 
 const typeLabels = { checking: 'Conta à ordem', savings: 'Poupança', cash: 'Numerário' };
@@ -11,6 +12,7 @@ export default function Contas() {
   const [accounts, setAccounts] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [toDelete, setToDelete] = useState(null);
 
   useEffect(() => { loadAccounts(); }, []);
 
@@ -25,9 +27,10 @@ export default function Contas() {
   function handleAdd() { setEditing(null); setFormOpen(true); }
   function handleEdit(acc) { setEditing(acc); setFormOpen(true); }
 
-  async function handleDelete(id) {
-    if (!confirm('Eliminar esta conta? As transações associadas não serão removidas.')) return;
-    try { await appApi.entities.Account.delete(id); setAccounts(accounts.filter(a => a.id !== id)); }
+  async function confirmDelete() {
+    const acc = toDelete;
+    setToDelete(null);
+    try { await appApi.entities.Account.delete(acc.id); setAccounts(accounts.filter(a => a.id !== acc.id)); }
     catch (err) { console.error('Erro:', err); }
   }
 
@@ -79,7 +82,7 @@ export default function Contas() {
                 <button onClick={() => handleEdit(acc)} className="flex items-center gap-1.5 text-xs text-muted-2 hover:text-ink px-2 py-1 rounded">
                   <Pencil className="w-3.5 h-3.5" /> Editar
                 </button>
-                <button onClick={() => handleDelete(acc.id)} className="flex items-center gap-1.5 text-xs text-muted-2 hover:text-destructive px-2 py-1 rounded">
+                <button onClick={() => setToDelete(acc)} className="flex items-center gap-1.5 text-xs text-muted-2 hover:text-destructive px-2 py-1 rounded">
                   <Trash2 className="w-3.5 h-3.5" /> Eliminar
                 </button>
               </div>
@@ -87,6 +90,14 @@ export default function Contas() {
           ))
         )}
       </div>
+
+      <ConfirmDeleteDialog
+        open={!!toDelete}
+        title="Apagar conta?"
+        description={toDelete ? `Vais apagar a conta "${toDelete.name}" (${formatKz(toDelete.balance)}). As transações associadas não serão removidas. Esta ação não pode ser desfeita.` : ''}
+        onCancel={() => setToDelete(null)}
+        onConfirm={confirmDelete}
+      />
 
       <AccountForm open={formOpen} onClose={() => setFormOpen(false)} onSaved={loadAccounts} account={editing} />
     </div>

@@ -1,16 +1,15 @@
 import React from 'react';
 import { FileText, CheckCircle, Award } from 'lucide-react';
+import { fiscalStats, isAgtVerified } from '@/lib/business/fiscalStats';
 
 export default function InvoiceLifecycle({ invoices }) {
-  const total = invoices.length;
-  const emitted = invoices.filter(i => i.agt_status === 'emitted').length;
-  const paid = invoices.filter(i => i.agt_status === 'paid').length;
-  const unverified = invoices.filter(i => i.agt_status === 'none' && i.document_number).length;
+  const { emitted, paid, verified } = fiscalStats(invoices);
+  const unverified = invoices.filter(i => !isAgtVerified(i) && i.document_number).length;
 
   const stages = [
-    { label: 'Emitida', count: emitted + paid, icon: FileText, color: 'text-brandblue', bg: 'bg-brandblue/10' },
+    { label: 'Emitida', count: emitted, icon: FileText, color: 'text-brandblue', bg: 'bg-brandblue/10' },
     { label: 'Paga', count: paid, icon: CheckCircle, color: 'text-ok', bg: 'bg-ok/10' },
-    { label: 'Verificada', count: paid, icon: Award, color: 'text-gold', bg: 'bg-gold/10' },
+    { label: 'Verificada', count: verified, icon: Award, color: 'text-gold', bg: 'bg-gold/10' },
   ];
 
   return (

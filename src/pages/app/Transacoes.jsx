@@ -5,6 +5,8 @@ import { formatKz, formatDateShort, formatDate } from '@/lib/format';
 import TransactionForm from '@/components/app/TransactionForm';
 import { Plus, Search, Trash2, Pencil } from 'lucide-react';
 import CategoryIcon from '@/components/app/CategoryIcon';
+import ConfirmDeleteDialog from '@/components/app/ConfirmDeleteDialog';
+import { toast } from '@/components/ui/use-toast';
 
 const typeTabs = [
   { id: 'all', label: 'Todas' },
@@ -19,6 +21,7 @@ export default function Transacoes() {
   const [categories, setCategories] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [toDelete, setToDelete] = useState(null);
 
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -73,18 +76,22 @@ export default function Transacoes() {
 
   function handleEdit(txn) { setEditing(txn); setFormOpen(true); }
 
-  async function handleDelete(id) {
-    if (!confirm('Eliminar esta transação?')) return;
+  function handleDelete(id) { setToDelete(transactions.find((t) => t.id === id) || null); }
+
+  async function confirmDelete() {
+    const txn = toDelete;
+    setToDelete(null);
+    if (!txn) return;
     try {
-      const txn = transactions.find((t) => t.id === id);
-      await appApi.entities.Transaction.delete(id);
-      if (txn && txn.type !== 'transfer') {
+      await appApi.entities.Transaction.delete(txn.id);
+      if (txn.type !== 'transfer') {
         const account = accounts.find((a) => a.id === txn.account_id);
         if (account) {
           await appApi.entities.Account.update(account.id, { balance: (account.balance || 0) - txn.amount });
         }
       }
-      setTransactions(transactions.filter((t) => t.id !== id));
+      toast({ description: 'Transação apagada' });
+      await loadData();
     } catch (err) { console.error('Erro ao eliminar:', err); }
   }
 
@@ -254,6 +261,14 @@ export default function Transacoes() {
           </div>
         )}
       </div>
+
+      <ConfirmDeleteDialog
+        open={!!toDelete}
+        title="Apagar transação?"
+        description={toDelete ? `Vais apagar "${toDelete.description}" de ${formatKz(Math.abs(toDelete.amount))}. Esta ação não pode ser desfeita.` : ''}
+        onCancel={() => setToDelete(null)}
+        onConfirm={confirmDelete}
+      />
 
       <TransactionForm
         open={formOpen}

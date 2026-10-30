@@ -9,6 +9,7 @@ import AgtSyncButton from '@/components/app/AgtSyncButton';
 import PartnerConsentManager from '@/components/app/PartnerConsentManager';
 import { AlertTriangle, FileText, Landmark } from 'lucide-react';
 import { filterVisibleInvoices } from '@/lib/business/partnerVisibility';
+import { currentYearInvoices, fiscalStats } from '@/lib/business/fiscalStats';
 
 const sourceLabels = { manual: 'Manual', photo_ocr: 'Foto/OCR', partner: 'Parceiro', agt: 'AGT' };
 
@@ -44,11 +45,8 @@ export default function Fiscal() {
     finally { setLoading(false); }
   }
 
-  const verifiedCount = useMemo(() => invoices.filter(i => i.agt_status === 'paid').length, [invoices]);
-  const deductibleTotal = useMemo(() =>
-    invoices
-      .filter(i => i.deductible_type && i.deductible_type !== 'none' && i.has_nif !== false && i.status === 'paid')
-      .reduce((s, i) => s + (i.amount || 0), 0), [invoices]);
+  const yearInvoices = useMemo(() => currentYearInvoices(invoices), [invoices]);
+  const stats = useMemo(() => fiscalStats(yearInvoices), [yearInvoices]);
 
   if (loading) {
     return (
@@ -72,14 +70,14 @@ export default function Fiscal() {
 
       {/* Summary */}
       <FiscalSummary
-        totalInvoices={invoices.filter(i => i.document_number).length}
-        verifiedCount={verifiedCount}
-        deductibleTotal={deductibleTotal}
+        totalInvoices={stats.total}
+        verifiedCount={stats.verified}
+        deductibleTotal={stats.deductibleTotal}
         lastSync={user?.agt_consent_date ? formatDate(user.agt_consent_date) : null}
       />
 
       {/* Invoice lifecycle */}
-      <InvoiceLifecycle invoices={invoices} />
+      <InvoiceLifecycle invoices={yearInvoices} />
 
       {/* Divergences */}
       {divergences.length > 0 && (
@@ -102,13 +100,13 @@ export default function Fiscal() {
       <div className="bg-surface rounded-talao border border-line shadow-soft px-3 pb-2">
         <div className="px-1 pt-3 pb-1 flex items-center justify-between">
           <span className="eyebrow">Faturas sob o NIF</span>
-          <span className="text-[10px] font-mono text-muted-2 bg-muted px-2 py-0.5 rounded-full">{invoices.length}</span>
+          <span className="text-[10px] font-mono text-muted-2 bg-muted px-2 py-0.5 rounded-full">{yearInvoices.length}</span>
         </div>
-        {invoices.length === 0 ? (
+        {yearInvoices.length === 0 ? (
           <p className="px-2 py-8 text-[13px] text-muted-2 text-center">Sem faturas registadas.</p>
         ) : (
           <div className="ed-list">
-            {invoices.map(inv => (
+            {yearInvoices.map(inv => (
               <div key={inv.id} className="it">
                 <div className="w-[34px] h-[34px] rounded-[10px] bg-[#e9f3ee] text-primary flex items-center justify-center shrink-0">
                   <FileText className="w-4 h-4" />

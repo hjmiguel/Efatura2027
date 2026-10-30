@@ -3,6 +3,7 @@ import { Plus, Pencil, Trash2, Users, Loader2 } from 'lucide-react';
 import { appApi } from '@/api/appClient';
 import { formatDate } from '@/lib/format';
 import DependentForm from '@/components/app/DependentForm';
+import ConfirmDeleteDialog from '@/components/app/ConfirmDeleteDialog';
 
 const relationshipLabels = {
   conjuge: 'Cônjuge', filho: 'Filho(a)', pai: 'Pai', mae: 'Mãe', outro: 'Outro',
@@ -13,6 +14,7 @@ export default function ProfileDependents() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingDep, setEditingDep] = useState(null);
+  const [toDelete, setToDelete] = useState(null);
 
   useEffect(() => { load(); }, []);
 
@@ -24,10 +26,11 @@ export default function ProfileDependents() {
     finally { setLoading(false); }
   }
 
-  async function handleDelete(id) {
-    if (!confirm('Remover este dependente?')) return;
+  async function confirmDelete() {
+    const dep = toDelete;
+    setToDelete(null);
     try {
-      await appApi.entities.Dependent.delete(id);
+      await appApi.entities.Dependent.delete(dep.id);
       load();
     } catch (err) { console.error(err); }
   }
@@ -80,7 +83,7 @@ export default function ProfileDependents() {
                   <Pencil className="w-3.5 h-3.5" />
                 </button>
                 <button
-                  onClick={() => handleDelete(dep.id)}
+                  onClick={() => setToDelete(dep)}
                   className="p-1.5 rounded text-muted-2 hover:text-destructive hover:bg-danger-soft transition-colors"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -90,6 +93,14 @@ export default function ProfileDependents() {
           ))}
         </div>
       )}
+
+      <ConfirmDeleteDialog
+        open={!!toDelete}
+        title="Apagar dependente?"
+        description={toDelete ? `Vais apagar "${toDelete.name}". Esta ação não pode ser desfeita.` : ''}
+        onCancel={() => setToDelete(null)}
+        onConfirm={confirmDelete}
+      />
 
       <DependentForm
         open={showForm}

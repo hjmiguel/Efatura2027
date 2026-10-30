@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { formatKz } from '@/lib/format';
 import { filterVisibleInvoices } from '@/lib/business/partnerVisibility';
+import { currentYearInvoices, isAgtVerified, isDeductiblePaid } from '@/lib/business/fiscalStats';
 
 const dedLabels = {
   saude: 'Saúde',
@@ -48,9 +49,8 @@ export default function RightRail() {
     .sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
   const pendingTotal = pending.reduce((s, i) => s + (i.amount || 0), 0);
 
-  const deductibles = invoices.filter(
-    (i) => i.deductible_type && i.deductible_type !== 'none' && i.has_nif !== false && i.status === 'paid'
-  );
+  const yearInvoices = currentYearInvoices(invoices);
+  const deductibles = yearInvoices.filter(isDeductiblePaid);
   const deductibleTotal = deductibles.reduce((s, i) => s + (i.amount || 0), 0);
   const breakdown = Object.keys(dedLabels)
     .map((key) => ({
@@ -60,8 +60,8 @@ export default function RightRail() {
     }))
     .filter((b) => b.amount > 0);
 
-  const verified = invoices.filter((i) => i.agt_status === 'emitted' || i.agt_status === 'paid').length;
-  const pendingVerification = invoices.filter((i) => i.has_nif && i.status === 'paid' && i.agt_status === 'none').length;
+  const verified = yearInvoices.filter(isAgtVerified).length;
+  const pendingVerification = yearInvoices.filter((i) => i.has_nif !== false && i.status === 'paid' && !isAgtVerified(i)).length;
 
   return (
     <aside className="hidden xl:flex fixed inset-y-0 right-0 w-[340px] flex-col bg-surface border-l border-line overflow-y-auto z-20">
