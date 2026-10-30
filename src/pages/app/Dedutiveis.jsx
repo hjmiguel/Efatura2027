@@ -96,7 +96,7 @@ export default function Dedutiveis() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <span className="eyebrow">§ 07 · Deduções</span>
+          <span className="eyebrow">§ 06 · Deduções</span>
           <h1 className="font-heading text-2xl font-bold text-ink mt-1">Dedutíveis IRPS</h1>
         </div>
         <button onClick={handleExportCSV} disabled={deductibleInvoices.length === 0}
@@ -205,8 +205,8 @@ export default function Dedutiveis() {
                   <div className="sb">{relationshipLabels[dep.relationship] || dep.relationship}{dep.nif && ` · NIF ${dep.nif}`}</div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button onClick={() => handleEditDep(dep)} className="p-1.5 rounded text-muted-2 hover:text-ink"><Pencil className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => setDepToDelete(dep)} className="p-1.5 rounded text-muted-2 hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => handleEditDep(dep)} aria-label="Editar dependente" className="p-1.5 rounded text-muted-2 hover:text-ink"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => setDepToDelete(dep)} aria-label="Apagar dependente" className="p-1.5 rounded text-muted-2 hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
                 </div>
               </div>
             ))}

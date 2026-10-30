@@ -74,7 +74,7 @@ export default function RightRail() {
               Ver
             </Link>
           </div>
-          <div className="font-mono text-[28px] font-semibold text-destructive tracking-tight leading-none">
+          <div className={`font-mono text-[28px] font-semibold tracking-tight leading-none ${pendingTotal > 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
             {formatKz(pendingTotal)}
           </div>
           <div className="text-[12px] text-muted-foreground mt-1.5">
@@ -156,7 +156,10 @@ export default function RightRail() {
                 {pendingVerification > 0 && ` ${pendingVerification} ${pendingVerification === 1 ? 'aguarda' : 'aguardam'} confirmação.`}
               </>
             ) : (
-              'Sem faturas verificadas pela AGT este ano. Liga o conector da AGT nos Pagamentos.'
+              <>
+                Sem faturas verificadas pela AGT este ano. Liga o conector da AGT em{' '}
+                <Link to="/app/fiscal" className="font-semibold text-primary hover:underline">Situação fiscal</Link>.
+              </>
             )}
           </p>
         </div>

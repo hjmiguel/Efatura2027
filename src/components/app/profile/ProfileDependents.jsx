@@ -78,12 +78,14 @@ export default function ProfileDependents() {
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => { setEditingDep(dep); setShowForm(true); }}
+                  aria-label="Editar dependente"
                   className="p-1.5 rounded text-muted-2 hover:text-primary hover:bg-muted transition-colors"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => setToDelete(dep)}
+                  aria-label="Apagar dependente"
                   className="p-1.5 rounded text-muted-2 hover:text-destructive hover:bg-danger-soft transition-colors"
                 >
                   <Trash2 className="w-3.5 h-3.5" />

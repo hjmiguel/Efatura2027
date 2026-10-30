@@ -29,7 +29,7 @@ export default function CorporateFiscal() {
 
   // AGT calendar dates (simplified)
   const now = new Date();
-  const currentMonth = now.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' });
+  const currentMonth = new Intl.DateTimeFormat('pt-AO', { month: 'long', year: 'numeric' }).format(now);
   const nextDeadline = new Date(now.getFullYear(), now.getMonth() + 1, 15);
 
   if (loading) {

@@ -74,7 +74,7 @@ export default function Documentos() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <span className="eyebrow">§ 06 · Arquivo</span>
+          <span className="eyebrow">§ 08 · Arquivo</span>
           <h1 className="font-heading text-2xl font-bold text-ink mt-1">Documentos</h1>
         </div>
         <button onClick={() => setOcrOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-2 bg-primary text-white rounded-xl text-sm font-medium btn-hover btn-primary-hover">
@@ -98,6 +98,7 @@ export default function Documentos() {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-2" />
         <input
+          aria-label="Pesquisar documentos"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Pesquisar por emissor ou número..."
@@ -250,7 +251,7 @@ function OcrFlow({ onClose, onDone }) {
       <div className="bg-surface w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-talao-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="sticky top-0 bg-surface z-10 flex items-center justify-between px-5 py-4 border-b border-line">
           <h2 className="font-heading font-bold text-ink">Nova fatura</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Fechar" className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground"><X className="w-5 h-5" /></button>
         </div>
         <div className="px-5 py-4">
           <div className="flex items-center gap-2 mb-6">
@@ -342,10 +343,11 @@ function OcrFlow({ onClose, onDone }) {
 }
 
 function ExtractedField({ label, value, onChange, mono, type = 'text' }) {
+  const id = React.useId();
   return (
     <div>
-      <label className="text-xs text-muted-2 block mb-1">{label}</label>
-      <input type={type} value={value || ''} onChange={(e) => onChange(e.target.value)} className={`w-full px-3 py-2 text-sm border border-line rounded-lg bg-surface focus:border-primary/40 focus:outline-none ${mono ? 'font-mono' : ''}`} />
+      <label htmlFor={id} className="text-xs text-muted-2 block mb-1">{label}</label>
+      <input id={id} type={type} value={value || ''} onChange={(e) => onChange(e.target.value)} className={`w-full px-3 py-2 text-sm border border-line rounded-lg bg-surface focus:border-primary/40 focus:outline-none ${mono ? 'font-mono' : ''}`} />
     </div>
   );
 }

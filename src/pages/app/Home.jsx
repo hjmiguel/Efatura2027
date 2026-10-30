@@ -97,7 +97,7 @@ export default function Home() {
   const pendingTotal = pendingInvoices.reduce((s, i) => s + (i.amount || 0), 0);
   const urgentCount = pendingInvoices.filter((i) => i.status === 'overdue').length;
   const disponibilidade = patrimonio - pendingTotal;
-  const monthName = new Date().toLocaleDateString('pt-PT', { month: 'long' });
+  const monthName = new Intl.DateTimeFormat('pt-AO', { month: 'long' }).format(new Date());
 
   if (loading) {
     return (

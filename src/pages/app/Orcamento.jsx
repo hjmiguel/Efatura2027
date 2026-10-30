@@ -186,9 +186,9 @@ export default function Orcamento() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <span className="eyebrow">§ 03 · Limites e metas</span>
-          <h1 className="font-heading text-2xl font-bold text-ink mt-1">Planeamento</h1>
-          <p className="text-sm text-muted-foreground mt-0.5 capitalize">
-            {now.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' })}
+          <h1 className="font-heading text-2xl font-bold text-ink mt-1">Orçamento</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {new Intl.DateTimeFormat('pt-AO', { month: 'long', year: 'numeric' }).format(now)}
           </p>
         </div>
         <button className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary text-white rounded-full text-sm font-medium btn-hover btn-primary-hover shrink-0">
@@ -258,20 +258,20 @@ export default function Orcamento() {
                         autoFocus
                         onKeyDown={(e) => e.key === 'Enter' && saveLimit(b.category_id, b.category_name)}
                       />
-                      <button onClick={() => saveLimit(b.category_id, b.category_name)} className="p-1 text-primary">
+                      <button onClick={() => saveLimit(b.category_id, b.category_name)} aria-label="Guardar limite" className="p-1 text-primary">
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
-                      <button onClick={() => setEditing(null)} className="p-1 text-muted-2">
+                      <button onClick={() => setEditing(null)} aria-label="Cancelar edição" className="p-1 text-muted-2">
                         <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-xs text-muted-foreground">{formatKz(b.spent)} / {formatKz(b.limit)}</span>
-                      <button onClick={() => { setEditing(b.category_id); setNewLimit(String(b.limit)); }} className="p-1 text-muted-2 hover:text-primary">
+                      <button onClick={() => { setEditing(b.category_id); setNewLimit(String(b.limit)); }} aria-label="Editar limite" className="p-1 text-muted-2 hover:text-primary">
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
-                      <button onClick={() => setBudgetToDelete(b)} className="p-1 text-muted-2 hover:text-destructive">
+                      <button onClick={() => setBudgetToDelete(b)} aria-label="Apagar orçamento" className="p-1 text-muted-2 hover:text-destructive">
                         <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -366,7 +366,7 @@ export default function Orcamento() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <span className="eyebrow">Gasto por categoria</span>
-                <h3 className="font-heading font-semibold text-ink mt-0.5 capitalize">{now.toLocaleDateString('pt-PT', { month: 'long' })}</h3>
+                <h3 className="font-heading font-semibold text-ink mt-0.5">{new Intl.DateTimeFormat('pt-AO', { month: 'long' }).format(now)}</h3>
               </div>
               <BarChart3 className="w-5 h-5 text-muted-2" />
             </div>

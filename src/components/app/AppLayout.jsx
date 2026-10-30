@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutGrid, ArrowLeftRight, PieChart, CreditCard, Sparkles,
-  FileText, Landmark, LogOut, Receipt,
+  FileText, Landmark, LogOut, Receipt, MoreHorizontal,
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { getFirstName } from '@/lib/format';
 import RightRail from '@/components/app/RightRail';
 import NotificationsBell from '@/components/app/NotificationsBell';
+import NamePromptDialog from '@/components/app/NamePromptDialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 
 const mainNav = [
   { label: 'Início', icon: LayoutGrid, path: '/app' },
@@ -27,6 +29,7 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [moreOpen, setMoreOpen] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then((u) => {
@@ -79,7 +82,7 @@ export default function AppLayout() {
       <Link
         to={item.path}
         aria-current={active ? 'page' : undefined}
-        className={`flex flex-col items-center gap-1 py-1.5 px-2 w-[62px] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+        className={`flex flex-col items-center gap-1 py-1.5 px-2 w-[54px] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
           active ? 'text-primary' : 'text-muted-2'
         }`}
       >
@@ -213,7 +216,7 @@ export default function AppLayout() {
       {/* ===== Main content ===== */}
       <main id="main-content" className="md:ml-[264px] xl:mr-[340px] pb-24 md:pb-0 min-h-screen">
         <div className="w-full px-4 sm:px-6 lg:px-8 py-4 md:py-6">
-          <Outlet />
+          <Outlet key={user?.full_name || ''} />
         </div>
       </main>
 
@@ -226,8 +229,45 @@ export default function AppLayout() {
           {mainNav.map((item) => (
             <BottomLink key={item.path} item={item} />
           ))}
+          <button
+            type="button"
+            onClick={() => setMoreOpen(true)}
+            className={`flex flex-col items-center gap-1 py-1.5 px-2 w-[54px] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+              archiveNav.some((i) => isActive(i.path)) ? 'text-primary' : 'text-muted-2'
+            }`}
+          >
+            <MoreHorizontal className="w-[23px] h-[23px]" strokeWidth={2} />
+            <span className="text-[10.5px] font-semibold">Mais</span>
+          </button>
         </div>
       </nav>
+
+      <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
+        <SheetContent side="bottom" className="md:hidden rounded-t-2xl">
+          <SheetHeader>
+            <SheetTitle>Mais</SheetTitle>
+            <SheetDescription className="sr-only">Acesso a Dedutíveis, Situação fiscal e Documentos.</SheetDescription>
+          </SheetHeader>
+          <div className="mt-3 space-y-1">
+            {archiveNav.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setMoreOpen(false)}
+                className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-ink hover:bg-muted"
+              >
+                <item.icon className="w-5 h-5 text-primary" strokeWidth={1.8} />
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <NamePromptDialog
+        open={!!user && !user.full_name?.trim() && !!user.phone && !!user.nif}
+        onSaved={(full_name) => setUser((u) => ({ ...u, full_name }))}
+      />
     </div>
   );
 }

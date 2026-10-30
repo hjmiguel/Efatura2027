@@ -170,6 +170,12 @@ export default function TransactionForm({ open, onClose, onSaved, transaction, a
         }
       }
 
+      const savedCategory = categories.find((c) => c.id === categoryId);
+      const isDeductible = savedCategory && savedCategory.deductible_type && savedCategory.deductible_type !== 'none';
+      if (isDeductible && !(transaction?.invoice_id)) {
+        toast({ description: 'Transação guardada. Para contar como dedutível, junta a fatura com o teu NIF em Documentos.' });
+      }
+
       onSaved();
       onClose();
     } catch (err) {

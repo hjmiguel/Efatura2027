@@ -60,7 +60,7 @@ export default function Fiscal() {
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <span className="eyebrow">§ 08 · Fiscal</span>
+        <span className="eyebrow">§ 07 · Fiscal</span>
         <h1 className="font-heading text-2xl font-bold text-ink mt-1">Situação fiscal</h1>
         <p className="text-[12.5px] text-muted-foreground mt-0.5">Faturas sob o teu NIF, verificação AGT e divergências</p>
       </div>

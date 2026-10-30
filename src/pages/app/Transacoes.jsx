@@ -111,9 +111,9 @@ export default function Transacoes() {
           <span className="eyebrow">§ 02 · Movimentos</span>
           <h1 className="font-heading text-2xl font-bold text-ink mt-1">Transações</h1>
         </div>
-        <Link to="/app/adicionar" className="inline-flex items-center gap-1.5 px-3 py-2 bg-primary text-white rounded-xl text-sm font-medium btn-hover btn-primary-hover">
+        <button type="button" onClick={() => { setEditing(null); setFormOpen(true); }} className="inline-flex items-center gap-1.5 px-3 py-2 bg-primary text-white rounded-xl text-sm font-medium btn-hover btn-primary-hover">
           <Plus className="w-4 h-4" /> Adicionar
-        </Link>
+        </button>
       </div>
 
       {/* Summary */}
@@ -127,7 +127,7 @@ export default function Transacoes() {
           <p className="font-mono text-[14px] font-semibold text-destructive">{formatKz(summary.expense)}</p>
         </div>
         <div className="bg-surface border border-line rounded-talao p-3 shadow-soft">
-          <p className="eyebrow mb-1">Saldo</p>
+          <p className="eyebrow mb-1">Balanço do período</p>
           <p className="font-mono text-[14px] font-semibold text-ink">{formatKz(summary.balance)}</p>
         </div>
       </div>
@@ -137,6 +137,7 @@ export default function Transacoes() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-2" />
         <input
           type="text"
+          aria-label="Pesquisar transações"
           placeholder="Pesquisar por descrição..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -215,13 +216,13 @@ export default function Transacoes() {
                     </td>
                     <td className="px-5 py-3 text-sm text-muted-foreground">{categoryName(txn.category_id) || '—'}</td>
                     <td className="px-5 py-3 text-sm text-muted-foreground">{accountName(txn.account_id)}</td>
-                    <td className={`px-5 py-3 text-right font-mono text-sm font-semibold ${isIncome ? 'text-ok' : 'text-ink'}`}>
+                    <td className={`px-5 py-3 text-right whitespace-nowrap font-mono text-sm font-semibold ${isIncome ? 'text-ok' : 'text-ink'}`}>
                       {isIncome ? '+' : ''}{formatKz(txn.amount)}
                     </td>
                     <td className="px-5 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => handleEdit(txn)} className="p-1.5 rounded-lg text-muted-2 hover:text-ink hover:bg-muted"><Pencil className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => handleDelete(txn.id)} className="p-1.5 rounded-lg text-muted-2 hover:text-destructive hover:bg-danger-soft"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleEdit(txn)} aria-label="Editar transação" className="p-1.5 rounded-lg text-muted-2 hover:text-ink hover:bg-muted"><Pencil className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => handleDelete(txn.id)} aria-label="Apagar transação" className="p-1.5 rounded-lg text-muted-2 hover:text-destructive hover:bg-danger-soft"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>
@@ -252,8 +253,8 @@ export default function Transacoes() {
                   </div>
                   <div className="flex items-center gap-1">
                     <span className={`vl ${isIncome ? 'text-ok' : 'text-ink'}`}>{isIncome ? '+' : ''}{formatKz(txn.amount)}</span>
-                    <button onClick={() => handleEdit(txn)} className="p-1 text-muted-2 hover:text-ink"><Pencil className="w-3 h-3" /></button>
-                    <button onClick={() => handleDelete(txn.id)} className="p-1 text-muted-2 hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
+                    <button onClick={() => handleEdit(txn)} aria-label="Editar transação" className="p-1 text-muted-2 hover:text-ink"><Pencil className="w-3 h-3" /></button>
+                    <button onClick={() => handleDelete(txn.id)} aria-label="Apagar transação" className="p-1 text-muted-2 hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
                   </div>
                 </div>
               );

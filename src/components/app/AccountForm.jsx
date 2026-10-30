@@ -10,17 +10,20 @@ const typeLabels = { checking: 'Conta à ordem', savings: 'Poupança', cash: 'Nu
 
 export default function AccountForm({ open, onClose, onSaved, account }) {
   const [saving, setSaving] = useState(false);
+  const [ibanError, setIbanError] = useState('');
+  const formatIban = (v) => v.replace(/\s+/g, '').toUpperCase().replace(/(.{4})/g, '$1 ').trim();
   const [form, setForm] = useState({
     name: '', bank_name: '', iban: '', balance: '', type: 'checking', color: '#12715C', is_active: true,
   });
 
   useEffect(() => {
     if (!open) return;
+    setIbanError('');
     if (account) {
       setForm({
         name: account.name || '',
         bank_name: account.bank_name || '',
-        iban: account.iban || '',
+        iban: formatIban(account.iban || ''),
         balance: (account.balance || 0).toString(),
         type: account.type || 'checking',
         color: account.color || '#12715C',
@@ -33,12 +36,18 @@ export default function AccountForm({ open, onClose, onSaved, account }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const cleanIban = form.iban.replace(/\s+/g, '').toUpperCase();
+    if (cleanIban && !/^AO06\d{21}$/.test(cleanIban)) {
+      setIbanError('IBAN angolano inválido. Deve começar por AO06 e ter 25 caracteres.');
+      return;
+    }
+    setIbanError('');
     setSaving(true);
     try {
       const data = {
         name: form.name,
         bank_name: form.bank_name,
-        iban: form.iban || undefined,
+        iban: cleanIban || undefined,
         balance: parseFloat(form.balance) || 0,
         type: form.type,
         color: form.color,
@@ -87,13 +96,14 @@ export default function AccountForm({ open, onClose, onSaved, account }) {
           </div>
           <div>
             <Label htmlFor="acc-iban">IBAN</Label>
-            <Input id="acc-iban" value={form.iban} onChange={(e) => setForm({ ...form, iban: e.target.value })} placeholder="AO06 0000 0000 0000 0000 0000 0" className="mt-1.5 font-mono text-sm" />
+            <Input id="acc-iban" value={form.iban} onChange={(e) => setForm({ ...form, iban: formatIban(e.target.value) })} placeholder="AO06 0000 0000 0000 0000 0000 0" maxLength={31} className="mt-1.5 font-mono text-sm" />
+            {ibanError && <p className="text-xs text-destructive mt-1.5">{ibanError}</p>}
           </div>
           <div>
-            <Label>Cor de identificação</Label>
-            <div className="flex gap-2 mt-1.5">
+            <Label id="acc-color-label">Cor de identificação</Label>
+            <div className="flex gap-2 mt-1.5" role="group" aria-labelledby="acc-color-label">
               {COLORS.map((c) => (
-                <button key={c} type="button" onClick={() => setForm({ ...form, color: c })}
+                <button key={c} type="button" aria-label={`Cor ${c}`} onClick={() => setForm({ ...form, color: c })}
                   className={`w-8 h-8 rounded-lg transition-transform ${form.color === c ? 'ring-2 ring-offset-2 ring-ink scale-110' : ''}`}
                   style={{ backgroundColor: c }} />
               ))}
