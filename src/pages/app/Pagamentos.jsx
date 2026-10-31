@@ -207,7 +207,7 @@ export default function Pagamentos() {
           {paid.length === 0 ? (
             <EmptyState icon={Receipt} title="Sem faturas pagas" text="As faturas que pagares aparecem aqui com o selo AGT." />
           ) : (
-            paid.map((inv) => <PaidRow key={inv.id} invoice={inv} onRevert={() => setStatusAction({ kind: 'pending', invoice: inv })} />)
+            paid.map((inv) => <PaidRow key={inv.id} invoice={inv} />)
           )}
         </div>
       )}
@@ -307,7 +307,7 @@ function BillCard({ invoice, onPay, onMarkPaid }) {
   );
 }
 
-function PaidRow({ invoice, onRevert }) {
+function PaidRow({ invoice }) {
   return (
     <div className="bg-surface border border-line rounded-talao p-4 shadow-soft flex items-center gap-3">
       <div className="w-[42px] h-[42px] rounded-[12px] bg-green-soft flex items-center justify-center shrink-0">
@@ -322,9 +322,6 @@ function PaidRow({ invoice, onRevert }) {
       <div className="flex items-center gap-2.5 shrink-0">
         {invoice.agt_status && invoice.agt_status !== 'none' && <AgtSeal status={invoice.agt_status} size={18} />}
         <p className="font-mono font-semibold text-[15px] text-ink">{formatKz(invoice.amount)}</p>
-        <button onClick={onRevert} className="px-2.5 py-1.5 border border-line text-muted-foreground rounded-lg text-[12px] font-medium hover:text-ink transition-colors">
-          Reverter
-        </button>
       </div>
     </div>
   );
