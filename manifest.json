@@ -1,0 +1,32 @@
+{
+  "id": "/",
+  "name": "Gestão+",
+  "short_name": "Gestão+",
+  "description": "Junta as tuas faturas, paga por Multicaixa Express e sabe sempre quanto te sobra. Feito para Angola.",
+  "start_url": "/entrar",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0E5D4B",
+  "theme_color": "#0E5D4B",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://media.base44.com/images/public/6a5a4f377a9fa9976cf19cbb/1c075d3de_generated_image.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://media.base44.com/images/public/6a5a4f377a9fa9976cf19cbb/1c075d3de_generated_image.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://media.base44.com/images/public/6a5a4f377a9fa9976cf19cbb/1c075d3de_generated_image.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

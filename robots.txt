@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /$
+Allow: /termos
+Allow: /privacidade
+Disallow: /app
+Disallow: /admin
+Disallow: /parceiros
+Disallow: /empresas
+
+Sitemap: https://gestaomais.ao/sitemap.xml
