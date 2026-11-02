@@ -9,7 +9,6 @@ import { getFirstName } from '@/lib/format';
 import RightRail from '@/components/app/RightRail';
 import NotificationsBell from '@/components/app/NotificationsBell';
 import NamePromptDialog from '@/components/app/NamePromptDialog';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 
 const mainNav = [
   { label: 'Início', icon: LayoutGrid, path: '/app' },
@@ -29,7 +28,6 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [moreOpen, setMoreOpen] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then((u) => {
@@ -82,12 +80,12 @@ export default function AppLayout() {
       <Link
         to={item.path}
         aria-current={active ? 'page' : undefined}
-        className={`flex flex-col items-center gap-1 py-1.5 px-2 w-[54px] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+        className={`flex flex-col items-center gap-1 py-1.5 px-2 min-w-[68px] shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
           active ? 'text-primary' : 'text-muted-2'
         }`}
       >
         <item.icon className="w-[23px] h-[23px]" strokeWidth={2} />
-        <span className="text-[10.5px] font-semibold">{item.label}</span>
+        <span className="text-[10.5px] font-semibold whitespace-nowrap">{item.label}</span>
       </Link>
     );
   };
@@ -225,44 +223,12 @@ export default function AppLayout() {
 
       {/* ===== Mobile bottom nav ===== */}
       <nav aria-label="Navegação principal" className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur-md border-t border-line">
-        <div className="flex items-center justify-around px-1.5 pb-3 pt-1">
-          {mainNav.map((item) => (
+        <div className="flex items-center overflow-x-auto scrollbar-hide px-1.5 pb-3 pt-1">
+          {[...mainNav, ...archiveNav].map((item) => (
             <BottomLink key={item.path} item={item} />
           ))}
-          <button
-            type="button"
-            onClick={() => setMoreOpen(true)}
-            className={`flex flex-col items-center gap-1 py-1.5 px-2 w-[54px] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-              archiveNav.some((i) => isActive(i.path)) ? 'text-primary' : 'text-muted-2'
-            }`}
-          >
-            <MoreHorizontal className="w-[23px] h-[23px]" strokeWidth={2} />
-            <span className="text-[10.5px] font-semibold">Mais</span>
-          </button>
         </div>
       </nav>
-
-      <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
-        <SheetContent side="bottom" className="md:hidden rounded-t-2xl">
-          <SheetHeader>
-            <SheetTitle>Mais</SheetTitle>
-            <SheetDescription className="sr-only">Acesso a Dedutíveis, Situação fiscal e Documentos.</SheetDescription>
-          </SheetHeader>
-          <div className="mt-3 space-y-1">
-            {archiveNav.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setMoreOpen(false)}
-                className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-ink hover:bg-muted"
-              >
-                <item.icon className="w-5 h-5 text-primary" strokeWidth={1.8} />
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        </SheetContent>
-      </Sheet>
 
       <NamePromptDialog
         open={!!user && !user.full_name?.trim() && !!user.phone && !!user.nif}
