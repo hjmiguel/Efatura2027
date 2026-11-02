@@ -80,7 +80,7 @@ export default function AppLayout() {
       <Link
         to={item.path}
         aria-current={active ? 'page' : undefined}
-        className={`flex flex-col items-center gap-1 py-1.5 px-2 min-w-[68px] shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+        className={`flex flex-col items-center gap-1 py-1.5 px-2 w-[62px] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
           active ? 'text-primary' : 'text-muted-2'
         }`}
       >
@@ -223,8 +223,8 @@ export default function AppLayout() {
 
       {/* ===== Mobile bottom nav ===== */}
       <nav aria-label="Navegação principal" className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur-md border-t border-line">
-        <div className="flex items-center overflow-x-auto scrollbar-hide px-1.5 pb-3 pt-1">
-          {[...mainNav, ...archiveNav].map((item) => (
+        <div className="flex items-center justify-around px-1.5 pb-3 pt-1">
+          {mainNav.map((item) => (
             <BottomLink key={item.path} item={item} />
           ))}
         </div>
