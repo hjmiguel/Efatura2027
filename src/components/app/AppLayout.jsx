@@ -24,6 +24,14 @@ const archiveNav = [
   { label: 'Documentos', icon: FileText, path: '/app/documentos' },
 ];
 
+const mobileNav = [
+  mainNav[0],
+  mainNav[1],
+  { label: 'IRPS', icon: Landmark, path: '/app/fiscal' },
+  mainNav[3],
+  mainNav[4],
+];
+
 export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -85,7 +93,7 @@ export default function AppLayout() {
         }`}
       >
         <item.icon className="w-[23px] h-[23px]" strokeWidth={2} />
-        <span className="text-[10.5px] font-semibold whitespace-nowrap">{item.path === '/app/orcamento' ? 'IRPS' : item.label}</span>
+        <span className="text-[10.5px] font-semibold whitespace-nowrap">{item.label}</span>
       </Link>
     );
   };
@@ -224,7 +232,7 @@ export default function AppLayout() {
       {/* ===== Mobile bottom nav ===== */}
       <nav aria-label="Navegação principal" className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/95 backdrop-blur-md border-t border-line">
         <div className="flex items-center justify-around px-1.5 pb-3 pt-1">
-          {mainNav.map((item) => (
+          {mobileNav.map((item) => (
             <BottomLink key={item.path} item={item} />
           ))}
         </div>
