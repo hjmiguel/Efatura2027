@@ -27,7 +27,7 @@ const archiveNav = [
 const mobileNav = [
   mainNav[0],
   mainNav[1],
-  { label: 'IRPS', icon: Landmark, path: '/app/fiscal' },
+  { label: 'IRPS', icon: Receipt, path: '/app/dedutiveis' },
   mainNav[3],
   mainNav[4],
 ];
