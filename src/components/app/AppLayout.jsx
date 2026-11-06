@@ -85,7 +85,7 @@ export default function AppLayout() {
         }`}
       >
         <item.icon className="w-[23px] h-[23px]" strokeWidth={2} />
-        <span className="text-[10.5px] font-semibold whitespace-nowrap">{item.label}</span>
+        <span className="text-[10.5px] font-semibold whitespace-nowrap">{item.path === '/app/orcamento' ? 'IRPS' : item.label}</span>
       </Link>
     );
   };
