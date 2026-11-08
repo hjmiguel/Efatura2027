@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { appApi } from '@/api/appClient';
+import { translateAuthError } from '@/lib/authErrors';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +21,7 @@ export default function ResetPassword() {
     e.preventDefault();
     setError("");
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("As palavras-passe não coincidem.");
       return;
     }
     setLoading(true);
@@ -28,7 +29,7 @@ export default function ResetPassword() {
       await appApi.auth.resetPassword({ resetToken, newPassword });
       window.location.href = "/entrar";
     } catch (err) {
-      setError(err.message || "Failed to reset password");
+      setError(translateAuthError(err, "Não foi possível redefinir a palavra-passe."));
     } finally {
       setLoading(false);
     }

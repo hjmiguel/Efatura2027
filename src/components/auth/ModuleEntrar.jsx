@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { appApi } from '@/api/appClient';
+import { translateAuthError } from '@/lib/authErrors';
 import Seo from '@/components/Seo';
 import { Loader2, ArrowLeft, ShieldAlert } from 'lucide-react';
 import GoogleIcon from '@/components/GoogleIcon';
@@ -45,7 +46,7 @@ export default function ModuleEntrar({
       }
       window.location.href = redirectPath;
     } catch (err) {
-      setError(err.message || 'Email ou palavra-passe incorretos.');
+      setError(translateAuthError(err, 'Email ou palavra-passe incorretos.'));
       setLoading(false);
     }
   };

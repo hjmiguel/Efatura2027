@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { appApi } from '@/api/appClient';
+import { translateAuthError } from '@/lib/authErrors';
 import Seo from '@/components/Seo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -43,7 +44,7 @@ export default function Registo() {
       }
       setShowOtp(true);
     } catch (err) {
-      setError(err.message || 'O registo falhou.');
+      setError(translateAuthError(err, 'O registo falhou.'));
     } finally {
       setLoading(false);
     }
@@ -60,7 +61,7 @@ export default function Registo() {
       await appApi.auth.updateMe({ phone, nif });
       window.location.href = '/app';
     } catch (err) {
-      setError(err.message || 'Código de verificação inválido.');
+      setError(translateAuthError(err, 'Código de verificação inválido.'));
     } finally {
       setLoading(false);
     }
@@ -75,7 +76,7 @@ export default function Registo() {
         description: 'Verifica o teu email para o novo código.',
       });
     } catch (err) {
-      setError(err.message || 'Falha ao reenviar o código.');
+      setError(translateAuthError(err, 'Falha ao reenviar o código.'));
     }
   };
 

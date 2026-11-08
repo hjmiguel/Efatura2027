@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { appApi } from '@/api/appClient';
+import { translateAuthError } from '@/lib/authErrors';
 import Seo from '@/components/Seo';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import GoogleIcon from '@/components/GoogleIcon';
@@ -19,7 +20,7 @@ export default function Entrar() {
       await appApi.auth.loginViaEmailPassword(email, password);
       window.location.href = '/app';
     } catch (err) {
-      setError(err.message || 'Email ou palavra-passe incorretos.');
+      setError(translateAuthError(err, 'Email ou palavra-passe incorretos.'));
     } finally {
       setLoading(false);
     }
