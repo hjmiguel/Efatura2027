@@ -11,10 +11,24 @@ const auth = supabase && buildAuth(supabase);
 
 const functions = {
   invoke: async (name, payload) => {
-    const { data, error } = await supabase.functions.invoke(name, { body: payload || {} });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 60000);
+    let result;
+    try {
+      result = await supabase.functions.invoke(name, { body: payload || {}, signal: controller.signal });
+    } catch (e) {
+      if (controller.signal.aborted) throw new Error('O pedido demorou demasiado. Tenta novamente.');
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
+    const { data, error } = result;
     if (error) {
       let msg = error.message;
       try { msg = (await error.context.json()).error || msg; } catch { /* sem corpo */ }
+      if (/failed to send a request|failed to fetch/i.test(msg)) {
+        msg = 'Serviço indisponível de momento. Tenta mais tarde.';
+      }
       throw new Error(msg);
     }
     return { data };

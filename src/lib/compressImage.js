@@ -15,7 +15,8 @@ export default async function compressImage(file, maxSide = 1600, quality = 0.8)
   const img = await new Promise((resolve, reject) => {
     const el = new Image();
     el.onload = () => resolve(el);
-    el.onerror = reject;
+    el.onerror = () => reject(new Error('Não foi possível ler a imagem. Usa JPG ou PNG.'));
+    setTimeout(() => reject(new Error('A imagem demorou demasiado a carregar.')), 15000);
     el.src = URL.createObjectURL(file);
   });
   const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
