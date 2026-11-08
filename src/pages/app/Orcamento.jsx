@@ -18,6 +18,7 @@ function CategoryIcon({ name, className = 'w-[18px] h-[18px]' }) {
 import { formatKz } from '@/lib/format';
 import Seo from '@/components/Seo';
 import ConfirmDeleteDialog from '@/components/app/ConfirmDeleteDialog';
+import { toast } from '@/components/ui/use-toast';
 import GoalsTab from '@/components/app/GoalsTab';
 
 
@@ -83,6 +84,19 @@ export default function Orcamento() {
       setLoading(false);
     }
   }
+
+  const handleNew = () => {
+    setActiveTab('orcamento');
+    setTimeout(() => {
+      const el = document.getElementById('new-budget-cat');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.focus();
+      } else {
+        toast({ title: 'Todas as categorias já têm limite definido.' });
+      }
+    }, 50);
+  };
 
   const totalLimit = budgets.reduce((s, b) => s + (b.limit || 0), 0);
   const totalSpent = budgets.reduce((s, b) => s + (b.spent || 0), 0);
@@ -187,7 +201,7 @@ export default function Orcamento() {
             {new Intl.DateTimeFormat('pt-AO', { month: 'long', year: 'numeric' }).format(now)}
           </p>
         </div>
-        <button className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary text-white rounded-full text-sm font-medium btn-hover btn-primary-hover shrink-0">
+        <button onClick={handleNew} className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary text-white rounded-full text-sm font-medium btn-hover btn-primary-hover shrink-0">
           <Plus className="w-4 h-4" /> Novo
         </button>
       </div>
