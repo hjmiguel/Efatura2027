@@ -61,17 +61,17 @@ module.exports = {
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
   			},
-  			ink: '#10211C',
-  			'primary-2': '#12715C',
-  			gold: '#E8A23D',
-  			'gold-soft': '#F6E2BC',
+  			ink: '#12261C',
+  			'primary-2': '#2A6B50',
+  			gold: '#FF3EA5',
+  			'gold-soft': '#FFD9EC',
   			'danger-soft': '#F7E0DC',
-  			ok: '#1C8A6A',
-  			'green-soft': '#DCF0E6',
+  			ok: '#2A7A55',
+  			'green-soft': '#DDEBD3',
   			brandblue: '#3a64a8',
-  			surface: '#FFFFFF',
-  			line: '#E2E8E4',
-  			'muted-2': '#6E7A73'
+  			surface: '#FBF6E6',
+  			line: '#E0D5B3',
+  			'muted-2': '#6B7468'
   		},
   		fontFamily: {
   			heading: ['Space Grotesk', 'ui-sans-serif', 'system-ui', 'sans-serif'],
