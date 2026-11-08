@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { RefreshCw, CheckCircle, AlertTriangle, ShieldCheck, ShieldOff } from 'lucide-react';
 import { appApi } from '@/api/appClient';
+import ConfirmDeleteDialog from '@/components/app/ConfirmDeleteDialog';
 
 export default function AgtSyncButton({ user, onSyncComplete }) {
   const [syncing, setSyncing] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [showConsent, setShowConsent] = useState(false);
+  const [revokeOpen, setRevokeOpen] = useState(false);
 
   const hasConsent = user?.agt_consent === true;
 
@@ -24,7 +26,7 @@ export default function AgtSyncButton({ user, onSyncComplete }) {
   }
 
   async function handleRevokeConsent() {
-    if (!confirm('Revogar o acesso AGT? As faturas existentes mantêm-se, mas o feed para de sincronizar.')) return;
+    setRevokeOpen(false);
     try {
       await appApi.auth.updateMe({ agt_consent: false });
       onSyncComplete();
@@ -84,13 +86,22 @@ export default function AgtSyncButton({ user, onSyncComplete }) {
           {syncing ? 'A sincronizar...' : 'Sincronizar AGT'}
         </button>
         <button
-          onClick={handleRevokeConsent}
+          onClick={() => setRevokeOpen(true)}
           className="inline-flex items-center gap-1.5 text-sm text-muted-2 hover:text-destructive transition-colors"
         >
           <ShieldOff className="w-3.5 h-3.5" />
           Revogar
         </button>
       </div>
+
+      <ConfirmDeleteDialog
+        open={revokeOpen}
+        title="Revogar o acesso à AGT?"
+        description="As faturas existentes mantêm-se, mas a Gestão+ deixa de sincronizar com a AGT."
+        confirmLabel="Revogar"
+        onCancel={() => setRevokeOpen(false)}
+        onConfirm={handleRevokeConsent}
+      />
 
       {result && result.success && (
         <div className="flex items-start gap-3 bg-green-soft border border-ok/20 rounded-talao p-4">

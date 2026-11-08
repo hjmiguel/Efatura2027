@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Building2, Trash2, Plus, Copy, Check, Loader2 } from 'lucide-react';
 import { appApi } from '@/api/appClient';
 import { formatDate } from '@/lib/format';
+import ConfirmDeleteDialog from '@/components/app/ConfirmDeleteDialog';
 
 async function sha256Browser(message) {
   const buf = new TextEncoder().encode(message);
@@ -23,6 +24,7 @@ export default function PartnerConsentManager({ consents: propConsents, userNif,
   const [generatedKey, setGeneratedKey] = useState('');
   const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [revokeId, setRevokeId] = useState(null);
   const [consents, setConsents] = useState(propConsents || []);
   const [loading, setLoading] = useState(!propConsents);
 
@@ -72,7 +74,7 @@ export default function PartnerConsentManager({ consents: propConsents, userNif,
   }
 
   async function handleRevoke(id) {
-    if (!confirm('Revogar consentimento? A empresa perde acesso imediatamente.')) return;
+    setRevokeId(null);
     try {
       await appApi.entities.PartnerConsent.update(id, {
         consent_status: 'revoked',
@@ -113,6 +115,15 @@ export default function PartnerConsentManager({ consents: propConsents, userNif,
           <Plus className="w-4 h-4" /> Adicionar
         </button>
       </div>
+
+      <ConfirmDeleteDialog
+        open={!!revokeId}
+        title="Revogar consentimento?"
+        description="A empresa perde o acesso imediatamente."
+        confirmLabel="Revogar"
+        onCancel={() => setRevokeId(null)}
+        onConfirm={() => handleRevoke(revokeId)}
+      />
 
       {generatedKey && (
         <div className="mb-4 bg-gold-soft/50 border border-gold/30 rounded-xl p-4">
@@ -183,7 +194,7 @@ export default function PartnerConsentManager({ consents: propConsents, userNif,
                 </p>
               </div>
               <button
-                onClick={() => handleRevoke(c.id)}
+                onClick={() => setRevokeId(c.id)}
                 className="p-1.5 rounded text-muted-2 hover:text-destructive hover:bg-danger-soft transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
