@@ -18,12 +18,8 @@ function CategoryIcon({ name, className = 'w-[18px] h-[18px]' }) {
 import { formatKz } from '@/lib/format';
 import Seo from '@/components/Seo';
 import ConfirmDeleteDialog from '@/components/app/ConfirmDeleteDialog';
-import GoalRing from '@/components/app/ui/GoalRing';
+import GoalsTab from '@/components/app/GoalsTab';
 
-const mockGoals = [
-  { id: 1, name: 'Fundo de emergência', current: 310000, target: 500000, pct: 62, deadline: 'dezembro', suggestion: 32000, color: '#E68F33' },
-  { id: 2, name: 'Viagem em família', current: 140000, target: 500000, pct: 28, deadline: 'abril', suggestion: 45000, color: '#4C7A53' },
-];
 
 const CURRENT_MONTH = () => {
   const d = new Date();
@@ -337,27 +333,7 @@ export default function Orcamento() {
       )}
 
       {/* ===== Tab: Metas ===== */}
-      {activeTab === 'metas' && (
-        <div className="space-y-3.5">
-          {mockGoals.map((goal) => (
-            <div key={goal.id} className="bg-surface border border-line rounded-talao p-4 shadow-soft flex items-center gap-4">
-              <GoalRing pct={goal.pct} color={goal.color} label={`${goal.pct}%`} />
-              <div className="flex-1 min-w-0">
-                <h3 className="font-heading font-bold text-[15px] text-ink">{goal.name}</h3>
-                <p className="text-[12.5px] text-muted-foreground mt-0.5">
-                  {formatKz(goal.current)} / {formatKz(goal.target)} Kz · até {goal.deadline}
-                </p>
-                <p className="text-[12px] text-ink mt-1.5">
-                  Sugestão: poupa <span className="font-mono font-bold text-ink">{formatKz(goal.suggestion)}</span> por mês
-                </p>
-              </div>
-            </div>
-          ))}
-          <button className="w-full flex items-center justify-center gap-2 py-3 bg-primary text-white rounded-talao text-sm font-medium btn-hover btn-primary-hover">
-            <Plus className="w-4 h-4" /> Nova meta
-          </button>
-        </div>
-      )}
+      {activeTab === 'metas' && <GoalsTab />}
 
       {/* ===== Tab: Relatórios ===== */}
       {activeTab === 'relatorios' && (
