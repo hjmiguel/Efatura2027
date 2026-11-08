@@ -22,7 +22,6 @@ import StatusConfirmDialog from '@/components/app/payments/StatusConfirmDialog';
 const tabs = [
   { id: 'pendente', label: 'Pendente' },
   { id: 'pagos', label: 'Pagos' },
-  { id: 'compromissos', label: 'Compromissos' },
   { id: 'empresas', label: 'Empresas' },
 ];
 
