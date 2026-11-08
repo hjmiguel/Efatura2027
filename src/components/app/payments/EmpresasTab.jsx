@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Shield, Zap, Smartphone, Bell, Plus, Building2, Droplet, Tv, Loader2 } from 'lucide-react';
 import { appApi } from '@/api/appClient';
 import ConnectCompanyModal from './ConnectCompanyModal';
@@ -13,6 +14,8 @@ export default function EmpresasTab() {
   const [consents, setConsents] = useState([]);
   const [connectOpen, setConnectOpen] = useState(false);
   const [authModal, setAuthModal] = useState(null);
+  const [agtSaving, setAgtSaving] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => { load(); }, []);
 
@@ -30,6 +33,19 @@ export default function EmpresasTab() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function toggleAgt() {
+    setAgtSaving(true);
+    try {
+      const next = !user?.agt_consent;
+      await appApi.auth.updateMe({ agt_consent: next });
+      setUser((u) => ({ ...u, agt_consent: next }));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAgtSaving(false);
     }
   }
 
@@ -95,16 +111,25 @@ export default function EmpresasTab() {
 
         {/* Consent text */}
         <p className="text-[12px] text-white/70 leading-relaxed mb-4">
-          Autorizaste a Gestão+ a consultar as faturas emitidas sob o teu NIF. Podes revogar quando quiseres.
+          {user?.agt_consent
+            ? 'Autorizaste a Gestão+ a consultar as faturas emitidas sob o teu NIF. Podes revogar quando quiseres.'
+            : 'Liga a ligação à AGT para a Gestão+ consultar as faturas emitidas sob o teu NIF.'}
         </p>
 
         {/* Buttons */}
         <div className="flex gap-2">
-          <button className="flex-1 py-2.5 border border-[#F2994A] text-[#F2994A] rounded-xl text-[13px] font-medium hover:bg-[#F2994A]/10 transition-colors">
+          <button
+            onClick={() => navigate('/app/fiscal')}
+            className="flex-1 py-2.5 border border-[#F2994A] text-[#F2994A] rounded-xl text-[13px] font-medium hover:bg-[#F2994A]/10 transition-colors"
+          >
             Ver situação fiscal
           </button>
-          <button className="flex-1 py-2.5 border border-white/30 text-white rounded-xl text-[13px] font-medium hover:bg-white/10 transition-colors">
-            Revogar
+          <button
+            onClick={toggleAgt}
+            disabled={agtSaving}
+            className="flex-1 py-2.5 border border-white/30 text-white rounded-xl text-[13px] font-medium hover:bg-white/10 transition-colors disabled:opacity-60"
+          >
+            {agtSaving ? 'A guardar...' : user?.agt_consent ? 'Revogar' : 'Ligar'}
           </button>
         </div>
       </div>
