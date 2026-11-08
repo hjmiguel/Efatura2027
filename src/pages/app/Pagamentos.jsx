@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { appApi } from '@/api/appClient';
 import ManualInvoiceForm from '@/components/app/ManualInvoiceForm';
 import {
-  CheckCircle2, CalendarDays, Crown,
+  CheckCircle2, CalendarDays, Crown, Plus, Undo2,
   Smartphone, Landmark, Receipt, ChevronRight, FileText, AlertCircle,
 } from 'lucide-react';
 import { formatKz, formatDate, daysUntil } from '@/lib/format';
@@ -154,9 +154,14 @@ export default function Pagamentos() {
           <span className="eyebrow">§ 04 · Contas a pagar</span>
           <h1 className="font-heading text-2xl font-bold text-ink mt-1">Pagamentos</h1>
         </div>
-        <button onClick={() => setPremiumOpen(true)} className="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 border border-gold/40 text-[#9a6a16] rounded-xl text-sm font-medium hover:bg-gold-soft transition-colors">
-          <Crown className="w-4 h-4" /> Premium
-        </button>
+        <div className="shrink-0 flex items-center gap-2">
+          <button onClick={() => setManualFormOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-2 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary-2 transition-colors">
+            <Plus className="w-4 h-4" /> Fatura
+          </button>
+          <button onClick={() => setPremiumOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-2 border border-gold/40 text-[#9a6a16] rounded-xl text-sm font-medium hover:bg-gold-soft transition-colors">
+            <Crown className="w-4 h-4" /> Premium
+          </button>
+        </div>
       </div>
 
       {/* Two stats */}
@@ -178,8 +183,6 @@ export default function Pagamentos() {
             key={t.id}
             onClick={() => setTab(t.id)}
             className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors border ${
-              t.id === 'compromissos' ? 'hidden' : ''
-            } ${
               tab === t.id ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-muted-foreground hover:text-ink'
             }`}
           >
@@ -207,7 +210,7 @@ export default function Pagamentos() {
           {paid.length === 0 ? (
             <EmptyState icon={Receipt} title="Sem faturas pagas" text="As faturas que pagares aparecem aqui com o selo AGT." />
           ) : (
-            paid.map((inv) => <PaidRow key={inv.id} invoice={inv} />)
+            paid.map((inv) => <PaidRow key={inv.id} invoice={inv} onRevert={() => setStatusAction({ kind: 'pending', invoice: inv })} />)
           )}
         </div>
       )}
@@ -307,7 +310,7 @@ function BillCard({ invoice, onPay, onMarkPaid }) {
   );
 }
 
-function PaidRow({ invoice }) {
+function PaidRow({ invoice, onRevert }) {
   return (
     <div className="bg-surface border border-line rounded-talao p-4 shadow-soft flex items-center gap-3">
       <div className="w-[42px] h-[42px] rounded-[12px] bg-green-soft flex items-center justify-center shrink-0">
@@ -322,6 +325,9 @@ function PaidRow({ invoice }) {
       <div className="flex items-center gap-2.5 shrink-0">
         {invoice.agt_status && invoice.agt_status !== 'none' && <AgtSeal status={invoice.agt_status} size={18} />}
         <p className="font-mono font-semibold text-[15px] text-ink">{formatKz(invoice.amount)}</p>
+        <button onClick={onRevert} aria-label="Reverter para pendente" title="Reverter para pendente" className="p-1.5 rounded-lg border border-line text-muted-foreground hover:text-ink hover:bg-muted transition-colors">
+          <Undo2 className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
