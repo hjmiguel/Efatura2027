@@ -53,7 +53,7 @@ export default function GoalsTab() {
             <div className="flex-1 min-w-0">
               <h3 className="font-heading font-bold text-[15px] text-ink">{g.name}</h3>
               <p className="text-[12.5px] text-muted-foreground mt-0.5">
-                {formatKz(g.current || 0)} / {formatKz(g.target)} Kz{g.deadline ? ` · até ${g.deadline}` : ''}
+                {formatKz(g.current || 0)} / {formatKz(g.target)}{g.deadline ? ` · até ${g.deadline}` : ''}
               </p>
             </div>
             <button onClick={() => setToDelete(g)} aria-label="Apagar meta" className="p-1.5 rounded text-muted-2 hover:text-destructive hover:bg-danger-soft">
