@@ -163,6 +163,33 @@ export default function Orcamento() {
     URL.revokeObjectURL(url);
   };
 
+  const exportPdf = async () => {
+    const { jsPDF } = await import('jspdf');
+    const doc = new jsPDF();
+    const monthLabel = new Intl.DateTimeFormat('pt-AO', { month: 'long', year: 'numeric' }).format(new Date());
+    let y = 20;
+    doc.setFontSize(16);
+    doc.text(`Gestão+ · Orçamento · ${monthLabel}`, 14, y);
+    y += 12;
+    doc.setFontSize(10);
+    doc.text('Categoria', 14, y);
+    doc.text('Gasto (Kz)', 100, y);
+    doc.text('Limite (Kz)', 140, y);
+    doc.text('%', 185, y);
+    y += 7;
+    budgets.forEach((b) => {
+      if (y > 275) { doc.addPage(); y = 20; }
+      const pct = b.limit > 0 ? Math.round((b.spent / b.limit) * 100) : 0;
+      doc.text(String(b.category_name), 14, y);
+      doc.text(String(Math.round(b.spent)), 100, y);
+      doc.text(String(Math.round(b.limit)), 140, y);
+      doc.text(`${pct}%`, 185, y);
+      y += 7;
+    });
+    if (budgets.length === 0) doc.text('Sem orçamentos definidos.', 14, y);
+    doc.save(`orcamento-${month}.pdf`);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -399,7 +426,7 @@ export default function Orcamento() {
             <button onClick={exportCsv} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-surface border border-line rounded-xl text-sm font-medium text-ink hover:bg-muted transition-colors">
               <Download className="w-4 h-4" /> CSV
             </button>
-            <button className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-surface border border-line rounded-xl text-sm font-medium text-muted-2">
+            <button onClick={exportPdf} className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-surface border border-line rounded-xl text-sm font-medium text-ink hover:bg-muted transition-colors">
               <FileText className="w-4 h-4" /> PDF
             </button>
           </div>
