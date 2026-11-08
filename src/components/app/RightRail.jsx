@@ -16,6 +16,7 @@ const dedLabels = {
 export default function RightRail() {
   const [loading, setLoading] = useState(true);
   const [invoices, setInvoices] = useState([]);
+  const [agtConnected, setAgtConnected] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -25,6 +26,7 @@ export default function RightRail() {
       base44.entities.Subscription.filter({ status: 'active' }),
     ])
       .then(([me, data, consents, subs]) => {
+        setAgtConnected(me?.agt_consent === true);
         setInvoices(filterVisibleInvoices(data, {
           consents,
           hasActiveSubscription: subs.some((s) => s.user_id === me.id),
@@ -154,6 +156,11 @@ export default function RightRail() {
               <>
                 <b className="text-ink">{verified}</b> {verified === 1 ? 'fatura verificada' : 'faturas verificadas'} pela AGT sob o teu NIF este ano.
                 {pendingVerification > 0 && ` ${pendingVerification} ${pendingVerification === 1 ? 'aguarda' : 'aguardam'} confirmação.`}
+              </>
+            ) : agtConnected ? (
+              <>
+                AGT ligada. Ainda sem faturas verificadas este ano. Sincroniza em{' '}
+                <Link to="/app/fiscal" className="font-semibold text-primary hover:underline">Situação fiscal</Link>.
               </>
             ) : (
               <>
