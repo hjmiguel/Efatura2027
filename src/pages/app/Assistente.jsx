@@ -12,6 +12,7 @@ export default function Assistente() {
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState('');
   const [heroData, setHeroData] = useState({ patrimonio: 0, monthExpense: 0, invoiceCount: 0 });
+  const [heroLoading, setHeroLoading] = useState(true);
   const [voiceOn, setVoiceOn] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const scrollRef = useRef(null);
@@ -82,6 +83,7 @@ export default function Assistente() {
         invoiceCount: pendingInvoices.length,
       });
     } catch (err) { console.error(err); }
+    finally { setHeroLoading(false); }
   }
 
   useEffect(() => {
@@ -154,7 +156,7 @@ export default function Assistente() {
                 <Sparkles className="w-5 h-5 text-gold" />
               </div>
               <div>
-                <p className="font-heading font-bold text-base">Olá, {userName}!</p>
+                <p className="font-heading font-bold text-base">{heroLoading ? 'Olá!' : `Olá, ${userName}!`}</p>
                 <p className="text-[11px] text-white/60">Assistente financeiro</p>
               </div>
             </div>
@@ -164,15 +166,15 @@ export default function Assistente() {
             <div className="flex gap-2">
               <div className="flex-1 bg-white/10 rounded-lg px-3 py-2">
                 <div className="text-[10px] text-white/60">Património</div>
-                <div className="font-mono text-[13px] font-semibold">{formatKzShort(heroData.patrimonio)}</div>
+                <div className="font-mono text-[13px] font-semibold">{heroLoading ? '…' : formatKzShort(heroData.patrimonio)}</div>
               </div>
               <div className="flex-1 bg-white/10 rounded-lg px-3 py-2">
                 <div className="text-[10px] text-white/60">Gasto no mês</div>
-                <div className="font-mono text-[13px] font-semibold">{formatKzShort(heroData.monthExpense)}</div>
+                <div className="font-mono text-[13px] font-semibold">{heroLoading ? '…' : formatKzShort(heroData.monthExpense)}</div>
               </div>
               <div className="flex-1 bg-white/10 rounded-lg px-3 py-2">
                 <div className="text-[10px] text-white/60">Por pagar</div>
-                <div className="font-mono text-[13px] font-semibold">{heroData.invoiceCount}</div>
+                <div className="font-mono text-[13px] font-semibold">{heroLoading ? '…' : heroData.invoiceCount}</div>
               </div>
             </div>
           </div>
