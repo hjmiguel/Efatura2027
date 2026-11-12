@@ -1,0 +1,37 @@
+# Gestão+ — configuração Apache (Hostinger)
+
+# Forçar HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Fallback SPA: rotas como /app ou /entrar servem o index.html
+RewriteBase /
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
+
+# Cabeçalhos de segurança
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+
+  # assetlinks.json (TWA) com o tipo correto
+  <FilesMatch "^assetlinks\.json$">
+    Header set Content-Type "application/json"
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+
+  # Cache longo para os ficheiros com hash
+  <FilesMatch "\.(js|css|woff2?|png|jpg|jpeg|svg|webp|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Sem cache para ficheiros que mudam a cada versão
+  <FilesMatch "^(index\.html|sw\.js|manifest\.json)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </FilesMatch>
+</IfModule>
